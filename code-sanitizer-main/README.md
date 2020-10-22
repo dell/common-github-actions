@@ -23,7 +23,7 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v2
       - name: Run the forbidden words scan
-        uses: dell/code-sanitizer@main
+        uses: dell/common-github-actions/code-sanitizer@main
         with:
           args: .
 ```
