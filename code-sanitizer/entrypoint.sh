@@ -1,26 +1,26 @@
 #!/bin/bash
 
 SCRIPTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-DIRECTORY=`pwd`
+DIRECTORY=$(pwd)
 TOTALFOUND=0
 SCRIPTNAME=$(basename "$0")
 OUTPUT=""
 
-cd "${SCRIPTDIR}"
+cd "${SCRIPTDIR}" || exit
 for file_name in "${SCRIPTDIR}"/*.forbidden-word-list; do
-   source "${file_name}"
+  source "${file_name}"
 done
 
-function usage {
-   echo
-   echo "`basename ${0}`"
-   echo "    -d directory        - Directory to scan, default is the current working directory"
-   echo "    -t output filename  - Write results to a file and stdout"
-   exit 1
+function usage() {
+  echo
+  echo "$SCRIPTNAME"
+  echo "    -d directory        - Directory to scan, default is the current working directory"
+  echo "    -t output filename  - Write results to a file and stdout"
+  exit 1
 }
 
 # output -
-function output {
+function output() {
   if [ "${OUTPUT}blank" == "blank" ]; then
     grep -E -iwRHI --color --line-number --exclude-dir .git --exclude-dir .github --exclude-dir .idea --exclude "*.forbidden-word-list" "${W}" .
   else
@@ -30,10 +30,10 @@ function output {
 
 # check_for_disallowed_words
 # $1 = working dir
-function check_for_disallowed_words {
-  cd "${DIRECTORY}"
+function check_for_disallowed_words() {
+  cd "${DIRECTORY}" || exit
   for A in "${DISALLOWEDWORDS[@]}"; do
-    IFS='|' tokens=( "$A" )
+    IFS='|' tokens=("$A")
     W="${tokens[0]}"
     T="${tokens[1]}"
     E="${tokens[2]}"
@@ -55,26 +55,26 @@ function check_for_disallowed_words {
 
 while getopts "t:d:h" opt; do
   case $opt in
-    d)
-      DIRECTORY="${OPTARG}"
-      ;;
-    h)
-      usage
-      exit 0
-      ;;
-    t)
-      OUTPUT="${OPTARG}"
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
-      usage
-      exit 1
-      ;;
-    :)
-      echo "Option -$OPTARG requires an argument." >&2
-      usage
-      exit 1
-      ;;
+  d)
+    DIRECTORY="${OPTARG}"
+    ;;
+  h)
+    usage
+    exit 0
+    ;;
+  t)
+    OUTPUT="${OPTARG}"
+    ;;
+  \?)
+    echo "Invalid option: -$OPTARG" >&2
+    usage
+    exit 1
+    ;;
+  :)
+    echo "Option -$OPTARG requires an argument." >&2
+    usage
+    exit 1
+    ;;
   esac
 done
 

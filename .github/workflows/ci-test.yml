@@ -1,0 +1,22 @@
+# This workflow is for testing the code-sanitizer script
+name: code-sanitizer-test
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the main branch
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      # Runs a set of commands using the runners shell
+      - name: Invoke run_test
+        run: |
+          if [ -f "code-sanitizer/test/run_test.sh" ]; then
+             cd code-sanitizier
+             bash test/run_test.sh
+          fi
