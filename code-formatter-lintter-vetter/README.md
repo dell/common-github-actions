@@ -27,4 +27,4 @@ jobs:
           directories: ./...
 ```
 
-The `directories` for the Action is a path in which to check for these issues. You can use './...' (default if no `directories` are provided) to check from the root of the repo.
+The `directories` for the Action is a path in which to check for these issues. You can use `./...` (default if no `directories` are provided) to check from the root of the repo.
