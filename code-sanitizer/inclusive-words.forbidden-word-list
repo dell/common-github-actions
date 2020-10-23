@@ -1,0 +1,47 @@
+#!/bin/bash
+#
+# This file defines a list of words/phrases to be checked for by the check-forbidden-words.sh script
+#
+# These words/phrases are non-inclusive and cannot be used in any public facing deliverables,
+# this includes singular and plural forms of the words/phrases
+# The format of each line is:
+# "forbidden word/phrase|description|reason"
+
+THESEWORDS=( 
+   "master/slave|noninclusive word|primary/secondary could be used instead"
+   "masters/slaves|noninclusive word|primaries/secondaries could be used instead"
+   "master-slave|noninclusive word|primary-secondary could be used instead"
+   "masters-slaves|noninclusive word|primaries-secondaries could be used instead"
+   "master|noninclusive word|primary could be used instead"
+   "masters|noninclusive word|primaries could be used instead"
+   "slave|noninclusive word|secondary could be used instead"
+   "slaves|noninclusive word|secondaries could be used instead"
+   "blacklist/whitelist|noninclusive word|denylist/allowlist could be used instead"
+   "blacklists/whitelists|noninclusive word|denylists/allowlists could be used instead"
+   "blacklist-whitelist|noninclusive word|denylist-allowlist could be used instead"
+   "blacklists-whitelists|noninclusive word|denylists-allowlists could be used instead"
+   "blacklist|noninclusive word|denylist could be used instead"
+   "blacklists|noninclusive word|denylists could be used instead"
+   "black list|noninclusive word|denylist could be used instead"
+   "black lists|noninclusive word|denylists could be used instead"
+   "whitelist|noninclusive word|allowlist could be used instead"
+   "whitelists|noninclusive word|allowlists could be used instead"
+   "white list|noninclusive word|allowlist could be used instead"
+   "white lists|noninclusive word|allowlists could be used instead"
+   "blackhat|noninclusive word|unethical could be used instead"
+   "blackhats|noninclusive word|unethicals could be used instead"
+   "black hat|noninclusive word|unethical could be used instead"
+   "black hats|noninclusive word|unethicals could be used instead"
+   "whitehat|noninclusive word|ethical could be used instead"
+   "whitehats|noninclusive word|ethicals could be used instead"
+   "white hat|noninclusive word|ethical could be used instead"
+   "white hats|noninclusive word|ethicals could be used instead"
+   "segregation|noninclusive word|separation could be used instead"
+   "segregations|noninclusive word|separations could be used instead"
+   "segregate|noninclusive word|separate could be used instead"
+   "segregates|noninclusive word|separates could be used instead"
+   "blackout|noninclusive word|restrict could be used instead"      
+   "blackouts|noninclusive word|restricts could be used instead"
+)
+
+DISALLOWEDWORDS=( "${DISALLOWEDWORDS[@]}" "${THESEWORDS[@]}")
