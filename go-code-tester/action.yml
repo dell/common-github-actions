@@ -10,3 +10,7 @@ runs:
   image: 'Dockerfile'
   args:
     - ${{ inputs.threshold }}
+
+branding:
+  icon: 'shield'
+  color: 'blue'
