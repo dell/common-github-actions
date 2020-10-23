@@ -1,0 +1,12 @@
+name: 'Go Tester'
+description: 'Runs unit tests and verifies code coverage per package'
+inputs:
+  threshold:
+    description: 'Code coverage threshold for packages'
+    required: true
+    default: 90
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.threshold }}
