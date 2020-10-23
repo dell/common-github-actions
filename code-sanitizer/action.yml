@@ -1,0 +1,19 @@
+name: 'Code Sanitizer'
+description: 'Checks for forbidden words and text in the code'
+author: 'ameer-jabbar'
+
+inputs:
+  args:
+    description: 'Path to check'
+    required: true
+    default: '.'
+
+runs:
+    using: 'docker'    
+    image: 'Dockerfile'
+    args:
+      - ${{ inputs.args }}
+
+branding:
+  icon: 'shield'
+  color: 'blue'
