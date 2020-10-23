@@ -17,6 +17,6 @@ jobs:
       - name: Invoke run_test
         run: |
           if [ -f "code-sanitizer/test/run_test.sh" ]; then
-             cd code-sanitizier
+             cd code-sanitizer
              bash test/run_test.sh
           fi
