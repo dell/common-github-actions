@@ -1,0 +1,18 @@
+name: 'Check GO security'
+description: 'Runs gosec'
+
+inputs:
+  directories:
+    description: 'Directories to run checks'
+    required: true
+    default: './...'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.directories }}
+
+branding:
+  icon: 'shield'
+  color: 'blue'
