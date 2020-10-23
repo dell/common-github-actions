@@ -10,7 +10,7 @@ function run_script() {
   expected=$3
   message=$4
 
-  total_test=$((total_tests + 1))
+  total_tests=$((total_tests + 1))
 
   bash entrypoint.sh -d "test/$directory"
   actual=$?
@@ -27,6 +27,6 @@ function run_script() {
 run_script "Clean run" clean 0 "Expected no non-inclusive language, but found"
 run_script "Found some" non-inclusive 50 "Expected to find 50"
 
-echo "Total tests ${total_test} Passed: ${passed_tests} Failed: ${failed_tests}"
+echo "Total tests ${total_tests} Passed: ${passed_tests} Failed: ${failed_tests}"
 
 exit $failed_tests
