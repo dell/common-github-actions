@@ -6,7 +6,7 @@ To enable this Action, you can create a .yml file under your repo's .github/work
 Simple example:
 
 ```
-name: Code Check
+name: Security Check
 
 on:
   push:
