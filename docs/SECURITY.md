@@ -8,4 +8,4 @@
 
 ## Reporting a Vulnerability
 
-Please report a vulnerability by opening an Issue in this repository.
+Please report a vulnerability by opening an issue (https://github.com/dell/common-github-actions/issues) in this repository.
