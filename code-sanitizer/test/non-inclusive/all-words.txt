@@ -1,0 +1,35 @@
+# This file has an example checkout with some non-inclusive language
+master/slave
+masters/slaves
+master-slave
+masters-slaves
+master
+masters
+slave
+slaves
+blacklist/whitelist
+blacklists/whitelists
+blacklist-whitelist
+blacklists-whitelists
+blacklist
+blacklists
+black list
+black lists
+whitelist
+whitelists
+white list
+white lists
+blackhat
+blackhats
+black hat
+black hats
+whitehat
+whitehats
+white hat
+white hats
+segregation
+segregations
+segregate
+segregates
+blackout
+blackouts
