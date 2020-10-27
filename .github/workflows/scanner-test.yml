@@ -10,6 +10,6 @@ jobs:
        - name: Malware Scanner
          uses: ./malware-scanner
          with:
-             directories: ./...
+             directories: .
              options: -rf
      
