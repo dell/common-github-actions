@@ -2,16 +2,16 @@ name: 'Check GO security'
 description: 'Runs gosec'
 
 inputs:
-  directories:
-    description: 'Directories to run checks'
+  args:
+    description: 'Arguments for gosec'
     required: true
-    default: './...'
+    default: '-h'
 
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.directories }}
+    - ${{ inputs.args }}
 
 branding:
   icon: 'shield'
