@@ -8,4 +8,7 @@
 
 ## Reporting a Vulnerability
 
-Please report a vulnerability by opening an issue (https://github.com/dell/common-github-actions/issues) in this repository.
+Have you discovered a security vulnerability in Github Actions?
+We ask you to alert the maintainers by sending an email, describing the issue, impact, and fix - if applicable.
+
+You can reach the Karavi maintainers at karavi@dell.com.
