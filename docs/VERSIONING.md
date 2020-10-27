@@ -1,6 +1,6 @@
 # Versioning
 
-This versioning strategy applies to Dell Karavi.
+This versioning strategy applies to GitHub Actions implemented in this repo.
 
 Artifacts published must belong to one of the following categories:
   * "Releases", i.e. artifacts that have versions that follow the `x.y.z` format,
@@ -51,4 +51,4 @@ Artifacts published must belong to one of the following categories:
       4) `suffix` does not equal `SNAPSHOT`.
 
 ### References
-Dell Karavi follow Semantic Versioning as defined on [http://semver.org/](http://semver.org).
+This versioning follow Semantic Versioning as defined on [http://semver.org/](http://semver.org).
