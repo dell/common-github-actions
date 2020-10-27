@@ -1,4 +1,4 @@
-FROM golang:latest
+FROM alpine
 
 LABEL "com.github.actions.name"="code-sanitizer"
 LABEL "com.github.actions.description"="Checks for forbidden words and text in the code"
