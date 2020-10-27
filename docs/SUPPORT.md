@@ -11,5 +11,5 @@ For any support on GitHub Actions in this repo, please contact karavi@dell.com.
 ## Questions
 
 You have a question about and cannot find the answer in the documenation? 
-Use the **[Ask a Question](../.github/ISSUE_TEMPLATE/ask-a-question.md)** template and fill out the required fields.
+Use the **[Ask a Question](https://github.com/dell/common-github-actions/issues/new?template=ask-a-question.md)** template and fill out the required fields.
 
