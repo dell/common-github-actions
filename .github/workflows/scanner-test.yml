@@ -8,15 +8,15 @@ on:
       branches: [ main ]
 
 jobs:
-    malware-security-scan:
-    runs-on: ubuntu-latest
-    name: Malware Scanner
-    steps:
-       - name: Checkout
-         uses: actions/checkout@v2
-       - name: Malware Scanner
-         uses: ./malware-scanner
-         with:
-             directories: .
-             options: -rf
+    malware_security_scan:
+        runs-on: ubuntu-latest
+        name: Malware Scanner
+        steps:
+        - name: Checkout
+          uses: actions/checkout@v2
+        - name: Malware Scanner
+          uses: ./malware-scanner
+          with:
+              directories: .
+              options: -rf
      
