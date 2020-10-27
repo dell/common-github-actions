@@ -8,7 +8,7 @@ jobs:
        - name: Checkout
          uses: actions/checkout@v2
        - name: Malware Scanner
-         uses: malware-scanner
+         uses: ./malware-scanner
          with:
              directories: ./...
              options: -rf
