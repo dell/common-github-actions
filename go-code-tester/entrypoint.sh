@@ -18,6 +18,10 @@ touch ${COVERAGE_TMPFILE}.count
 check_coverage() {
     while read -r line
     do
+        no_tests=$(echo "$line" | awk '{print $1}')
+        if [ "$no_tests" == "?" ]; then
+            continue
+        fi
         echo "$line" | awk '{print $2, substr($5, 1, length($5)-1)}' | while read pkg cov
         do
             if [ $((${cov%.*} - ${THRESHOLD})) -lt 0 ]; then
