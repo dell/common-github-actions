@@ -1,4 +1,4 @@
-FROM golang:latest
+FROM ubuntu
 
 LABEL "com.github.actions.name"="code-sanitizer"
 LABEL "com.github.actions.description"="Checks for forbidden words and text in the code"
@@ -10,4 +10,4 @@ LABEL version="1.0.0"
 COPY "inclusive-words.forbidden-word-list" "/inclusive-words.forbidden-word-list"
 COPY "entrypoint.sh" "/entrypoint.sh"
 RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["bash", "/entrypoint.sh", "-d"]
