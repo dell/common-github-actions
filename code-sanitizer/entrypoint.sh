@@ -4,7 +4,6 @@ SCRIPTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 DIRECTORY=$(pwd)
 TOTALFOUND=0
 SCRIPTNAME=$(basename "$0")
-OUTPUT=""
 
 cd "${SCRIPTDIR}" || exit
 for file_name in "${SCRIPTDIR}"/*.forbidden-word-list; do
@@ -15,17 +14,12 @@ function usage() {
   echo
   echo "$SCRIPTNAME"
   echo "    -d directory        - Directory to scan, default is the current working directory"
-  echo "    -t output filename  - Write results to a file and stdout"
   exit 1
 }
 
 # output -
 function output() {
-  if [ "${OUTPUT}blank" == "blank" ]; then
-    grep -E -iwRHI --color --line-number --exclude-dir .git --exclude-dir .github --exclude-dir .idea --exclude "*.forbidden-word-list" "${W}" .
-  else
-    grep -E -iwRHI --line-number --exclude-dir .git --exclude-dir .github --exclude-dir .idea --exclude "*.forbidden-word-list" "${W}" . | tee -a ${OUTPUT}
-  fi
+  grep -E -iwRHI --color --line-number --exclude-dir .git --exclude-dir .github --exclude-dir .idea --exclude "*.forbidden-word-list" "${W}" .
 }
 
 # check_for_disallowed_words
@@ -33,7 +27,7 @@ function output() {
 function check_for_disallowed_words() {
   cd "${DIRECTORY}" || exit
   for A in "${DISALLOWEDWORDS[@]}"; do
-    IFS='|' tokens=("$A")
+    IFS='|' tokens=($A)
     W="${tokens[0]}"
     T="${tokens[1]}"
     E="${tokens[2]}"
@@ -53,7 +47,7 @@ function check_for_disallowed_words() {
 
 }
 
-while getopts "t:d:h" opt; do
+while getopts "d:h" opt; do
   case $opt in
   d)
     DIRECTORY="${OPTARG}"
@@ -61,9 +55,6 @@ while getopts "t:d:h" opt; do
   h)
     usage
     exit 0
-    ;;
-  t)
-    OUTPUT="${OPTARG}"
     ;;
   \?)
     echo "Invalid option: -$OPTARG" >&2
@@ -77,10 +68,6 @@ while getopts "t:d:h" opt; do
     ;;
   esac
 done
-
-if [ "${OUTPUT}blank" != "blank" ]; then
-  rm -f "${OUTPUT}"
-fi
 
 check_for_disallowed_words "${BASEDIR}/${SOURCE_CLONE}"
 echo "Total issues found: $TOTALFOUND"
