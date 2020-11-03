@@ -24,6 +24,20 @@ You may obtain a copy of the License at
 - [Security](./docs/SECURITY.md)
 - [About](#About)
 
+## Implemented Actions
+
+### code-sanitizer
+[GitHub Action to scan the source for non-inclusive words and language.](https://github.com/dell/common-github-actions/blob/main/code-sanitizer/README.md) 
+
+### go-code-formatter-linter-vetter
+[GitHub Action to run go formatter, linter, and venter scans against the GO source files](https://github.com/dell/common-github-actions/blob/main/go-code-formatter-linter-vetter/README.md)
+
+### go-code-tester
+[GitHub Action to run code coverage against GO source](https://github.com/dell/common-github-actions/blob/main/go-code-tester/README.md)
+
+### malware-scanner
+[GitHub Action to run ClamScan AntiVirus Scan against source](https://github.com/dell/common-github-actions/blob/main/malware-scanner/README.md)
+
 ## Support
 
 Don’t hesitate to ask! Contact the team and community on the [mailing lists](https://group).

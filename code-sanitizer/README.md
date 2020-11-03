@@ -1,6 +1,6 @@
 # Code Sanitizer GitHub Action
 This GitHub Action can be used to check sources files for forbidden words and text. Forbidden words include 
-such things as non-inclusive language, non-private IP addresses. 
+such things as non-inclusive language. 
 
 To enable this Action, you can create a .yml file under your repo's .github/workflows directory. 
 Simple example:
