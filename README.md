@@ -40,7 +40,7 @@ You may obtain a copy of the License at
 
 ## Support
 
-Don’t hesitate to ask! Contact the team and community on the [mailing lists](https://group).
+Don’t hesitate to ask! Contact the team and community on the [mailing lists](mailto:karavi@dell.com?subject=[Common-GitHub-Actions]%20<replace%20me%20with%20more%20specific%20subject>).
 Open an issue if you found a bug on [Github Issues](https://github.com/dell/common-github-actions/issues).
 
 ## About
