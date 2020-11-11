@@ -20,7 +20,7 @@ You may obtain a copy of the License at
   - [Contributing Guide](./docs/CONTRIBUTING.md)
 - [Maintainers](./docs/MAINTAINERS.md)
 - [Release Notes](./docs/RELEASE_NOTES.md)
-- [Support](./docs/SUPPORT.md)
+- [Support](#support)
 - [Security](./docs/SECURITY.md)
 - [About](#About)
 
@@ -40,7 +40,7 @@ You may obtain a copy of the License at
 
 ## Support
 
-Don’t hesitate to ask! Contact the team and community on the [mailing lists](https://group).
+Don’t hesitate to ask! Contact the team and community on [our support](./docs/SUPPORT.md).
 Open an issue if you found a bug on [Github Issues](https://github.com/dell/common-github-actions/issues).
 
 ## About
