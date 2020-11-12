@@ -18,6 +18,7 @@ You may obtain a copy of the License at
 - Guides
   - [Committer Guide](./docs/COMMITTER_GUIDE.md)
   - [Contributing Guide](./docs/CONTRIBUTING.md)
+  - [Maintainer Guide](./docs/MAINTAINER_GUIDE.md)
 - [Maintainers](./docs/MAINTAINERS.md)
 - [Release Notes](./docs/RELEASE_NOTES.md)
 - [Support](#support)
