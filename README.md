@@ -9,7 +9,7 @@ You may obtain a copy of the License at
 -->
 # Dell GitHub Actions
 
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](./docs/CODE_OF_CONDUCT.md)
 [![License](https://img.shields.io/github/license/dell/common-github-actions)](LICENSE)
 [![Latest Release](https://img.shields.io/github/v/release/dell/common-github-actions?label=latest&style=flat-square)](https://github.com/dell/common-github-actions/releases)
 
