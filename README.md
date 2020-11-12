@@ -43,6 +43,10 @@ You may obtain a copy of the License at
 Don’t hesitate to ask! Contact the team and community on [our support](./docs/SUPPORT.md).
 Open an issue if you found a bug on [Github Issues](https://github.com/dell/common-github-actions/issues).
 
+## Versioning
+
+This project is adhering to [Semantic Versioning](https://semver.org/). 
+
 ## About
 
 The GitHub Actions implemented in this repo are 100% open source and community-driven. 
