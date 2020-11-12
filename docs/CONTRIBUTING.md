@@ -90,12 +90,10 @@ We are following a scaled trunk branching strategy where short-lived branches ar
 |  Branch Type |  Example                          |  Comment                                  |
 |--------------|-----------------------------------|-------------------------------------------|
 |  main        |  main                             |                                           |
-|  Release     |  release-1.0                      |  hotfix: release-1.1 patch: release-1.0.1 |
 |  Feature     |  feature-9-olp-support            |  "9" referring to GitHub issue ID         |
 |  Bug Fix     |  bugfix-110-remove-docker-compose |  "110" referring to GitHub issue ID       |
 
 #### Branch Types
-- A Release branch is a branch created from main that will be solely used for release a Karavi version. Only critical bug fixes will be merged into this branch.
 - Bug Fix branch is a branch which is created for the purpose of fixing the given defect/issue.
 - Feature branch is created for a feature development purpose.
 
@@ -106,8 +104,6 @@ We are following a scaled trunk branching strategy where short-lived branches ar
 4. If other code changes have merged into the upstream main branch, perform a rebase of those changes into your branch.
 5. Open a [pull request](#pull-requests) between your branch and the upstream main branch.
 6. Once your pull request has merged, your branch can be deleted.
-
-Release branches will be created from the main branch near the time of a planned release when all features are completed. Only critical bug fixes will be merged into the release branch at this time. All other bug fixes and features can continue to be merged into the main branch. When the release branch is stable, the branch will be tagged for release.
 
 # Signing your commits
 
