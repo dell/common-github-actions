@@ -20,7 +20,6 @@ You may obtain a copy of the License at
   - [Contributing Guide](./docs/CONTRIBUTING.md)
   - [Maintainer Guide](./docs/MAINTAINER_GUIDE.md)
 - [Maintainers](./docs/MAINTAINERS.md)
-- [Release Notes](./docs/RELEASE_NOTES.md)
 - [Support](#support)
 - [Security](./docs/SECURITY.md)
 - [About](#About)
