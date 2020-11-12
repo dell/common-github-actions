@@ -1,3 +1,11 @@
+<!--
+Copyright (c) 2020 Dell Inc., or its subsidiaries. All Rights Reserved.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # How to Contribute
 
 Become one of the contributors to this project! We thrive to build a welcoming and open community for anyone who wants to use the project or contribute to it. There are just a few small guidelines you need to follow. To help us create a safe and positive community experience for all, we require all participants to adhere to the [Code of Conduct](CODE_OF_CONDUCT.md).
@@ -9,14 +17,13 @@ Become one of the contributors to this project! We thrive to build a welcoming a
 * [Answering questions](#Answering-questions)
 * [Triage issues](#Triage-issues)
 * [Your first contribution](#Your-first-contribution)
-* [Pull requests](#Pull-requests)
-* [Commit message format](#Commit-message-format)
 * [Branching Strategy](#Branching-strategy)
-* [Code reviews](#Code-reviews)
 * [Signing your commits](#Signing-your-commits)
+* [Pull requests](#Pull-requests)
+* [Code reviews](#Code-reviews)
 * [TODOs in the code](#TODOs-in-the-code)
 
-## Become a contributor
+# Become a contributor
 
 You can contribute to Dell GitHub Actions in several ways. Here are some examples:
 
@@ -26,7 +33,7 @@ You can contribute to Dell GitHub Actions in several ways. Here are some example
 - Write technical documentation and blog posts, for users and contributors.
 - Help others by answering questions about Dell GitHub Actions.
 
-## Report bugs
+# Report bugs
 
 We aim to track and document everything related to this repo via the Issues page. The code and documentation are released with no warranties or SLAs and are intended to be supported through a community driven process.
 
@@ -44,17 +51,17 @@ When opening a Bug please include the following information to help with debuggi
 
 An Issue __must__ be created before submitting any pull request. Any pull request that is created should be linked to an Issue.
 
-## Feature request
+# Feature request
 
 If you have an idea of how to improve Dell GitHub Actions, submit a [feature request](https://github.com/dell/common-github-actions/issues/new?template=feature_request.md).
 
-## Answering questions
+# Answering questions
 
 If you have a question and you can't find the answer in the documentation or issues, the next step is to submit a [question](https://github.com/dell/common-github-actions/issues/new?template=ask-a-question.md)
 
 We'd love your help answering questions being asked by other Dell GitHub Actions users.
 
-## Triage issues
+# Triage issues
 
 Triage helps ensure that issues resolve quickly by:
 
@@ -67,8 +74,7 @@ If you don't have the knowledge or time to code, consider helping with _issue tr
 
 Read more about the ways you can [Triage issues](ISSUE_TRIAGE.md).
 
-## Your first contribution
-
+# Your first contribution
 Unsure where to begin contributing to Dell GitHub Actions? Start by browsing issues labeled `beginner friendly` or `help wanted`.
 
 - [Beginner-friendly](https://github.com/dell/common-github-actions/issues?q=is%3Aopen+is%3Aissue+label%3A%22beginner+friendly%22) issues are generally straightforward to complete.
@@ -76,7 +82,54 @@ Unsure where to begin contributing to Dell GitHub Actions? Start by browsing iss
 
 When you're ready to contribute, it's time to create a pull request.
 
-## Pull requests
+# Branching Strategy
+We are following a scaled trunk branching strategy where short-lived branches are created off of the main branch. When coding is complete, the branch is merged back into main after being approved in a pull request code review.
+
+## Branch Naming Convention
+
+|  Branch Type |  Example                          |  Comment                                  |
+|--------------|-----------------------------------|-------------------------------------------|
+|  main        |  main                             |                                           |
+|  Feature     |  feature-9-olp-support            |  "9" referring to GitHub issue ID         |
+|  Bug Fix     |  bugfix-110-remove-docker-compose |  "110" referring to GitHub issue ID       |
+
+#### Branch Types
+- Bug Fix branch is a branch which is created for the purpose of fixing the given defect/issue.
+- Feature branch is created for a feature development purpose.
+
+## Steps to create a branch for a bug fix or feature:
+1. Fork the repository.
+2. Create a branch off of the main branch. The branch name should follow [branch naming convention](#branch-naming-convention).
+3. Write code, add tests, and commit to your branch. Optionally, add feature flags to disable any new features that are not yet ready for the release.
+4. If other code changes have merged into the upstream main branch, perform a rebase of those changes into your branch.
+5. Open a [pull request](#pull-requests) between your branch and the upstream main branch.
+6. Once your pull request has merged, your branch can be deleted.
+
+# Signing your commits
+
+We require that developers sign off their commits to certify that they have permission to contribute the code in a pull request. This way of certifying is commonly known as the [Developer Certificate of Origin (DCO)](https://developercertificate.org/). We encourage all contributors to read the DCO text before signing a commit and making contributions.
+
+GitHub will prevent a pull request from being merged if there are any unsigned commits.
+
+## Signing a commit
+
+GPG (GNU Privacy Guard) will be used to sign commits.  Follow the instructions [here](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/signing-commits) to create a GPG key and configure your GitHub account to use that key.
+
+Make sure you have your user name and e-mail set.  This will be required for your signed commit to be properly verified.  Check the following references:
+
+* Setting up your github user name [reference](https://help.github.com/articles/setting-your-username-in-git/)
+* Setting up your e-mail address [reference](https://help.github.com/articles/setting-your-commit-email-address-in-git/)
+
+Once Git and your GitHub account have been properly configured, you can add the -S flag to the git commits:
+```console
+$ git commit -S -m your commit message
+# Creates a signed commit
+```
+
+## Commit message format
+
+Karavi uses the guidelines for commit messages outlined in [How to Write a Git Commit Message](https://chris.beams.io/posts/git-commit/)
+# Pull requests
 
 If this is your first time contributing to an open-source project on GitHub, make sure you read about [Creating a pull request](https://help.github.com/en/articles/creating-a-pull-request).
 
@@ -101,53 +154,9 @@ We use the pull request title when we generate change logs for releases. As such
 
 Make sure that the title for your pull request uses the same format as the subject line in the commit message.
 
-## Commit message format
-
-Dell GitHub Actions uses the guidelines for commit messages outlined in [How to Write a Git Commit Message](https://chris.beams.io/posts/git-commit/)
-
-## Branching Strategy
-We are following a scaled trunk branching strategy where short-lived branches are created off of the main branch. When coding is complete, the branch is merged back into main after being approved in a pull request code review.
-
-Steps to create a branch for a bug fix or feature:
-1. Fork the repository.
-2. Create a branch off of the main branch. The branch name should be descriptive and include the bug fix or feature that it contains.
-3. Write code, add tests, and commit to your branch. Optionally, add feature flags to disable any new features that are not yet ready for the release.
-4. If other code changes have merged into the upstream main branch, perform a rebase of those changes into your branch.
-5. Open a pull request between your branch and the upstream main branch.
-6. Once your pull request has merged, your branch can be deleted.
-
-## Branch Naming Convention
-
-|  Branch Type |  Example                          |  Comment                                  |
-|--------------|-----------------------------------|-------------------------------------------|
-|  main        |  main                             |                                           |
-|  Feature     |  feature-9-olp-support            |  "9" referring to GitHub issue ID         |
-|  Bug Fix     |  bugfix-110-remove-docker-compose |  "110" referring to GitHub issue ID       |
-
-## Code Reviews
+# Code Reviews
 
 All submissions, including submissions by project members, require review. We use GitHub pull requests for this purpose. Consult [GitHub Help](https://help.github.com/articles/about-pull-requests/) for more information on using pull requests.
 
-## Signing your commits
-
-We require that developers sign off their commits to certify that they have permission to contribute the code in a pull request. This way of certifying is commonly known as the [Developer Certificate of Origin (DCO)](https://developercertificate.org/). We encourage all contributors to read the DCO text before signing a commit and making contributions.
-
-GitHub will prevent a pull request from being merged if there are any unsigned commits.
-
-### Signing a commit
-
-GPG (GNU Privacy Guard) will be used to sign commits.  Follow the instructions [here](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/signing-commits) to create a GPG key and configure your GitHub account to use that key.
-
-Make sure you have your user name and e-mail set.  This will be required for your signed commit to be properly verified.  Check the following references:
-
-* Setting up your github user name [reference](https://help.github.com/articles/setting-your-username-in-git/)
-* Setting up your e-mail address [reference](https://help.github.com/articles/setting-your-commit-email-address-in-git/)
-
-Once Git and your GitHub account have been properly configured, you can add the -S flag to the git commits:
-```console
-$ git commit -S -m your commit message
-# Creates a signed commit
-```
-
-## TODOs in the code
+# TODOs in the code
 We don't like TODOs in the code. It is really best if you sort out all issues you can see with the changes before we check the changes in.
