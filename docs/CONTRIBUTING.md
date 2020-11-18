@@ -170,9 +170,9 @@ Following GitHub Actions are used to enforce quality gates when a pull request i
 
 #### Security scans
 
-To check the security vulnerability, Karavi has following GitHub Actions that will be run when a pull request is open.
+Common GitHub Actions enforces for the following checks to run when a pull request is opened.
 
-* [Malware Scanner](hub.com/dell/common-github-actions/tree/main/malware-scannerttps://gith) inspects source code for malware.
+[Malware Scanner](hub.com/dell/common-github-actions/tree/main/malware-scannerttps://gith) inspects source code for malware.
 
 #### Code sanitization
 
