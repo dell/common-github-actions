@@ -172,7 +172,7 @@ Following GitHub Actions are used to enforce quality gates when a pull request i
 
 Common GitHub Actions enforces for the following checks to run when a pull request is opened.
 
-[Malware Scanner](https://githhub.com/dell/common-github-actions/tree/main/malware-scanner) inspects source code for malware.
+[Malware Scanner](https://github.com/dell/common-github-actions/tree/main/malware-scanner) inspects source code for malware.
 
 #### Code sanitization
 
