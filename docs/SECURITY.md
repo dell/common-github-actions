@@ -9,12 +9,6 @@ You may obtain a copy of the License at
 -->
 # Security Policy
 
-## Supported Versions
-
-| Version | Supported          |
-| ------- | ------------------ |
-|         |
-
 ## Reporting a Vulnerability
 
 Have you discovered a security vulnerability in Github Actions?
