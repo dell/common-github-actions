@@ -34,7 +34,7 @@ You may obtain a copy of the License at
 
 ### go-code-formatter-linter-vetter
 
-[GitHub Action to run go formatter, linter, and venter scans against the GO source files](https://github.com/dell/common-github-actions/blob/main/go-code-formatter-linter-vetter/README.md)
+[GitHub Action to run go formatter, linter, and vetter scans against the GO source files](https://github.com/dell/common-github-actions/blob/main/go-code-formatter-linter-vetter/README.md)
 
 ### go-code-tester
 

@@ -182,7 +182,7 @@ Part of issue triage should also be triaging of external PRs. Main goal should b
 
 ## GitHub issue management workflow
 
-The following section describes the triage workflow for new GitGHub issues that get created.
+The following section describes the triage workflow for new GitHub issues that get created.
 
 ### GitHub Issue: Bug
 

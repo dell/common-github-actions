@@ -23,6 +23,7 @@ Become one of the contributors to this project! We thrive to build a welcoming a
 * [Branching Strategy](#Branching-strategy)
 * [Signing your commits](#Signing-your-commits)
 * [Pull requests](#Pull-requests)
+* [Quality Gates for pull requests](#Quality-Gates-for-pull-requests)
 * [Code reviews](#Code-reviews)
 
 ## Become a contributor
@@ -162,6 +163,20 @@ All commits will be squashed into one when we accept a pull request. The title o
 We use the pull request title when we generate change logs for releases. As such, we strive to make the title as informative as possible.
 
 Make sure that the title for your pull request uses the same format as the subject line in the commit message.
+
+### Quality Gates for pull requests
+
+Following GitHub Actions are used to enforce quality gates when a pull request is created or when any commit is made to the pull request. These GitHub Actions enforced our minimum code quality requirement for any code that get check into the repository. If any of the gate fails, it is expected that contributor will look into the check log, understand the problem and resolve the issue.
+
+#### Security scans
+
+To check the security vulnerability, Karavi has following GitHub Actions that will be run when a pull request is open.
+
+* [Malware Scanner](hub.com/dell/common-github-actions/tree/main/malware-scannerttps://gith) inspects source code for malware.
+
+#### Code sanitization
+
+[GitHub action](https://github.com/dell/common-github-actions/tree/main/code-sanitizer) that analyzes source code for non-inclusive words and language.
 
 ## Code Reviews
 
