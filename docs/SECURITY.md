@@ -7,11 +7,12 @@ You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 -->
+
 # Security Policy
 
 ## Reporting a Vulnerability
 
-Have you discovered a security vulnerability in Github Actions?
+Have you discovered a security vulnerability in this repository?
 We ask you to alert the maintainers by sending an email, describing the issue, impact, and fix - if applicable.
 
-You can reach the Karavi maintainers at karavi@dell.com.
+You can reach the maintainers at karavi@dell.com.
