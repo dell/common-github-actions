@@ -10,7 +10,11 @@ description: 'Runs gofmt, golint, and go vet'
 
 inputs:
   directories:
-    description: 'Directories to run checks'
+    description: >
+      Directories to run checks. Format is:
+        directories: [--vet-in-dir <VET_DIR>] <DIRS>
+      As shown, you can optionally specify '--vet-in-dir' for cases where the module is
+      defined within a specific directory and you would like to run the 'go vet' there.
     required: true
     default: './...'
 
