@@ -13,7 +13,7 @@ VET_IN_DIR=0
 VET_DIR=""
 
 captured_vet_dir=0
-for param in "$@"
+for param in $@
 do
     case $param in
        "--vet-in-dir")
