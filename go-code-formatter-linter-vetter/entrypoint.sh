@@ -8,7 +8,39 @@
 #
 #  http://www.apache.org/licenses/LICENSE-2.0
 
-CHECK_DIRS="$*"
+CHECK_DIRS=""
+VET_IN_DIR=0
+VET_DIR=""
+
+captured_vet_dir=0
+for param in "$@"
+do
+    case $param in
+       "--vet-in-dir")
+          VET_IN_DIR=1
+          shift
+          ;;
+       *)
+          if [ $VET_IN_DIR -eq 1 ] && [ $captured_vet_dir -eq 0 ]; then
+             VET_DIR="$param"
+             captured_vet_dir=1
+          else
+             CHECK_DIRS="$param $CHECK_DIRS"
+          fi
+          shift
+          ;;
+    esac
+done
+
+if [ $VET_IN_DIR -eq 1 ] && [ $captured_vet_dir -eq 0 ]; then
+    echo "--vet-in-dir specified, but no directory provided"
+    exit 1
+fi
+
+if [ "$CHECK_DIRS" == "" ]; then
+    echo "No directories provided"
+    exit 1
+fi
 
 if [ -f "../vendor" ]; then
     # Tell the applicable Go tools to use the vendor directory, if it exists.
@@ -39,10 +71,18 @@ fmt
 FMT_RETURN_CODE=$?
 echo === Finished
 
+if [ $VET_IN_DIR -eq 1 ]; then
+   cd "$VET_DIR" || exit 1
+fi
+
 echo === Vetting...
 go vet ${MOD_FLAGS} ${CHECK_DIRS}
 VET_RETURN_CODE=$?
 echo === Finished
+
+if [ $VET_IN_DIR -eq 1 ]; then
+   cd - || exit 1
+fi
 
 echo === Linting...
 (command -v golint >/dev/null 2>&1 \
