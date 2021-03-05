@@ -29,6 +29,6 @@ jobs:
           skip-list: "this/pkg1,this/pkg2"
 ```
 
-The `threshold` for the Action is a coverage percentage threshold that every pakcage must meet. The default `threshold` is 90.
+The `threshold` for the Action is a coverage percentage threshold that every package must meet. The default `threshold` is 90.
 
 The `skip-list` is an optional parameter. It should be a comma delimited string of package names to skip for the testing coverage criteria.
