@@ -12,12 +12,16 @@ inputs:
     description: 'Code coverage threshold for packages'
     required: true
     default: 90
+  skip-list:
+    description: 'A comma delimited list of pkg names to skip for coverage constraint'
+    required: false
+    default: ""
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
     - ${{ inputs.threshold }}
-
+    - ${{ inputs.skip-list }}
 branding:
   icon: 'shield'
   color: 'blue'
