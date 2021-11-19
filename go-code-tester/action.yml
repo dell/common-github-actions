@@ -25,6 +25,7 @@ runs:
   image: 'Dockerfile'
   args:
     - ${{ inputs.threshold }}
+    - ${{ inputs.test-folder }}
     - ${{ inputs.skip-list }}
 branding:
   icon: 'shield'
