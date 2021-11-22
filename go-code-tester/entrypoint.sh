@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # Copyright (c) 2020 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
@@ -10,7 +10,6 @@
 
 THRESHOLD=$1
 SKIP_LIST=$2
-pkg_skip_list=
 
 # Second parameter is a comma delimited list of
 # Go package names that should have the coverage
@@ -19,9 +18,13 @@ pkg_skip_list=
 
 go clean -testcache
 
-TEST_OUTPUT=$(cd service;go test -v -short -count=1 -race -cover ./...)
+cd service
+
+go test -v -short -count=1 -race -cover ./...
+
 TEST_RETURN_CODE=$?
 
 if [ "${TEST_RETURN_CODE}" != "0" ]; then
     exit 1
 fi
+exit 0
