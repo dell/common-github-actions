@@ -15,7 +15,6 @@ SKIP_LIST=$2
 # Go package names that should have the coverage
 # criteria applied against
 
-pwd
 go clean -testcache
 
 if [ -d "service" ]; then
@@ -23,7 +22,8 @@ if [ -d "service" ]; then
 else
    pwd
    ls -l
-   cd controllers
+   cd csi-volumegroup-snapshotter/controllers
+   ls -l
 fi
 
 go test -v -short -count=1 -race -cover ./...
