@@ -15,12 +15,14 @@ SKIP_LIST=$2
 # Go package names that should have the coverage
 # criteria applied against
 
-
+pwd
 go clean -testcache
 
 if [ -d "service" ]; then
    cd service
 else
+   pwd
+   ls -l
    cd controllers
 fi
 
