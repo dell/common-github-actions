@@ -18,7 +18,11 @@ SKIP_LIST=$2
 
 go clean -testcache
 
-cd service
+if [ -d "service" ]; then
+   cd service
+else
+   cd controllers
+fi
 
 go test -v -short -count=1 -race -cover ./...
 
