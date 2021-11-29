@@ -38,7 +38,7 @@ is_in_skip_list() {
 
 go clean -testcache
 
-TEST_OUTPUT=$(cd ${TEST_FOLDER} && go test -short -count=1 -race -cover ./... | tee /dev/stderr; exit ${PIPESTATUS[0]})
+TEST_OUTPUT=$(cd ${TEST_FOLDER} && go test -v -short -count=1 -race -cover ./... | tee /dev/stderr; exit ${PIPESTATUS[0]})
 TEST_RETURN_CODE=$?
 
 if [ "${TEST_RETURN_CODE}" != "0" ]; then
