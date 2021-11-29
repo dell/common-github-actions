@@ -14,7 +14,7 @@ inputs:
     default: 90
   test-folder:
     description: 'Folder the test is run in'
-    required: true
+    required: false
     default: "."
   skip-list:
     description: 'A comma delimited list of pkg names to skip for coverage constraint'
