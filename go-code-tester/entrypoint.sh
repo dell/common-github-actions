@@ -26,7 +26,8 @@ else
    ls -l
 fi
 
-go test -v -short -count=1 -coverpkg=all -race -cover ./...
+go version
+go test -v -short -count=1 -coverpkg=all -cover ./...
 
 TEST_RETURN_CODE=$?
 
