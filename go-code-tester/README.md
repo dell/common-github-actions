@@ -25,10 +25,13 @@ jobs:
         uses: dell/common-github-actions/go-code-tester@main
         with:
           threshold: 90
+          test-folder: "."
           # Optional parameter to skip certain packages
           skip-list: "this/pkg1,this/pkg2"
 ```
 
 The `threshold` for the Action is a coverage percentage threshold that every package must meet. The default `threshold` is 90.
+
+The `test-folder` is for specifying what folder to run the test command in. The default value is the current folder, `"."`
 
 The `skip-list` is an optional parameter. It should be a comma delimited string of package names to skip for the testing coverage criteria.

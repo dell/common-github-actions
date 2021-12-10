@@ -12,6 +12,10 @@ inputs:
     description: 'Code coverage threshold for packages'
     required: true
     default: 90
+  test-folder:
+    description: 'Folder the test is run in'
+    required: false
+    default: "."
   skip-list:
     description: 'A comma delimited list of pkg names to skip for coverage constraint'
     required: false
@@ -21,6 +25,7 @@ runs:
   image: 'Dockerfile'
   args:
     - ${{ inputs.threshold }}
+    - ${{ inputs.test-folder }}
     - ${{ inputs.skip-list }}
 branding:
   icon: 'shield'
