@@ -46,13 +46,13 @@ check_coverage() {
 if [ -z "$SKIP_LIST_FOR_GREP" ]; then
   # If there is no skip-list, just search for cases where the word coverage is preceded by whitespace. We want the space because
   # this distinguishes between the final coverage report and the intermediate coverage printouts that happen earlier in the output
-  cat cat ~/run.log | grep -e "\scoverage" | awk '{print $2, substr($5, 1, length($5)-1)}' | while read pkg cov;
+  cat ~/run.log | grep -e "\scoverage" | awk '{print $2, substr($5, 1, length($5)-1)}' | while read pkg cov;
   do
     check_coverage $pkg $cov
   done
 else
   # this is the same as the above, except it includes a filter that gets rid of all the packages that appear in the skip-list
-  cat cat ~/run.log | grep -e "\scoverage" | grep -vw -e $SKIP_LIST_FOR_GREP | awk '{print $2, substr($5, 1, length($5)-1)}' | while read pkg cov;
+  cat ~/run.log | grep -e "\scoverage" | grep -vw -e $SKIP_LIST_FOR_GREP | awk '{print $2, substr($5, 1, length($5)-1)}' | while read pkg cov;
   do
     check_coverage $pkg $cov
   done
