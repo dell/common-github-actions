@@ -13,69 +13,50 @@ TEST_FOLDER=$2
 SKIP_LIST=$3
 pkg_skip_list=
 
-# Second parameter is a comma delimited list of
-# Go package names that should have the coverage
-# criteria applied against
-if [ "${SKIP_LIST}"x != "x" ]; then
-  # Save the current IFS
-  p_IFS=$IFS
-  IFS=','
-  read -r -a pkg_skip_list <<<"$SKIP_LIST"
-  echo "There are ${#pkg_skip_list[*]} packages to skip"
-  # Reset to the saved value
-  IFS=$p_IFS
-fi
-
-is_in_skip_list() {
-  name=$1
-  for val in "${pkg_skip_list[@]}"; do
-    if [ "$val" = "$name" ]; then
-      return 1
-    fi
-  done
-  return 0
-}
-
 go clean -testcache
 
-TEST_OUTPUT=$(cd ${TEST_FOLDER} && go test -short -count=1 -race -cover ./... | tee /dev/stderr; exit ${PIPESTATUS[0]})
+TEST_OUTPUT=$(cd ${TEST_FOLDER} && go test -v -short -race -count=1 -cover ./... | tee ~/run.log)
+cat ~/run.log
 TEST_RETURN_CODE=$?
 
 if [ "${TEST_RETURN_CODE}" != "0" ]; then
-    exit 1
+  exit 1
 fi
 
-COVERAGE_TMPFILE=/tmp/check_coverage
-COVERAGE_TMPFILE_COUNT=${COVERAGE_TMPFILE}.count
-touch ${COVERAGE_TMPFILE}.count
+# Put skip list in format that will work for grep and into format that is human-readable
+SKIP_LIST_FOR_GREP=${SKIP_LIST//[,]/ -e }
+SKIP_LIST_FOR_ECHO=${SKIP_LIST//[,]/, }
 
+echo "skipping the following packages: $SKIP_LIST_FOR_ECHO"
+
+FAIL=0
 check_coverage() {
-    while read -r line
-    do
-        no_tests=$(echo "$line" | awk '{print $1}')
-        if [ "$no_tests" == "?" ]; then
-            continue
-        fi
-        echo "$line" | awk '{print $2, substr($5, 1, length($5)-1)}' | while read pkg cov
-        do
-            if [ $((${cov%.*} - ${THRESHOLD})) -lt 0 ]; then
-                is_in_skip_list $pkg
-                if [ $? -eq 0 ]; then
-                  echo "$pkg" does not meet "$THRESHOLD"% coverage | tee $COVERAGE_TMPFILE
-                  cat $COVERAGE_TMPFILE | wc -l > $COVERAGE_TMPFILE_COUNT
-                else
-                  echo "$pkg" "$cov"% is less than the "$THRESHOLD"% threshold, but it is in the skip list
-                fi
-            fi 
-        done
-    done <<< "${TEST_OUTPUT}"
+  pkg=$1
+  cov=$2
+  if [[ ${THRESHOLD} > ${cov%.*} ]]; then
+     echo "FAIL: coverage for package $pkg is ${cov}%, lower than 90%"
+     FAIL=1
+  else
+     echo "PASS: coverage for package $pkg is ${cov}%, greater than 90%"
+  fi
 
-    if [ ! -z `cat $COVERAGE_TMPFILE_COUNT` ] && [ ! `cat $COVERAGE_TMPFILE_COUNT` -eq "0" ]; then
-        return 1
-    fi
-    return 0
+  return 0
 }
 
-check_coverage
-CHECK_COVERAGE_RETURN_CODE=$?
-exit ${CHECK_COVERAGE_RETURN_CODE}
+if [ -z "$SKIP_LIST_FOR_GREP" ]; then
+  # If there is no skip-list, just search for cases where the word coverage is preceded by whitespace. We want the space because
+  # this distinguishes between the final coverage report and the intermediate coverage printouts that happen earlier in the output
+  cat cat ~/run.log | grep -e "\scoverage" | awk '{print $2, substr($5, 1, length($5)-1)}' | while read pkg cov;
+  do
+    check_coverage $pkg $cov
+  done
+else
+  # this is the same as the above, except it includes a filter that gets rid of all the packages that appear in the skip-list
+  cat cat ~/run.log | grep -e "\scoverage" | grep -vw -e $SKIP_LIST_FOR_GREP | awk '{print $2, substr($5, 1, length($5)-1)}' | while read pkg cov;
+  do
+    check_coverage $pkg $cov
+  done
+fi
+
+exit ${FAIL}
+
