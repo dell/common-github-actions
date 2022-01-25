@@ -20,6 +20,7 @@ TEST_RETURN_CODE=$?
 echo $TEST_OUTPUT > ~/run.log
 cat ~/run.log
 if [ "${TEST_RETURN_CODE}" != "0" ]; then
+  echo "test failed with return code $TEST_RETURN_CODE"
   exit 1
 fi
 
