@@ -15,10 +15,10 @@ pkg_skip_list=
 
 go clean -testcache
 
-TEST_OUTPUT=$(cd ${TEST_FOLDER} && go test -v -short -race -count=1 -cover ./... | tee ~/run.log)
+TEST_OUTPUT=$(cd ${TEST_FOLDER} && go test -v -short -race -count=1 -cover ./... )
 TEST_RETURN_CODE=$?
+echo $TEST_OUTPUT > ~/run.log
 cat ~/run.log
-
 if [ "${TEST_RETURN_CODE}" != "0" ]; then
   exit 1
 fi
