@@ -20,11 +20,11 @@ go test -v -short -race -count=1 -cover ./... > run.log
 TEST_RETURN_CODE=$?
 cat run.log
 if [ "${TEST_RETURN_CODE}" != "0" ]; then
-  echo "test failed with return code $TEST_RETURN_CODE, skipping coverage check"
+  echo "test failed with return code $TEST_RETURN_CODE, not proceeding with coverage check"
   exit 1
 fi
 
-# Put skip list in format that will work for grep and into format that is human-readable
+# Put skip list in grep-friendly and human-friendly formats
 SKIP_LIST_FOR_GREP=${SKIP_LIST//[,]/ -e }
 SKIP_LIST_FOR_ECHO=${SKIP_LIST//[,]/, }
 
