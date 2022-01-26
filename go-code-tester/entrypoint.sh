@@ -20,7 +20,7 @@ go test -v -short -race -count=1 -cover ./... > run.log
 TEST_RETURN_CODE=$?
 cat run.log
 if [ "${TEST_RETURN_CODE}" != "0" ]; then
-  echo "test failed with return code $TEST_RETURN_CODE"
+  echo "test failed with return code $TEST_RETURN_CODE, skipping coverage check"
   exit 1
 fi
 
