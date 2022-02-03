@@ -35,10 +35,11 @@ check_coverage() {
   pkg=$1
   cov=$2
   if [[ ${THRESHOLD} > ${cov%.*} ]]; then
-     echo "FAIL: coverage for package $pkg is ${cov}%, lower than 90%"
+     echo "FAIL: coverage for package $pkg is ${cov}%, lower than ${THRESHOLD}%"
      FAIL=1
+     echo "FAIL is ${FAIL}"
   else
-     echo "PASS: coverage for package $pkg is ${cov}%, greater than 90%"
+     echo "PASS: coverage for package $pkg is ${cov}%, not lower than ${THRESHOLD}%"
   fi
 
   return 0
@@ -59,6 +60,6 @@ else
   done
 fi
 
-echo ${FAIL}
+echo "FAIL is ${FAIL}"
 exit ${FAIL}
 
