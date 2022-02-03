@@ -59,5 +59,6 @@ else
   done
 fi
 
+echo ${FAIL}
 exit ${FAIL}
 
