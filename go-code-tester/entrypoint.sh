@@ -31,7 +31,6 @@ SKIP_LIST_FOR_ECHO=${SKIP_LIST//[,]/, }
 echo "skipping the following packages: $SKIP_LIST_FOR_ECHO"
 
 FAIL=0
-
 check_coverage() {
   pkg=$1
   cov=$2
