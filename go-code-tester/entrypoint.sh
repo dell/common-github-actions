@@ -20,7 +20,7 @@ go test -v -short -race -count=1 -cover ./... > ~/run.log
 TEST_RETURN_CODE=$?
 cat ~/run.log
 if [ "${TEST_RETURN_CODE}" != "0" ]; then
-  echo "test failed with return code $TEST_RETURN_CODE"
+  echo "test failed with return code $TEST_RETURN_CODE, not proceeding with coverage check"
   exit 1
 fi
 
@@ -28,7 +28,7 @@ if [ -z "$SKIP_LIST" ]
 then
   echo "No packages in skip-list"
 else
-  # Put skip list in format that will work for grep and into format that is human-readable
+  # Put skip list in grep-friendly and human-friendly formats
   SKIP_LIST_FOR_GREP=${SKIP_LIST//[,]/ -e }
   SKIP_LIST_FOR_ECHO=${SKIP_LIST//[,]/, }
   echo "skipping the following packages: $SKIP_LIST_FOR_ECHO"
