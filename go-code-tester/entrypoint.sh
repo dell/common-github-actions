@@ -54,14 +54,14 @@ if [ -z "$SKIP_LIST_FOR_GREP" ]; then
   do
     check_coverage $pkg $cov
     echo "FAIL is ${FAIL}"
-  done
+  done < input.data
 else
   # this is the same as the above, except it includes a filter that gets rid of all the packages that appear in the skip-list
   cat ~/run.log | grep -e "\scoverage" | grep -vw -e $SKIP_LIST_FOR_GREP | awk '{print $2, substr($5, 1, length($5)-1)}' | while read pkg cov;
   do
     check_coverage $pkg $cov
     echo "FAIL is ${FAIL}"
-  done
+  done < input.data
 fi
 
 echo "FAIL is ${FAIL}"
