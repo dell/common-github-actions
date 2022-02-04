@@ -31,6 +31,8 @@ SKIP_LIST_FOR_ECHO=${SKIP_LIST//[,]/, }
 echo "skipping the following packages: $SKIP_LIST_FOR_ECHO"
 
 FAIL=0
+echo "FAIL is ${FAIL}"
+
 check_coverage() {
   pkg=$1
   cov=$2
@@ -51,12 +53,14 @@ if [ -z "$SKIP_LIST_FOR_GREP" ]; then
   cat ~/run.log | grep -e "\scoverage" | awk '{print $2, substr($5, 1, length($5)-1)}' | while read pkg cov;
   do
     check_coverage $pkg $cov
+    echo "FAIL is ${FAIL}"
   done
 else
   # this is the same as the above, except it includes a filter that gets rid of all the packages that appear in the skip-list
   cat ~/run.log | grep -e "\scoverage" | grep -vw -e $SKIP_LIST_FOR_GREP | awk '{print $2, substr($5, 1, length($5)-1)}' | while read pkg cov;
   do
     check_coverage $pkg $cov
+    echo "FAIL is ${FAIL}"
   done
 fi
 
