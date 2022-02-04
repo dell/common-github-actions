@@ -16,7 +16,7 @@ pkg_skip_list=
 go clean -testcache
 
 cd ${TEST_FOLDER}
-go test -v -short -race -count=1 -cover ./... > ~/run.log
+go test -v -short -count=1 -cover ./... > ~/run.log
 TEST_RETURN_CODE=$?
 cat ~/run.log
 if [ "${TEST_RETURN_CODE}" != "0" ]; then
