@@ -24,11 +24,15 @@ if [ "${TEST_RETURN_CODE}" != "0" ]; then
   exit 1
 fi
 
-# Put skip list in format that will work for grep and into format that is human-readable
-SKIP_LIST_FOR_GREP=${SKIP_LIST//[,]/ -e }
-SKIP_LIST_FOR_ECHO=${SKIP_LIST//[,]/, }
-
-echo "skipping the following packages: $SKIP_LIST_FOR_ECHO"
+if [ -z "$SKIP_LIST" ]
+then
+  echo "No packages in skip-list"
+else
+  # Put skip list in format that will work for grep and into format that is human-readable
+  SKIP_LIST_FOR_GREP=${SKIP_LIST//[,]/ -e }
+  SKIP_LIST_FOR_ECHO=${SKIP_LIST//[,]/, }
+  echo "skipping the following packages: $SKIP_LIST_FOR_ECHO"
+fi
 
 FAIL=0
 check_coverage() {
@@ -44,7 +48,7 @@ check_coverage() {
   return 0
 }
 
-if [ -z "$SKIP_LIST_FOR_GREP" ]; then
+if [ -z "$SKIP_LIST" ]; then
   # If there is no skip-list, just search for cases where the word coverage is preceded by whitespace. We want the space because
   # this distinguishes between the final coverage report and the intermediate coverage printouts that happen earlier in the output
   while read pkg cov;
