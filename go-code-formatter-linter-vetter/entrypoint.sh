@@ -86,7 +86,7 @@ fi
 
 echo === Linting...
 (command -v golint >/dev/null 2>&1 \
-    || GO111MODULE=off go get -insecure -u golang.org/x/lint/golint) \
+    || GO111MODULE=off go get -u golang.org/x/lint/golint) \
     && golint --set_exit_status ${CHECK_DIRS}
 LINT_RETURN_CODE=$?
 echo === Finished
