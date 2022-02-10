@@ -38,7 +38,7 @@ FAIL=0
 check_coverage() {
   pkg=$1
   cov=$2
-  if [[ ${THRESHOLD} > ${cov%.*} ]]; then
+  if [[ ${THRESHOLD} -gt ${cov%.*} ]]; then
      echo "FAIL: coverage for package $pkg is ${cov}%, lower than ${THRESHOLD}%"
      FAIL=1
   else
