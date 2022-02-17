@@ -16,7 +16,7 @@ pkg_skip_list=
 go clean -testcache
 
 cd ${TEST_FOLDER}
-go test -v -short -race -count=1 -cover ./... > ~/run.log
+go test -v -coverpkg=github.com/dell/csm-operator/pkg/logger,github.com/dell/csm-operator/pkg/resources/daemonset,github.com/dell/csm-operator/pkg/resources/deployment,github.com/dell/csm-operator/pkg/drivers,github.com/dell/csm-operator/pkg/resources/configmap,github.com/dell/csm-operator/pkg/resources/serviceaccount,github.com/dell/csm-operator/pkg/resources/rbac,github.com/dell/csm-operator/pkg/utils,github.com/dell/csm-operator/pkg/resources/csidriver,github.com/dell/csm-operator/pkg/constants,github.com/dell/csm-operator/controllers github.com/dell/csm-operator/controllers github.com/dell/csm-operator/pkg/drivers > ~/run.log
 TEST_RETURN_CODE=$?
 cat ~/run.log
 if [ "${TEST_RETURN_CODE}" != "0" ]; then
