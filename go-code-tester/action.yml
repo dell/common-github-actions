@@ -24,6 +24,10 @@ inputs:
     description: 'A comma delimited list of pkg names to test'
     required: false
     default: ""
+  coverpkg:
+    description: 'arguments for the -coverpkg argument if you wish to use it'
+    required: false
+    default: ""
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -32,6 +36,7 @@ runs:
     - ${{ inputs.test-folder }}
     - ${{ inputs.skip-list }}
     - ${{ inputs.package-list }}
+    - ${{ inputs.coverpkg }}
 branding:
   icon: 'shield'
   color: 'blue'
