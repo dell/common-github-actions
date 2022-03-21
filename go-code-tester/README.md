@@ -35,3 +35,5 @@ The `threshold` for the Action is a coverage percentage threshold that every pac
 The `test-folder` is for specifying what folder to run the test command in. The default value is the current folder, `"."`
 
 The `skip-list` is an optional parameter. It should be a comma delimited string of package names to skip for the testing coverage criteria.
+
+The `package-list` is an optional parameter. It should be a comma delimited string of package names to run tests on. If not specified, all packages will be tested.
