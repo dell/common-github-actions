@@ -11,12 +11,21 @@
 THRESHOLD=$1
 TEST_FOLDER=$2
 SKIP_LIST=$3
-pkg_skip_list=
+PKG_LIST=$4
+
+if [ -z "$PKG_LIST" ]
+then
+  echo "No packages specified, testing all packages"
+  pkgs="./..."
+else
+  echo "Testing specified packages"
+  pkgs=$PKG_LIST
+fi
 
 go clean -testcache
 
 cd ${TEST_FOLDER}
-go test -v -short -race -count=1 -cover ./... > ~/run.log
+go test -v -short -count=1 -cover $pkgs > ~/run.log
 TEST_RETURN_CODE=$?
 cat ~/run.log
 if [ "${TEST_RETURN_CODE}" != "0" ]; then
