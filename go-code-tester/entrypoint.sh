@@ -25,9 +25,7 @@ fi
 go clean -testcache
 
 cd ${TEST_FOLDER}
-kubectl get vsc -A
-#go test -v -short -count=1 -cover $pkgs > ~/run.log
-go test -v -coverprofile=c.out $pkgs > ~/run.log
+go test -v -short -count=1 -cover $pkgs > ~/run.log
 TEST_RETURN_CODE=$?
 cat ~/run.log
 if [ "${TEST_RETURN_CODE}" != "0" ]; then
