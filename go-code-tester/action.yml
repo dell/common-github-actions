@@ -20,6 +20,10 @@ inputs:
     description: 'A comma delimited list of pkg names to skip for coverage constraint'
     required: false
     default: ""
+  package-list:
+    description: 'A comma delimited list of pkg names to test'
+    required: false
+    default: ""
 runs:
   using: 'docker'
   image: 'Dockerfile'
