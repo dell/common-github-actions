@@ -31,6 +31,7 @@ runs:
     - ${{ inputs.threshold }}
     - ${{ inputs.test-folder }}
     - ${{ inputs.skip-list }}
+    - ${{ inputs.package-list }}
 branding:
   icon: 'shield'
   color: 'blue'
