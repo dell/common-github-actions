@@ -12,6 +12,7 @@ THRESHOLD=$1
 TEST_FOLDER=$2
 SKIP_LIST=$3
 PKG_LIST=$4
+COVERPKG=$5
 
 if [ -z "$PKG_LIST" ]
 then
@@ -20,6 +21,15 @@ then
 else
   echo "Testing specified packages"
   pkgs=$PKG_LIST
+fi
+
+if [ -z "$COVERPKG" ]
+then
+  echo "No arguments specified for coverpkg"
+  covpkgs="./..."
+else
+  echo "Setting coverpkg argument"
+  covpkgs="-coverpkg=$COVERPKG"
 fi
 
 go clean -testcache
