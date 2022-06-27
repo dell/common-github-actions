@@ -15,6 +15,8 @@ pkg_skip_list=
 
 go clean -testcache
 
+go version
+
 cd ${TEST_FOLDER}
 go test -v -short -race -count=1 -cover ./... > ~/run.log
 TEST_RETURN_CODE=$?
