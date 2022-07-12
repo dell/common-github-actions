@@ -14,12 +14,12 @@ EXCLUDES=$2
 GOFLAGS=$GOFLAGS" -buildvcs=false"
 echo "GOFLAGS: $GOFLAGS"
 
-gosec -exclude=G304 ./...
+#gosec -exclude=G304 ./...
 
-TEST_RETURN_CODE=$?
-if [ "${TEST_RETURN_CODE}" != "0" ]; then
-  echo "test failed with return code $TEST_RETURN_CODE"
-  exit 1
-fi
+#TEST_RETURN_CODE=$?
+#if [ "${TEST_RETURN_CODE}" != "0" ]; then
+#  echo "test failed with return code $TEST_RETURN_CODE"
+#  exit 1
+#fi
 
-exit 0
+#exit 0
