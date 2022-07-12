@@ -17,6 +17,10 @@ inputs:
     description: 'Exclude arguments to run with gosec. List them as such: G304,G208,G215'
     required: false
     default: ""
+  exclude-dir:
+    description: 'Name of directory to be excluded with exclude-dir option'
+    required: false
+    default: ""
 
 runs:
   using: 'docker'
