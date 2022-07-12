@@ -10,15 +10,12 @@
 
 DIRECTORIES=$1
 EXCLUDES=$2
+EXCLUDE_DIR="-exclude-dir=$3"
 
 if [ -n "$EXCLUDES" ]
 then
   EXCLUDE_FLAG="-exclude=$EXCLUDES"
-  echo "created exclude flag $EXCLUDE_FLAG"
 fi
-
-#GOFLAGS=$GOFLAGS" -buildvcs=false"
-#echo "GOFLAGS: $GOFLAGS"
 
 curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin latest
 
