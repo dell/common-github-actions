@@ -11,8 +11,8 @@
 DIRECTORIES=$1
 EXCLUDES=$2
 
-GOFLAGS=$GOFLAGS" -buildvcs=false"
-echo "GOFLAGS: $GOFLAGS"
+#GOFLAGS=$GOFLAGS" -buildvcs=false"
+#echo "GOFLAGS: $GOFLAGS"
 
 curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin latest
 
