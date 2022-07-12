@@ -16,7 +16,7 @@ echo "GOFLAGS: $GOFLAGS"
 
 apt update -y
 apt install snapd -y
-snap install gosec -y
+snap install gosec
 
 gosec -exclude=G304 ./...
 
