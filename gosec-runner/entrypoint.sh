@@ -14,9 +14,9 @@ EXCLUDES=$2
 GOFLAGS=$GOFLAGS" -buildvcs=false"
 echo "GOFLAGS: $GOFLAGS"
 
-sudo apt update -y
-sudo apt install snapd -y
-sudo snap install gosec -y
+apt update -y
+apt install snapd -y
+snap install gosec -y
 
 gosec -exclude=G304 ./...
 
