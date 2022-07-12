@@ -14,11 +14,9 @@ EXCLUDES=$2
 GOFLAGS=$GOFLAGS" -buildvcs=false"
 echo "GOFLAGS: $GOFLAGS"
 
-apt update -y
-apt install snapd -y
-snap install gosec
+curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin latest
 
-gosec -exclude=G304 ./...
+$(go env GOPATH)/bin/gosec -exclude=G304 ./...
 
 TEST_RETURN_CODE=$?
 if [ "${TEST_RETURN_CODE}" != "0" ]; then
