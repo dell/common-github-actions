@@ -14,12 +14,16 @@ EXCLUDES=$2
 GOFLAGS=$GOFLAGS" -buildvcs=false"
 echo "GOFLAGS: $GOFLAGS"
 
-#gosec -exclude=G304 ./...
+sudo apt update -y
+sudo apt install snapd -y
+sudo snap install gosec -y
 
-#TEST_RETURN_CODE=$?
-#if [ "${TEST_RETURN_CODE}" != "0" ]; then
-#  echo "test failed with return code $TEST_RETURN_CODE"
-#  exit 1
-#fi
+gosec -exclude=G304 ./...
 
-#exit 0
+TEST_RETURN_CODE=$?
+if [ "${TEST_RETURN_CODE}" != "0" ]; then
+  echo "test failed with return code $TEST_RETURN_CODE"
+  exit 1
+fi
+
+exit 0
