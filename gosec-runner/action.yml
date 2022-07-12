@@ -5,28 +5,27 @@
 # You may obtain a copy of the License at
 #
 #  http://www.apache.org/licenses/LICENSE-2.0
-name: 'Go Tester'
-description: 'Runs unit tests and verifies code coverage per package'
+name: 'Run gosec'
+description: 'Runs gosec'
+
 inputs:
-  threshold:
-    description: 'Code coverage threshold for packages'
-    required: true
-    default: 90
-  test-folder:
-    description: 'Folder the test is run in'
+  directories:
+    description: >
+      Directories to run gosec. Default is './...'
     required: false
-    default: "."
-  skip-list:
-    description: 'A comma delimited list of pkg names to skip for coverage constraint'
+    default: './...'
+  excludes:
+    description: 'exclude arguments to run with gosec'
     required: false
     default: ""
+
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.threshold }}
-    - ${{ inputs.test-folder }}
-    - ${{ inputs.skip-list }}
+    - ${{ inputs.directories }}
+    - ${{ inputs.excludes }}
+
 branding:
   icon: 'shield'
   color: 'blue'
