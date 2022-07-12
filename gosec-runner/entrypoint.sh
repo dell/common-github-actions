@@ -11,7 +11,7 @@
 DIRECTORIES=$1
 EXCLUDES=$2
 
-if [ - "$EXCLUDES" ]
+if [ -n "$EXCLUDES" ]
 then
   EXCLUDE_FLAG="-exclude=$EXCLUDES"
   echo "created exclude flag $EXCLUDE_FLAG"
