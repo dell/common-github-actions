@@ -11,17 +11,23 @@
 DIRECTORIES=$1
 EXCLUDES=$2
 
+if [ - "$EXCLUDES" ]
+then
+  EXCLUDE_FLAG="-exclude=$EXCLUDES"
+fi
+
 #GOFLAGS=$GOFLAGS" -buildvcs=false"
 #echo "GOFLAGS: $GOFLAGS"
 
 curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin latest
 
-$(go env GOPATH)/bin/gosec -exclude=G304 ./...
+$(go env GOPATH)/bin/gosec $EXCLUDE_FLAG $DIRECTORIES
 
 TEST_RETURN_CODE=$?
 if [ "${TEST_RETURN_CODE}" != "0" ]; then
-  echo "test failed with return code $TEST_RETURN_CODE"
+  echo "gosec failed with return code $TEST_RETURN_CODE"
   exit 1
 fi
 
+echo "gosec ran successfully"
 exit 0
