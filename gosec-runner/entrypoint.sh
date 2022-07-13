@@ -19,7 +19,7 @@ fi
 
 if [ -n "$EXCLUDE_DIR" ]
 then
-  EXCLUDE_DIR_FLAG="-exclude=$EXCLUDE_DIR"
+  EXCLUDE_DIR_FLAG="-exclude-dir=$EXCLUDE_DIR"
 fi
 
 curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin latest
