@@ -25,7 +25,7 @@ fi
 curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin latest
 
 echo "run gosec command: $(go env GOPATH)/bin/gosec $EXCLUDE_FLAG $EXCLUDE_DIR_FLAG $DIRECTORIES"
-$(go env GOPATH)/bin/gosec $EXCLUDE_FLAG $DIRECTORIES
+$(go env GOPATH)/bin/gosec $EXCLUDE_FLAG $EXCLUDE_DIR_FLAG $DIRECTORIES
 
 TEST_RETURN_CODE=$?
 if [ "${TEST_RETURN_CODE}" != "0" ]; then
@@ -33,5 +33,5 @@ if [ "${TEST_RETURN_CODE}" != "0" ]; then
   exit 1
 fi
 
-echo "gosec ran successfully"
+echo "gosec ran successfully!"
 exit 0
