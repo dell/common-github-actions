@@ -10,16 +10,21 @@
 
 DIRECTORIES=$1
 EXCLUDES=$2
-EXCLUDE_DIR="-exclude-dir=$3"
+EXCLUDE_DIR=$3
 
 if [ -n "$EXCLUDES" ]
 then
   EXCLUDE_FLAG="-exclude=$EXCLUDES"
 fi
 
+if [ -n "$EXCLUDE_DIR" ]
+then
+  EXCLUDE_DIR_FLAG="-exclude=$EXCLUDE_DIR"
+fi
+
 curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin latest
 
-echo "run gosec command: $(go env GOPATH)/bin/gosec $EXCLUDE_FLAG $DIRECTORIES"
+echo "run gosec command: $(go env GOPATH)/bin/gosec $EXCLUDE_FLAG $EXCLUDE_DIR_FLAG $DIRECTORIES"
 $(go env GOPATH)/bin/gosec $EXCLUDE_FLAG $DIRECTORIES
 
 TEST_RETURN_CODE=$?
