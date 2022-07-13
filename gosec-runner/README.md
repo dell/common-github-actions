@@ -16,12 +16,12 @@ on:
 jobs:
 
   build:
-    name: Run gosec to check for security vulnerabilities
+    name: Run gosec
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
         uses: actions/checkout@v2
-      - name: Run unit tests and check package coverage
+      - name: Run gosec to check for security vulnerabilities
         uses: dell/common-github-actions/gosec-runner@main
         with:
           directories: "./..."
