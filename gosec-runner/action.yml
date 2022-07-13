@@ -28,6 +28,7 @@ runs:
   args:
     - ${{ inputs.directories }}
     - ${{ inputs.excludes }}
+    - ${{ inputs.exclude-dir }}
 
 branding:
   icon: 'shield'
