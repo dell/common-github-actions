@@ -29,9 +29,9 @@ $(go env GOPATH)/bin/gosec $EXCLUDE_FLAG $EXCLUDE_DIR_FLAG $DIRECTORIES
 
 TEST_RETURN_CODE=$?
 if [ "${TEST_RETURN_CODE}" != "0" ]; then
-  echo "gosec failed with return code $TEST_RETURN_CODE"
+  echo "Gosec failed with return code $TEST_RETURN_CODE"
   exit 1
 fi
 
-echo "gosec ran successfully!"
+echo "Gosec ran successfully!"
 exit 0
