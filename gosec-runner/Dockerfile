@@ -1,7 +1,7 @@
 FROM golang:1.18
 
-LABEL "com.github.actions.name"="go-code-tester"
-LABEL "com.github.actions.description"="Runs unit tests and verifies code coverage per package"
+LABEL "com.github.actions.name"="gosec-runner"
+LABEL "com.github.actions.description"="Runs gosec"
 LABEL "com.github.actions.icon"="eye"
 LABEL "com.github.actions.color"="gray-dark"
 
