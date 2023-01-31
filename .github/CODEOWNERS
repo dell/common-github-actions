@@ -1,0 +1,29 @@
+# CODEOWNERS
+#
+# documentation for this file can be found at:
+# https://help.github.com/en/articles/about-code-owners
+
+# These are the default owners for the code and will
+# be requested for review when someone opens a pull request.
+# order is alphabetical for easier maintenance.
+#
+# Sean Gallacher (gallacher)
+# Trevor Dawe (tdawe)
+# Alexander Hoppe (hoppea2)
+# Alik Saring (alikdell)
+# Aaron Tye (atye)
+# Shayna Finocchiaro (shaynafinocchiaro)
+# Sharmila Ramamoorthy (sharmilarama)
+# Evgeny Uglov (EvgenyUglov)
+# Bowen Jiang (bjiang27)
+# Isaias Martinez (isaiasA1)
+# Arnchie qu (arnchiequ-dell)
+# Luna Xu (xuluna)
+# Akshay Saini (AkshaySainiDell)
+# Konduri Satya Narayana (satyakonduri)
+# Adarsh Kumar Yadav (adarsh-dell)
+# Bharath Sreekanth (bharathsreekanth)
+# Matt Schmaelzle (mjsdell)
+
+# for all files:
+* @gallacher @tdawe @alikdell @atye @hoppea2 @shaynafinocchiaro @sharmilarama @EvgenyUglov @bjiang27 @isaiasA1 @arnchiequ-dell @xuluna @AkshaySainiDell @satyakonduri @adarsh-dell @bharathsreekanth @mjsdell
