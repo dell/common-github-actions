@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.2.0
       - name: Run gosec to check for security vulnerabilities
         uses: dell/common-github-actions/gosec-runner@main
         with:
