@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2020 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2020-2023 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ pkg_skip_list=
 go clean -testcache
 
 cd ${TEST_FOLDER}
-if [ -z "$RACE_DETECTOR" || "$RACE_DETECTOR" -eq "true" ]; then
+if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
   go test -v -short -race -count=1 -cover ./... > ~/run.log
 else
   # Run without the race flag
