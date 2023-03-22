@@ -61,13 +61,13 @@ if [ -z "$SKIP_LIST" ]; then
   while read pkg cov;
   do
     check_coverage $pkg $cov
-  done <<< $(cat ~/run.log | grep -e "\scoverage" | awk '{print $2, substr($5, 1, length($5)-1)}')
+  done <<< $(cat ~/run.log | grep ^ok | awk '{print $2, substr($5, 1, length($5)-1)}')
 else
   # this is the same as the above, except it includes a filter that gets rid of all the packages that appear in the skip-list
   while read pkg cov;
   do
     check_coverage $pkg $cov
-  done <<< $(cat ~/run.log | grep -e "\scoverage" | grep -vw -e $SKIP_LIST_FOR_GREP | awk '{print $2, substr($5, 1, length($5)-1)}')
+  done <<< $(cat ~/run.log | grep ^ok | grep -vw -e $SKIP_LIST_FOR_GREP | awk '{print $2, substr($5, 1, length($5)-1)}')
 fi
 
 exit ${FAIL}

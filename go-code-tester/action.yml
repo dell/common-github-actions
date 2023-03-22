@@ -21,7 +21,7 @@ inputs:
     required: false
     default: ""
   race-detector:
-    description: 'Boolean to indicate running tests with the race detector'
+    description: 'Boolean to enable the race detector'
     required: false
     default: "true"
 runs:
