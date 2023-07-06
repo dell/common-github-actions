@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.2.0
       - name: Run unit tests and check package coverage
         uses: dell/common-github-actions/go-code-tester@main
         with:
@@ -28,6 +28,8 @@ jobs:
           test-folder: "."
           # Optional parameter to skip certain packages
           skip-list: "this/pkg1,this/pkg2"
+          # Optional paramter to enable the race detector
+          race-detector: "true"
 ```
 
 The `threshold` for the Action is a coverage percentage threshold that every package must meet. The default `threshold` is 90.
@@ -37,3 +39,6 @@ The `test-folder` is for specifying what folder to run the test command in. The 
 The `skip-list` is an optional parameter. It should be a comma delimited string of package names to skip for the testing coverage criteria.
 
 The `package-list` is an optional parameter. It should be a comma delimited string of package names to run tests on. If not specified, all packages will be tested.
+
+The `race-detector` is an optional boolean parameter to enable or disable the race detector. 
+

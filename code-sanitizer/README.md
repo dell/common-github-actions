@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.2.0
       - name: Run the forbidden words scan
         uses: dell/common-github-actions/code-sanitizer@main
         with:

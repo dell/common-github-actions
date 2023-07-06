@@ -1,7 +1,7 @@
 FROM golang:1.20
 
-LABEL "com.github.actions.name"="go-code-formatter-linter-vetter"
-LABEL "com.github.actions.description"="Checks for formatting, linting, and vetting issues"
+LABEL "com.github.actions.name"="gosec-runner"
+LABEL "com.github.actions.description"="Runs gosec"
 LABEL "com.github.actions.icon"="eye"
 LABEL "com.github.actions.color"="gray-dark"
 

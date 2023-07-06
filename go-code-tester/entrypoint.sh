@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2020 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2020-2023 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,13 +31,21 @@ else
   echo "Setting coverpkg argument"
   covpkgs="-coverpkg=$COVERPKG"
 fi
+RACE_DETECTOR=$6
+pkg_skip_list=
 
 go clean -testcache
 
 cd ${TEST_FOLDER}
-#go test -v -short -count=1 -cover $pkgs > ~/run.log
-go test -v -short -count=1 -cover $covpkgs $pkgs > ~/run.log
-TEST_RETURN_CODE=$?
+if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
+  go test -v -short -race -count=1 -cover $covpkgs $pkgs > ~/run.log
+  TEST_RETURN_CODE=$?
+else
+  # Run without the race flag
+  go test -v -short -count=1 -cover $covpkgs $pkgs > ~/run.log
+  TEST_RETURN_CODE=$?
+fi
+
 cat ~/run.log
 if [ "${TEST_RETURN_CODE}" != "0" ]; then
   echo "test failed with return code $TEST_RETURN_CODE, not proceeding with coverage check"
@@ -74,13 +82,13 @@ if [ -z "$SKIP_LIST" ]; then
   while read pkg cov;
   do
     check_coverage $pkg $cov
-  done <<< $(cat ~/run.log | grep -e "\scoverage" | awk '{print $2, substr($5, 1, length($5)-1)}')
+  done <<< $(cat ~/run.log | grep ^ok | awk '{print $2, substr($5, 1, length($5)-1)}')
 else
   # this is the same as the above, except it includes a filter that gets rid of all the packages that appear in the skip-list
   while read pkg cov;
   do
     check_coverage $pkg $cov
-  done <<< $(cat ~/run.log | grep -e "\scoverage" | grep -vw -e $SKIP_LIST_FOR_GREP | awk '{print $2, substr($5, 1, length($5)-1)}')
+  done <<< $(cat ~/run.log | grep ^ok | grep -vw -e $SKIP_LIST_FOR_GREP | awk '{print $2, substr($5, 1, length($5)-1)}')
 fi
 
 exit ${FAIL}
