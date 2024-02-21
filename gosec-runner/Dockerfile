@@ -1,4 +1,4 @@
-FROM golang:1.20
+FROM golang:1.22
 
 LABEL "com.github.actions.name"="gosec-runner"
 LABEL "com.github.actions.description"="Runs gosec"
