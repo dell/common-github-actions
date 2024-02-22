@@ -18,10 +18,10 @@ go clean -testcache
 
 cd ${TEST_FOLDER}
 if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
-  go test -v -short -race -count=1 -cover ./... > ~/run.log
+  GOEXPERIMENT=nocoverageredesign go test -v -short -race -count=1 -cover ./... > ~/run.log
 else
   # Run without the race flag
-  go test -v -short -count=1 -cover ./... > ~/run.log
+  GOEXPERIMENT=nocoverageredesign go test -v -short -count=1 -cover ./... > ~/run.log
 fi
 
 TEST_RETURN_CODE=$?
