@@ -76,7 +76,13 @@ jobs:
           pip install yamllint
       - name: Grab yamllint config file
         run: |
-          curl -O https://raw.githubusercontent.com/$WF_ORG/$WF_REPO/main/$WF_CONFIGS/yamllint/yamllint.yaml
+          echo "Grabbing Yaml config file from: https://raw.githubusercontent.com/$WF_ORG/$WF_REPO/main/$WF_CONFIGS/yamllint/yamllint.yaml"
+          curl -O -f https://raw.githubusercontent.com/$WF_ORG/$WF_REPO/main/$WF_CONFIGS/yamllint/yamllint.yaml
       - name: Run yamllint
         run: |
-          yamllint -c yamllint.yaml .
+          if [ -f yamllint.yaml ] then
+            yamllint -c yamllint.yaml .
+          else
+            echo "No Yamllint config file found, running with defaults"
+            yamllint .
+          fi
