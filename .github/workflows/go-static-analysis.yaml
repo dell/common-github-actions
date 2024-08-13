@@ -81,7 +81,7 @@ jobs:
           curl -O -f https://raw.githubusercontent.com/$WF_ORG/$WF_REPO/main/$WF_CONFIGS/yamllint/yamllint.yaml
       - name: Run yamllint
         run: |
-          if [ -f yamllint.yaml ] then
+          if [ -f yamllint.yaml ]; then
             yamllint -c yamllint.yaml .
           else
             echo "No Yamllint config file found, running with defaults"
