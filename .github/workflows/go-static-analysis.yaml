@@ -45,7 +45,7 @@ jobs:
       - name: Run Go Security
         uses: securego/gosec@master
         with:
-          args: -exclude-dir=tests -exclude=G101 ./...
+          args: ./...
 
   # Check sources files for malware
   malware_security_scan:
