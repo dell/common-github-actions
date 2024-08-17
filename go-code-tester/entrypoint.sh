@@ -20,7 +20,7 @@ if [[ -z $SKIP_TEST ]]; then
   echo "No packages in skip-test"
 else
   echo "skipping the following tests (regex): $SKIP_TEST"
-  skip_options="-skip \'$SKIP_TEST\'"
+  skip_options="-skip \"$SKIP_TEST\""
 fi
 
 go clean -testcache
