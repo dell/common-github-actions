@@ -17,10 +17,10 @@ SKIP_TEST=$5
 skip_options=""
 
 if [[ -z $SKIP_TEST ]]; then
-  echo "No packages in skip-test"
+  echo "running all tests in packages"
 else
   echo "skipping the following tests (regex): $SKIP_TEST"
-  skip_options="-skip \"$SKIP_TEST\""
+  skip_options="-skip $SKIP_TEST"
 fi
 
 go clean -testcache
