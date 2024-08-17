@@ -30,6 +30,9 @@ jobs:
           skip-list: "this/pkg1,this/pkg2"
           # Optional paramter to enable the race detector
           race-detector: "true"
+          # Optional  parameter to skip tests
+          skip-test: "TestToSkip"
+
 ```
 
 The `threshold` for the Action is a coverage percentage threshold that every package must meet. The default `threshold` is 90.
@@ -38,4 +41,6 @@ The `test-folder` is for specifying what folder to run the test command in. The 
 
 The `skip-list` is an optional parameter. It should be a comma delimited string of package names to skip for the testing coverage criteria.
 
-The `race-detector` is an optional boolean parameter to enable or disable the race detector. 
+The `race-detector` is an optional boolean parameter to enable or disable the race detector.
+
+The `skip-test` is a regex and passed directly as the -skip option to the `go test` command.
