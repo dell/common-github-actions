@@ -25,7 +25,7 @@ inputs:
     required: false
     default: "true"
   skip-test:
-    description: 'Regex for sipping tests'
+    description: 'Regex for skipping tests'
     required: false
     default: ""
 runs:
