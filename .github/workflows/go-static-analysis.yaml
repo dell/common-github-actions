@@ -61,6 +61,11 @@ jobs:
           cache: false
       - name: Checkout the code
         uses: actions/checkout@v4
+      - name: Grab golangci-lint config file
+        continue-on-error: true
+        run: |
+          echo "Grabbing config file from: https://raw.githubusercontent.com/$WF_ORG/$WF_REPO/common-workflows/$WF_CONFIGS/golangci-lint/golangci.yaml"
+          curl -O -f https://raw.githubusercontent.com/$WF_ORG/$WF_REPO/main/$WF_CONFIGS/golangci-lint/golangci.yaml
       - name: Vendor packages
         run: |
           go mod vendor
@@ -69,6 +74,7 @@ jobs:
         with:
           version: latest
           skip-cache: true
+          args: --config=golangci.yaml
 
   # Inspects source code for security problems by scanning the Go AST and SSA code representation.
   go_security_scan:
