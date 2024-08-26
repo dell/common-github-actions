@@ -13,17 +13,6 @@ name: Golang Static Analysis
 # Invocable as a reusable workflow
 on:
   workflow_call:
-    inputs:
-      # arguments to pass to gosec
-      gosec_args:
-        required: false
-        type: string
-        default: ''
-      # directories used to check gosec, go vet, and other tools
-      gotools_root:
-        required: false
-        type: string
-        default: './...'
 
 # permissions required for this workflow
 permissions:
@@ -34,7 +23,7 @@ env:
   WF_ORG: dell
   WF_REPO: common-github-actions
   WF_CONFIGS: .github/configs
-  WF_CONFIGS_BRANCH: common-workflows # do not merge without this being set to default branch
+  WF_CONFIGS_BRANCH: main
 
 # Various jobs
 jobs:
