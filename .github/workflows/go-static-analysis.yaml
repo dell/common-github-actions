@@ -34,6 +34,7 @@ env:
   WF_ORG: dell
   WF_REPO: common-github-actions
   WF_CONFIGS: .github/configs
+  WF_CONFIGS_BRANCH: common-workflows
 
 # Various jobs
 jobs:
@@ -64,8 +65,8 @@ jobs:
       - name: Grab golangci-lint config file
         continue-on-error: true
         run: |
-          echo "Grabbing config file from: https://raw.githubusercontent.com/$WF_ORG/$WF_REPO/common-workflows/$WF_CONFIGS/golangci-lint/golangci.yaml"
-          curl -O -f https://raw.githubusercontent.com/$WF_ORG/$WF_REPO/main/$WF_CONFIGS/golangci-lint/golangci.yaml
+          echo "Grabbing config file from: https://raw.githubusercontent.com/$WF_ORG/$WF_REPO/$WF_CONFIGS_BRANCH/$WF_CONFIGS/golangci-lint/golangci.yaml"
+          curl -O -f https://raw.githubusercontent.com/$WF_ORG/$WF_REPO/$WF_CONFIGS_BRANCH/$WF_CONFIGS/golangci-lint/golangci.yaml
       - name: Vendor packages
         run: |
           go mod vendor
@@ -118,8 +119,8 @@ jobs:
       - name: Grab yamllint config file
         continue-on-error: true
         run: |
-          echo "Grabbing Yaml config file from: https://raw.githubusercontent.com/$WF_ORG/$WF_REPO/main/$WF_CONFIGS/yamllint/yamllint.yaml"
-          curl -O -f https://raw.githubusercontent.com/$WF_ORG/$WF_REPO/main/$WF_CONFIGS/yamllint/yamllint.yaml
+          echo "Grabbing Yaml config file from: https://raw.githubusercontent.com/$WF_ORG/$WF_REPO/$WF_CONFIGS_BRANCH/$WF_CONFIGS/yamllint/yamllint.yaml"
+          curl -O -f https://raw.githubusercontent.com/$WF_ORG/$WF_REPO/$WF_CONFIGS_BRANCH/$WF_CONFIGS/yamllint/yamllint.yaml
       - name: Run yamllint
         run: |
           if [ -f yamllint.yaml ]; then
