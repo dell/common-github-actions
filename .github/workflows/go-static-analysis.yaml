@@ -18,6 +18,10 @@ on:
         required: false
         type: string
         default: ''
+      gotools_root:
+        required: false
+        type: string
+        default: './...'
 
 # environment variables common across all jobs
 env:
@@ -38,7 +42,7 @@ jobs:
       - name: Run the formatter, linter, and vetter
         uses: dell/common-github-actions/go-code-formatter-linter-vetter@main
         with:
-          directories: ./...
+          directories: ${{ inputs.gotools_root }}
 
   # Inspects source code for security problems by scanning the Go AST and SSA code representation.
   go_security_scan:
@@ -50,7 +54,7 @@ jobs:
       - name: Run Go Security
         uses: securego/gosec@master
         with:
-          args: ${{ inputs.gosec_args }} ./...
+          args: ${{ inputs.gosec_args }} ${{ inputs.gotools_root }}
 
   # Check sources files for malware
   malware_security_scan:
