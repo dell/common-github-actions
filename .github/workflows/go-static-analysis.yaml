@@ -50,6 +50,26 @@ jobs:
         with:
           directories: ${{ inputs.gotools_root }}
 
+  # Lints code with golangci-lint
+  golangci-lint:
+    name: Lint golang code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache: false
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - name: Vendor packages
+        run: |
+          go mod vendor
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v5
+        with:
+          version: latest
+          skip-cache: true
+
   # Inspects source code for security problems by scanning the Go AST and SSA code representation.
   go_security_scan:
     name: Go security
