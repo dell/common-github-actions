@@ -13,6 +13,11 @@ name: Golang Static Analysis
 # Invocable as a reusable workflow
 on:
   workflow_call:
+    inputs:
+      gosec_args:
+        required: false
+        type: string
+        default: ''
 
 # environment variables common across all jobs
 env:
@@ -45,7 +50,7 @@ jobs:
       - name: Run Go Security
         uses: securego/gosec@master
         with:
-          args: ./...
+          args: ${{ inputs.gosec_args }} ./...
 
   # Check sources files for malware
   malware_security_scan:
