@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2020-2023 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2020-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,16 +12,25 @@ THRESHOLD=$1
 TEST_FOLDER=$2
 SKIP_LIST=$3
 RACE_DETECTOR=$4
-pkg_skip_list=
+SKIP_TEST=$5
+
+skip_options=""
+
+if [[ -z $SKIP_TEST ]]; then
+  echo "running all tests in packages"
+else
+  echo "skipping the following tests (regex): $SKIP_TEST"
+  skip_options="-skip $SKIP_TEST"
+fi
 
 go clean -testcache
 
 cd ${TEST_FOLDER}
 if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
-  GOEXPERIMENT=nocoverageredesign go test -v -short -race -count=1 -cover ./... > ~/run.log
+  GOEXPERIMENT=nocoverageredesign go test $skip_options -v -short -race -count=1 -cover ./... > ~/run.log
 else
   # Run without the race flag
-  GOEXPERIMENT=nocoverageredesign go test -v -short -count=1 -cover ./... > ~/run.log
+  GOEXPERIMENT=nocoverageredesign go test $skip_options -v -short -count=1 -cover ./... > ~/run.log
 fi
 
 TEST_RETURN_CODE=$?
