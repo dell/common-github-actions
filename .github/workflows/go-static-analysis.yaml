@@ -39,17 +39,18 @@ env:
 # Various jobs
 jobs:
 
+  # obsolete due to inclusion of golangci-lint check
   # Check sources files for formatting, linting, and vetting issues.
-  code-check:
-    name: Check Go formatting, linting, vetting
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the code
-        uses: actions/checkout@v4
-      - name: Run the formatter, linter, and vetter
-        uses: dell/common-github-actions/go-code-formatter-linter-vetter@main
-        with:
-          directories: ${{ inputs.gotools_root }}
+  #code-check:
+  #  name: Check Go formatting, linting, vetting
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: Checkout the code
+  #      uses: actions/checkout@v4
+  #    - name: Run the formatter, linter, and vetter
+  #      uses: dell/common-github-actions/go-code-formatter-linter-vetter@main
+  #      with:
+  #        directories: ${{ inputs.gotools_root }}
 
   # Lints code with golangci-lint
   golangci-lint:
