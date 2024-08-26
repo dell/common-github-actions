@@ -50,7 +50,7 @@ jobs:
       - name: Run Go Security
         uses: securego/gosec@master
         with:
-          args: ${{ inputs.gosec_args }} ./...
+          args: ${{ inputs.gosec_args }}
 
   # Check sources files for malware
   malware_security_scan:
