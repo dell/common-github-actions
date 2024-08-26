@@ -14,14 +14,20 @@ name: Golang Static Analysis
 on:
   workflow_call:
     inputs:
+      # arguments to pass to gosec
       gosec_args:
         required: false
         type: string
         default: ''
+      # directories used to check gosec, go vet, and other tools
       gotools_root:
         required: false
         type: string
         default: './...'
+
+# permissions required for this workflow
+permissions:
+  contents: read
 
 # environment variables common across all jobs
 env:
