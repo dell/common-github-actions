@@ -14,6 +14,8 @@ You may obtain a copy of the License at
 [![License](https://img.shields.io/github/license/dell/common-github-actions)](LICENSE)
 [![Latest Release](https://img.shields.io/github/v/release/dell/common-github-actions?label=latest&style=flat-square)](https://github.com/dell/common-github-actions/releases)
 
+This repository contains a set of reusable actions and workflows, designed to be run with GitHub Actions.
+
 ## Table of Contents
 
 - [Code of Conduct](./docs/CODE_OF_CONDUCT.md)
@@ -43,6 +45,35 @@ You may obtain a copy of the License at
 ### malware-scanner
 
 [GitHub Action to run ClamScan AntiVirus Scan against source](https://github.com/dell/common-github-actions/blob/main/malware-scanner/README.md)
+
+## Implemented Workflows
+
+In addition to the actions mentioned above, the repository contains workflows that are used by various projects.
+
+### go-static-analysis
+
+This workflow runs static analysis checks against repositories that utilize Golang as the primary development language. The jobs that are run include:
+* golanci-lint with gofumpt (stricter version of gofmt), gosec, govet, and revive (replacement for golint). The configuration file for this job can be found at [.github/configs/golangci-lint/golangci.yaml](.github/configs/golangci-lint/golangci.yaml)
+* malware_security_scan, which is the malware-scanner mentioned above
+* yaml_lint_scan which validates yaml files. The yamllint config file for this job is at [.github/configs/yamllint/yamllint.yaml](.github/configs/yamllint/yamllint.yaml)
+
+The workflow does not accept any parameters and can be used from any repo by creating a workflow that resembles the following
+
+```
+name: Workflow
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+
+  # golang static analysis checks
+  go-static-analysis:
+    uses: dell/common-github-actions/.github/workflows/go-static-analysis.yaml@main
+    name: Golang Validation
+```
 
 ## Support
 
