@@ -13,8 +13,8 @@ yaml-files:
   - ".yamllint"
 
 rules:
-  braces: enable
-  brackets: enable
+  braces: disable
+  brackets: disable
   colons: enable
   commas: enable
   comments:
