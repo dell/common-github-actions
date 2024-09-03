@@ -7,7 +7,7 @@
 #
 #  http://www.apache.org/licenses/LICENSE-2.0
 
-# Reusable workflow to perform staic analysis on Golang based projects
+# Reusable workflow to perform static analysis on Golang based projects
 name: Golang Static Analysis
 
 # Invocable as a reusable workflow

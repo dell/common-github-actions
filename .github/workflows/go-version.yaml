@@ -1,0 +1,43 @@
+# Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+
+# Reusable workflow to perform go version update on Golang based projects
+name: Go Version
+
+# Invocable as a reusable workflow
+# Manaully triggered workflow
+on:
+    workflow_dispatch:
+    workflow_call:
+
+jobs:
+    go-version:
+      name: Update go version
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache: false
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - name: Check latest go Version
+        run: |
+          echo "GO_VERSION=$(curl -sL https://go.dev/VERSION?m=text) | awk 'NR==1{print $1}' | tr -cd '[:digit:].'" >> $GITHUB_ENV
+      - name: Update go version
+        run: |
+          go mod edit -go=${{ env.GO_VERSION }}
+      # Must allow GitHub Actions to create pull requests
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          branch: "go-${{ env.GO_VERSION }}"
+          commit-message: "Update go version to ${{ env.GO_VERSION }}"
+          title: "Update go version to ${{ env.GO_VERSION }}"
+          body: "PR opened by CSM release to update go version to ${{ env.GO_VERSION }}"
+          delete-branch: true
