@@ -10,7 +10,7 @@
 name: Go Version
 
 # Invocable as a reusable workflow
-# Manaully triggered workflow
+# Can be manually triggered
 on:
     workflow_dispatch:
     workflow_call:
