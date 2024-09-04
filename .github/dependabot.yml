@@ -43,6 +43,6 @@ updates:
           - "github.com/dell/connectivity-cert-persister-k8s"
           - "github.com/dell/csi-metadata-retriever"
           - "github.com/dell/csi-volumegroup-snapshotter"
-    third-party-dependencies:
-      patterns:
-        - "*"
+      third-party-dependencies:
+        patterns:
+          - "*"
