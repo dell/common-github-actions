@@ -26,11 +26,13 @@ jobs:
           cache: false
       - name: Checkout the code
         uses: actions/checkout@v4
-      - name: Check latest go Version
+      - name: Check latest go version
         run: |
           echo "GO_VERSION=$(curl -sL https://go.dev/VERSION?m=text) | awk 'NR==1{print $1}' | tr -cd '[:digit:].'" >> $GITHUB_ENV
       - name: Update go version
         run: |
+          echo "Updating go version to ${{ env.GO_VERSION }}"
+          git checkout -b go-${{ env.GO_VERSION }}
           go mod edit -go=${{ env.GO_VERSION }}
       # Must allow GitHub Actions to create pull requests
       - name: Create pull request

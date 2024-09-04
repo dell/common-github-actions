@@ -15,20 +15,39 @@ on:
 
 # Various jobs
 jobs:
-    go-build:
-      name: Test repository builds
+    release-version:
+      name: Update Release Version
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout the code
+          uses: actions/checkout@v4
+        - name: Update release version references
+          # grep for version references
+          # create var with new version by incrementing the current version by 1
+          # update version references
+          # commit changes
+          # push changes
 
+    # only run after release-version PR is merged
+    # implement step
+    go-build:
+      name: Test Repository Build
+
+    # implement step
     build-and-scan:
       name: Build and Scan Images
 
+    # implement step
     security-scan:
       name: Security Scans
       runs-on: ubuntu-latest
 
+    # implement step
     release-branch:
       name: Create Release Branch
       runs-on: ubuntu-latest
 
+    # implement step
     release:
       name: Create Release
-          -
+      runs-on: ubuntu-latest

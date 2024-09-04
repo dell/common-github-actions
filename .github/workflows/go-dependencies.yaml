@@ -10,8 +10,35 @@
 name: Golang Module Dependencies
 
 # Invocable as a reusable workflow
+# Can be manually triggered
 on:
-  workflow_call:
+    workflow_dispatch:
+    workflow_call:
+
+# environment variables common across all jobs
+env:
+  WF_ORG: dell
+  WF_REPO: common-github-actions
+  WF_CONFIGS: .github/configs
+  WF_CONFIGS_BRANCH: main
 
 jobs:
-    
+
+  # golang dependency updates
+  go-dependencies:
+    name: Update go mod dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache: false
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      # use same dependabot config across all repos
+      - name: Grab Dependabot config file
+        continue-on-error: true
+        run: |
+          export CONFIG="$WF_ORG/$WF_REPO/$WF_CONFIGS_BRANCH/$WF_CONFIGS/dependabot/dependabot.yml"
+          echo "Grabbing Dependabot config file from: https://raw.githubusercontent.com/$CONFIG"
+          curl -O -f https://raw.githubusercontent.com/$CONFIG
