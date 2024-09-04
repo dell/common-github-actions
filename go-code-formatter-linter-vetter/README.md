@@ -1,17 +1,18 @@
 # Code Formatter-Linter-Vetter GitHub Action
+
 This GitHub Action can be used to check sources files for formatting, linting, and vetting issues.
 
-To enable this Action, you can create a .yml file under your repo's .github/workflows directory. 
+To enable this Action, you can create a .yml file under your repo's .github/workflows directory.
 Simple example:
 
-```
+```yaml
 name: Code Check
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
 
@@ -20,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v3.2.0
+        uses: actions/checkout@v4
       - name: Run the formatter, linter, and vetter
         uses: dell/common-github-actions/go-code-formatter-linter-vetter@main
         with:
