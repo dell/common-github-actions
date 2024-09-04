@@ -1,10 +1,11 @@
 # Gosec Runner GitHub Action
+
 This GitHub Action can be used to run gosec on a particular package.
 
-To enable this Action, you can create a .yml file under your repo's .github/workflows directory. 
+To enable this Action, you can create a .yml file under your repo's .github/workflows directory.
 Simple example:
 
-```
+```yaml
 name: Gosec runner
 
 on:
@@ -20,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v3.2.0
+        uses: actions/checkout@v4
       - name: Run gosec to check for security vulnerabilities
         uses: dell/common-github-actions/gosec-runner@main
         with:

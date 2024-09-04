@@ -1,10 +1,11 @@
 # Go Code Tester GitHub Action
+
 This GitHub Action can be used to run Go unit tests and check that code coverage per package meets a threshold.
 
-To enable this Action, you can create a .yml file under your repo's .github/workflows directory. 
+To enable this Action, you can create a .yml file under your repo's .github/workflows directory.
 Simple example:
 
-```
+```yaml
 name: Code Test
 
 on:
@@ -20,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v3.2.0
+        uses: actions/checkout@v4
       - name: Run unit tests and check package coverage
         uses: dell/common-github-actions/go-code-tester@main
         with:

@@ -4,15 +4,15 @@ name: code-sanitizer-test
 # events but only for the main branch
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3.2.0
+      - uses: actions/checkout@v4
       # Runs a set of commands using the runners shell
       - name: Invoke run_test
         run: |

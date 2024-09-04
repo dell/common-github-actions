@@ -26,7 +26,7 @@ This repository contains a set of reusable actions and workflows, designed to be
 - [Maintainers](./docs/MAINTAINERS.md)
 - [Support](#support)
 - [Security](./docs/SECURITY.md)
-- [About](#About)
+- [About](#about)
 
 ## Implemented Actions
 
@@ -53,13 +53,14 @@ In addition to the actions mentioned above, the repository contains workflows th
 ### go-static-analysis
 
 This workflow runs static analysis checks against repositories that utilize Golang as the primary development language. The jobs that are run include:
-* golanci-lint with gofumpt (stricter version of gofmt), gosec, govet, and revive (replacement for golint). The configuration file for this job can be found at [.github/configs/golangci-lint/golangci.yaml](.github/configs/golangci-lint/golangci.yaml)
-* malware_security_scan, which is the malware-scanner mentioned above
-* yaml_lint_scan which validates yaml files. The yamllint config file for this job is at [.github/configs/yamllint/yamllint.yaml](.github/configs/yamllint/yamllint.yaml)
+
+- golanci-lint with gofumpt (stricter version of gofmt), gosec, govet, and revive (replacement for golint). The configuration file for this job can be found at [.github/configs/golangci-lint/golangci.yaml](.github/configs/golangci-lint/golangci.yaml)
+- malware_security_scan, which is the malware-scanner mentioned above
+- yaml_lint_scan which validates yaml files. The yamllint config file for this job is at [.github/configs/yamllint/yamllint.yaml](.github/configs/yamllint/yamllint.yaml)
 
 The workflow does not accept any parameters and can be used from any repo by creating a workflow that resembles the following
 
-```
+```yaml
 name: Workflow
 on:
   push:
