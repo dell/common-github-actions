@@ -7,26 +7,15 @@
 # be requested for review when someone opens a pull request.
 # order is alphabetical for easier maintenance.
 #
+# Christian Coffield (ChristianAtDell)
+# Don Khan (donatwork)
 # Sean Gallacher (gallacher)
-# Trevor Dawe (tdawe)
 # Alexander Hoppe (hoppea2)
-# Alik Saring (alikdell)
-# Aaron Tye (atye)
-# Shayna Finocchiaro (shaynafinocchiaro)
-# Sharmila Ramamoorthy (sharmilarama)
-# Evgeny Uglov (EvgenyUglov)
-# Bowen Jiang (bjiang27)
-# Isaias Martinez (isaiasA1)
-# Arnchie qu (arnchiequ-dell)
-# Luna Xu (xuluna)
-# Akshay Saini (AkshaySainiDell)
-# Konduri Satya Narayana (satyakonduri)
-# Adarsh Kumar Yadav (adarsh-dell)
-# Bharath Sreekanth (bharathsreekanth)
 # Matt Schmaelzle (mjsdell)
-# Chiman Jain (chimanjain)
-# Harish H  (HarishH-DELL)
-# Nitesh Rewatkar (nitesh3108)
+# Prasanna Muthukumaraswamy (prablr79)
+# Sharmila Ramamoorthy (sharmilarama)
+# Shayna Finocchiaro (shaynafinocchiaro)
+
 
 # for all files:
-* @gallacher @tdawe @alikdell @atye @hoppea2 @shaynafinocchiaro @sharmilarama @EvgenyUglov @bjiang27 @isaiasA1 @arnchiequ-dell @xuluna @AkshaySainiDell @satyakonduri @adarsh-dell @bharathsreekanth @mjsdell @chimanjain @HarishH-DELL @nitesh3108
+* @ChristianAtDell @donatwork @gallacher @hoppea2 @mjsdell @prablr79 @sharmilarama @shaynafinocchiaro
