@@ -15,39 +15,62 @@ on:
 
 # Various jobs
 jobs:
-    release-version:
-      name: Update Release Version
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout the code
-          uses: actions/checkout@v4
-        - name: Update release version references
-          # grep for version references
-          # create var with new version by incrementing the current version by 1
-          # update version references
-          # commit changes
-          # push changes
+  release-version:
+    name: Update Release Version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - name: Update release version references
+        run: echo "executing release-version step"
+        # grep for version references
+        # create var with new version by incrementing the current version by 1
+        # update version references
+        # commit changes
+        # push changes
 
-    # only run after release-version PR is merged
-    # implement step
-    go-build:
-      name: Test Repository Build
-
-    # implement step
-    build-and-scan:
-      name: Build and Scan Images
-
-    # implement step
-    security-scan:
-      name: Security Scans
-      runs-on: ubuntu-latest
-
-    # implement step
-    release-branch:
-      name: Create Release Branch
-      runs-on: ubuntu-latest
-
-    # implement step
-    release:
-      name: Create Release
-      runs-on: ubuntu-latest
+  # only run after release-version PR is merged
+  build-and-scan:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+      - name: Install dependencies
+        run: go mod tidy
+      - name: Build
+        run: go build -v ./...
+      - name: Run tests
+        run: go test -v ./...
+      - name: Run malware scan
+        uses: dell/common-github-actions/malware-scanner@reusuable-release-workflow
+        with:
+          directories: .
+          options: -ri
+      - name: Run gosec to check for security vulnerabilities
+        uses: dell/common-github-actions/gosec-runner@reusuable-release-workflow
+        with:
+          exclude-dir: tests/e2e
+          directories: ./...
+      - name: Create release branch
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git checkout -b release/v${{ github.event.inputs.version }}
+          git push origin release/v${{ github.event.inputs.version }}
+      - name: Create GitHub release
+        uses: actions/create-release@v1
+        with:
+          tag_name: v${{ github.event.inputs.version }}
+          release_name: Release v${{ github.event.inputs.version }}
+          draft: true
+          prerelease: true
+          body: |
+            ## Changes
+            - Describe your changes here
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
