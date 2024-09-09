@@ -6,6 +6,10 @@
 #
 #  http://www.apache.org/licenses/LICENSE-2.0
 
+# NOTE: old go update script https://eos2git.cec.lab.emc.com/CSM/csm-pipeline/blob/master/shell-scripts/go-automation.sh
+# NOTE: this currently won't work for nested go.mod files, consider changing this to an action to accept parameters for nested files
+# NOTE: this also should work in the CSM repo to update go version for ubi image
+
 # Reusable workflow to perform go version update on Golang based projects
 name: Go Version
 
