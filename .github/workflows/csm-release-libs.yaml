@@ -7,7 +7,7 @@
 #  http://www.apache.org/licenses/LICENSE-2.0
 
 # This workflow is used to release libraries like gobrick, gofsutil etc.
-name: Release
+name: Release Libs
 
 # Invocable as a reusable workflow
 on:
@@ -44,11 +44,15 @@ jobs:
         id: increment_tag
         run: |
           latest_tag=${{ env.latest_tag }}
-          IFS='.' read -r -a parts <<< "${latest_tag#v}"
-          major=${parts[0]}
-          minor=${parts[1]}
-          patch=${parts[2]}
-          new_tag="v$major.$minor.$((patch+1))"
+          if [ "$latest_tag" = "none" ]; then
+            new_tag="v1.0.0"
+          else
+            IFS='.' read -r -a parts <<< "${latest_tag#v}"
+            major=${parts}
+            minor=${parts}
+            patch=${parts}
+            new_tag="v$major.$minor.$((patch+1))"
+          fi
           echo "new_tag=$new_tag" >> $GITHUB_ENV
       
       - name: Create new tag
