@@ -10,7 +10,8 @@
 name: Release Libs
 
 # Invocable as a reusable workflow
-on:  
+on:
+  workflow_call:  
   workflow_dispatch:
     inputs:
       version:
