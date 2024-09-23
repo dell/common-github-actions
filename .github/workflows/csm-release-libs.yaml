@@ -10,21 +10,18 @@
 name: Release Libs
 
 # Invocable as a reusable workflow
-on:
-  workflow_call:
+on:  
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to increment (major, minor, patch)'
+        description: 'Version to release (major, minor, patch)'
         required: true
-        default: 'patch'
+        default: 'none'
 
 jobs:
   build-and-scan:
     name: Build,Scan and Release
     runs-on: ubuntu-latest
-    outputs:
-      output1: ${{ steps.get_latest_tag.outputs.test }}
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
@@ -42,39 +39,39 @@ jobs:
       #     directories: .
       #     options: -ri          
 
-      - name: Get latest tag
-        id: get_latest_tag
-        run: |
-            latest_tag=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "none")
-            echo "latest_tag=$latest_tag" >> $GITHUB_ENV
-            echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
+      # - name: Get latest tag
+      #   id: get_latest_tag
+      #   run: |
+      #       latest_tag=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "none")
+      #       echo "latest_tag=$latest_tag" >> $GITHUB_ENV
+      #       echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
       
-      - name: Increment tag
-        id: increment_tag
-        run: |          
-          if [ "$latest_tag" = "none" ]; then
-            new_tag="v1.0.0"
-          else
-            IFS='.' read -r -a parts <<< "${latest_tag#v}"
-            major=${parts}
-            minor=${parts}
-            patch=${parts}
-            new_tag="v$major.$minor.$((patch+1))"
-          fi
-          echo "new_tag=$new_tag" >> $GITHUB_ENV
+      # - name: Increment tag
+      #   id: increment_tag
+      #   run: |          
+      #     if [ "$latest_tag" = "none" ]; then
+      #       new_tag="v1.0.0"
+      #     else
+      #       IFS='.' read -r -a parts <<< "${latest_tag#v}"
+      #       major=${parts}
+      #       minor=${parts}
+      #       patch=${parts}
+      #       new_tag="v$major.$minor.$((patch+1))"
+      #     fi
+      #     echo "new_tag=$new_tag" >> $GITHUB_ENV
       
       - name: Create new tag
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
-          git tag ${{ env.new_tag }}
-          git push origin ${{ env.new_tag }}
+          git tag ${{ github.event.inputs.version }}
+          git push origin ${{ github.event.inputs.version }}
 
       - name: Create GitHub release
         uses: actions/create-release@v1
         with:
-          tag_name: ${{ env.new_tag }}
-          release_name: Release ${{ env.new_tag }}
+          tag_name: ${{ github.event.inputs.version }}
+          release_name: Release ${{ github.event.inputs.version }}
           draft: false
           prerelease: false
           body: |
