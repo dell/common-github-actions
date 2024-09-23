@@ -12,13 +12,19 @@ name: Release Libs
 # Invocable as a reusable workflow
 on:
   workflow_call:
-env:
-  new_tag: none
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to increment (major, minor, patch)'
+        required: true
+        default: 'patch'
 
 jobs:
   build-and-scan:
     name: Build,Scan and Release
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.get_latest_tag.outputs.test }}
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
@@ -41,6 +47,7 @@ jobs:
         run: |
             latest_tag=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "none")
             echo "latest_tag=$latest_tag" >> $GITHUB_ENV
+            echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
       
       - name: Increment tag
         id: increment_tag
