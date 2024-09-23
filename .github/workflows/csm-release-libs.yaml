@@ -42,8 +42,7 @@ jobs:
       
       - name: Increment tag
         id: increment_tag
-        run: |
-          latest_tag=${{ env.latest_tag }}
+        run: |          
           if [ "$latest_tag" = "none" ]; then
             new_tag="v1.0.0"
           else
