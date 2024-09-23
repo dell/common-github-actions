@@ -26,40 +26,19 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
-      # - name: Set up Go
-      #   uses: actions/setup-go@v5
-      #   with:
-      #     go-version: '1.23'
-      # - name: Install dependencies
-      #   run: go mod tidy
-      # - name: Build
-      #   run: go build -v ./...
-      # - name: Run malware scan
-      #   uses: dell/common-github-actions/malware-scanner@reusuable-release-workflow
-      #   with:
-      #     directories: .
-      #     options: -ri          
-
-      # - name: Get latest tag
-      #   id: get_latest_tag
-      #   run: |
-      #       latest_tag=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "none")
-      #       echo "latest_tag=$latest_tag" >> $GITHUB_ENV
-      #       echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
-      
-      # - name: Increment tag
-      #   id: increment_tag
-      #   run: |          
-      #     if [ "$latest_tag" = "none" ]; then
-      #       new_tag="v1.0.0"
-      #     else
-      #       IFS='.' read -r -a parts <<< "${latest_tag#v}"
-      #       major=${parts}
-      #       minor=${parts}
-      #       patch=${parts}
-      #       new_tag="v$major.$minor.$((patch+1))"
-      #     fi
-      #     echo "new_tag=$new_tag" >> $GITHUB_ENV
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+      - name: Install dependencies
+        run: go mod tidy
+      - name: Build
+        run: go build -v ./...
+      - name: Run malware scan
+        uses: dell/common-github-actions/malware-scanner@reusuable-release-workflow
+        with:
+          directories: .
+          options: -ri
       
       - name: Create new tag
         run: |
