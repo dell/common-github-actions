@@ -58,14 +58,14 @@ jobs:
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
-          git tag ${new_tag}
-          git push origin ${new_tag}
+          git tag ${{env.new_tag}}
+          git push origin ${{env.new_tag}}
 
       - name: Create GitHub release
         uses: actions/create-release@v1
         with:
-          tag_name: ${new_tag}
-          release_name: Release ${new_tag}
+          tag_name: ${{env.new_tag}}
+          release_name: Release ${{env.new_tag}}
           draft: false
           prerelease: false
           body: |
