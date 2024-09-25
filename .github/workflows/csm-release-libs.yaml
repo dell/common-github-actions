@@ -7,7 +7,7 @@
 #  http://www.apache.org/licenses/LICENSE-2.0
 
 # This workflow is used to release libraries like gobrick, gofsutil etc.
-name: Release Libs
+name: Release Go Client Libraries
 
 # Invocable as a reusable workflow
 on:
@@ -21,7 +21,7 @@ on:
 
 jobs:
   build-and-scan:
-    name: Build,Scan and Release
+    name: Build, Scan and Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
