@@ -76,6 +76,30 @@ jobs:
     name: Golang Validation
 ```
 
+### csm-release-libs
+
+This workflow automates the release process for all the Go Client Libraries:
+
+The workflow accepts version as an input and releases that particular version. Below is the example usage in gobrick repository. If no version is specified then it will automatically bump up the major version.
+
+```yaml
+name: Release Gobrick
+# Invocable as a reusable workflow
+# Can be manually triggered
+on:
+  workflow_call: 
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (major, minor, patch)'
+        required: true
+        default: 'none'
+jobs:
+  csm-release:
+    uses: dell/common-github-actions/.github/workflows/csm-release-libs.yaml@main
+    name: Release Go Client Libraries
+```
+
 ## Support
 
 Don’t hesitate to ask! Contact the team and community on [our support](./docs/SUPPORT.md).
