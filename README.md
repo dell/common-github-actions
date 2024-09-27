@@ -87,7 +87,7 @@ name: Release Gobrick
 # Invocable as a reusable workflow
 # Can be manually triggered
 on:
-  workflow_call: 
+  workflow_call:
   workflow_dispatch:
     inputs:
       version:
@@ -98,6 +98,28 @@ jobs:
   csm-release:
     uses: dell/common-github-actions/.github/workflows/csm-release-libs.yaml@main
     name: Release Go Client Libraries
+```
+
+### go-version-workflow
+
+This workflow updates to the latest go version in repositories that utilize Golang as the primary development language. The workflow is triggered by https://github.com/dell/common-github-actions/actions/workflows/trigger-go-workflow.yaml or can be triggered manually.
+
+The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following
+Note: Workflows that call reusable workflows in the same organization or enterprise can use the inherit keyword to implicitly pass the secrets. See: https://docs.github.com/en/actions/sharing-automations/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow.
+
+```yaml
+name: Go Version Update
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [go-update-workflow]
+
+jobs:
+  go-version-update:
+    uses: dell/common-github-actions/.github/workflows/go-version-workflow.yaml@main
+    name: Go Version Update
+    secrets: inherit
 ```
 
 ## Support
