@@ -19,8 +19,16 @@ jobs:
       steps:
       - name: Check latest go version
         run: |
-          echo "GO_VERSION_STRIPPED=$(curl -sL https://go.dev/VERSION?m=text | awk 'NR==1{print $1}' | tr -cd '[:digit:].')" >> $GITHUB_ENV
-          echo "GO_VERSION=$(curl -sL https://go.dev/VERSION?m=text | awk 'NR==1{print $1}')" >> $GITHUB_ENV
+          GO_VERSION_STRIPPED=$(curl -sL https://go.dev/VERSION?m=text | awk 'NR==1{print $1}' | tr -cd '[:digit:].')
+          GO_VERSION=$(curl -sL https://go.dev/VERSION?m=text | awk 'NR==1{print $1}')
+
+          if [[ -z "$GO_VERSION_STRIPPED" || -z "$GO_VERSION" ]]; then
+            echo "Error: GO_VERSION_STRIPPED or GO_VERSION is empty"
+            exit 1
+          fi
+
+          echo "GO_VERSION_STRIPPED=$GO_VERSION_STRIPPED" >> $GITHUB_ENV
+          echo "GO_VERSION=$GO_VERSION" >> $GITHUB_ENV
 
       - uses: actions/setup-go@v5
         with:
@@ -28,7 +36,6 @@ jobs:
           cache: false
           check-latest: true
 
-      # Uses trigger-workflow.yaml payload
       - name: Checkout the code
         uses: actions/checkout@v4
 
