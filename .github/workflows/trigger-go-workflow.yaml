@@ -72,7 +72,8 @@ jobs:
       - name: Trigger Go Version Update
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ secrets.CSM_RELEASE_PAT }}
+          # For token information, see: https://github.com/peter-evans/repository-dispatch/tree/main?tab=readme-ov-file#token
+          token: ${{ secrets.CSMBOT_PAT }}
           repository: ${{ matrix.repo }}
           event-type: go-update-workflow
           client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
