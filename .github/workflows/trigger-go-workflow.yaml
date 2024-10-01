@@ -1,0 +1,79 @@
+# Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+
+# Trigger workflow for go version update on CSM projects
+name: Trigger Go Version Workflow
+
+on:
+  # Can be manually triggered
+  workflow_dispatch:
+    inputs:
+      internal-repositories:
+        description: 'Internal repositories to trigger workflow against. Matrix example: "org/repo1, org/repo2"'
+        required: false
+
+# environment variables
+env:
+  WF_ORG: dell
+  INTERNAL_REPOS: ${{ github.event.inputs.internal-repositories }}
+
+jobs:
+  trigger:
+    name: Trigger Go Version Update
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        repo:
+          [
+            "$WF_ORG/cert-csi",
+            "$WF_ORG/common-github-actions",
+            "$WF_ORG/cosi",
+            "$WF_ORG/csi-metadata-retriever",
+            "$WF_ORG/csi-powerflex",
+            "$WF_ORG/csi-powermax",
+            "$WF_ORG/csi-powerscale",
+            "$WF_ORG/csi-powerstore",
+            "$WF_ORG/csi-unity",
+            "$WF_ORG/csi-volumegroup-snapshotter",
+            "$WF_ORG/csm",
+            "$WF_ORG/csm-authorization",
+            "$WF_ORG/csm-docs",
+            "$WF_ORG/csm-metrics-powermax",
+            "$WF_ORG/csm-metrics-powerscale",
+            "$WF_ORG/csm-metrics-powerstore",
+            "$WF_ORG/csm-metrics-unity",
+            "$WF_ORG/csm-observability",
+            "$WF_ORG/csm-operator",
+            "$WF_ORG/csm-replication",
+            "$WF_ORG/dell-csi-extensions",
+            "$WF_ORG/gobrick",
+            "$WF_ORG/gocsi",
+            "$WF_ORG/gofsutil",
+            "$WF_ORG/goiscsi",
+            "$WF_ORG/gonvme",
+            "$WF_ORG/goobjectscale",
+            "$WF_ORG/gopowermax",
+            "$WF_ORG/gopowerscale",
+            "$WF_ORG/gopowerstore",
+            "$WF_ORG/goscaleio",
+            "$WF_ORG/gounity",
+            "$WF_ORG/karavi-metrics-powerflex",
+            "$WF_ORG/karavi-resiliency",
+            "$INTERNAL_REPOS",
+          ]
+
+    steps:
+      - name: Trigger Go Version Update
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          # For token information, see: https://github.com/peter-evans/repository-dispatch/tree/main?tab=readme-ov-file#token
+          token: ${{ secrets.CSMBOT_PAT }}
+          repository: ${{ matrix.repo }}
+          event-type: go-update-workflow
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
