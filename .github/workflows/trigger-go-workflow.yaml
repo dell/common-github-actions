@@ -61,7 +61,7 @@ jobs:
             "$WF_ORG/gounity",
             "$WF_ORG/karavi-metrics-powerflex",
             "$WF_ORG/karavi-resiliency",
-            "$WF_ORG/karavi-topology"
+            "$WF_ORG/karavi-topology",
           ]
 
     steps:
