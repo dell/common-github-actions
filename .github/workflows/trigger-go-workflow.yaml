@@ -43,7 +43,6 @@ jobs:
             "$WF_ORG/csm-metrics-powerscale",
             "$WF_ORG/csm-metrics-powerstore",
             "$WF_ORG/csm-metrics-unity",
-            "$WF_ORG/karavi-observability",
             "$WF_ORG/csm-operator",
             "$WF_ORG/csm-replication",
             "$WF_ORG/dell-csi-extensions",
@@ -60,6 +59,7 @@ jobs:
             "$WF_ORG/gounity",
             "$WF_ORG/karavi-authorization",
             "$WF_ORG/karavi-metrics-powerflex",
+            "$WF_ORG/karavi-observability",
             "$WF_ORG/karavi-resiliency",
             "$WF_ORG/karavi-topology",
           ]
