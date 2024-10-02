@@ -43,7 +43,7 @@ jobs:
             "$WF_ORG/csm-metrics-powerscale",
             "$WF_ORG/csm-metrics-powerstore",
             "$WF_ORG/csm-metrics-unity",
-            "$WF_ORG/csm-observability",
+            "$WF_ORG/karavi-observability",
             "$WF_ORG/csm-operator",
             "$WF_ORG/csm-replication",
             "$WF_ORG/dell-csi-extensions",
