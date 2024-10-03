@@ -12,15 +12,10 @@ name: Trigger Go Version Workflow
 on:
   # Can be manually triggered
   workflow_dispatch:
-    inputs:
-      internal-repositories:
-        description: 'Internal repositories to trigger workflow against. Matrix example: "org/repo1, org/repo2"'
-        required: false
 
 # environment variables
 env:
   WF_ORG: dell
-  INTERNAL_REPOS: ${{ github.event.inputs.internal-repositories }}
 
 jobs:
   trigger:
@@ -42,13 +37,12 @@ jobs:
             "$WF_ORG/csi-unity",
             "$WF_ORG/csi-volumegroup-snapshotter",
             "$WF_ORG/csm",
-            "$WF_ORG/csm-authorization",
             "$WF_ORG/csm-docs",
+            "$WF_ORG/csm-logcollector",
             "$WF_ORG/csm-metrics-powermax",
             "$WF_ORG/csm-metrics-powerscale",
             "$WF_ORG/csm-metrics-powerstore",
             "$WF_ORG/csm-metrics-unity",
-            "$WF_ORG/csm-observability",
             "$WF_ORG/csm-operator",
             "$WF_ORG/csm-replication",
             "$WF_ORG/dell-csi-extensions",
@@ -63,9 +57,11 @@ jobs:
             "$WF_ORG/gopowerstore",
             "$WF_ORG/goscaleio",
             "$WF_ORG/gounity",
+            "$WF_ORG/karavi-authorization",
             "$WF_ORG/karavi-metrics-powerflex",
+            "$WF_ORG/karavi-observability",
             "$WF_ORG/karavi-resiliency",
-            "$INTERNAL_REPOS",
+            "$WF_ORG/karavi-topology",
           ]
 
     steps:
