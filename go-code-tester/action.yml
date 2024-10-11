@@ -37,6 +37,7 @@ runs:
     - ${{ inputs.skip-list }}
     - ${{ inputs.race-detector }}
     - ${{ inputs.skip-test }}
+    - ${{ inputs.run-test }}
 branding:
   icon: 'shield'
   color: 'blue'

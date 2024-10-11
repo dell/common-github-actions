@@ -34,7 +34,7 @@ jobs:
           # Optional parameter to skip tests
           skip-test: "TestToSkip"
           # Optional parameter to specify regex for tests to run
-          run-list: "TestToRun"
+          run-test: "TestToRun"
 ```
 
 The `threshold` for the Action is a coverage percentage threshold that every package must meet. The default `threshold` is 90.
@@ -47,4 +47,4 @@ The `race-detector` is an optional boolean parameter to enable or disable the ra
 
 The `skip-test` is a regex and passed directly as the -skip option to the `go test` command.
 
-The `run-list` is a regex and passed directly as the -run option to the `go test` command.
+The `run-test` is a regex and passed directly as the -run option to the `go test` command.
