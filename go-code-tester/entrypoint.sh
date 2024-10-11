@@ -13,24 +13,29 @@ TEST_FOLDER=$2
 SKIP_LIST=$3
 RACE_DETECTOR=$4
 SKIP_TEST=$5
+RUN_TEST=$6
 
 skip_options=""
+run_options=""
 
-if [[ -z $SKIP_TEST ]]; then
-  echo "running all tests in packages"
-else
+if [[ -n $SKIP_TEST ]]; then
   echo "skipping the following tests (regex): $SKIP_TEST"
   skip_options="-skip $SKIP_TEST"
+fi
+
+if [[ -n $RUN_TEST ]]; then
+  echo "running the following tests (regex): $RUN_TEST"
+  run_options="-run $RUN_TEST"
 fi
 
 go clean -testcache
 
 cd ${TEST_FOLDER}
 if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
-  GOEXPERIMENT=nocoverageredesign go test $skip_options -v -short -race -count=1 -cover ./... > ~/run.log
+  GOEXPERIMENT=nocoverageredesign go test $skip_options -v -short -race -count=1 -cover $run_options ./... > ~/run.log
 else
   # Run without the race flag
-  GOEXPERIMENT=nocoverageredesign go test $skip_options -v -short -count=1 -cover ./... > ~/run.log
+  GOEXPERIMENT=nocoverageredesign go test $skip_options -v -short -count=1 -cover $run_options ./... > ~/run.log
 fi
 
 TEST_RETURN_CODE=$?
@@ -80,4 +85,3 @@ else
 fi
 
 exit ${FAIL}
-
