@@ -13,10 +13,6 @@ on:
   # Can be manually triggered
   workflow_dispatch:
 
-# environment variables
-env:
-  WF_ORG: dell
-
 jobs:
   trigger:
     name: Trigger Go Version Update
@@ -26,42 +22,41 @@ jobs:
       matrix:
         repo:
           [
-            "$WF_ORG/cert-csi",
-            "$WF_ORG/common-github-actions",
-            "$WF_ORG/cosi",
-            "$WF_ORG/csi-metadata-retriever",
-            "$WF_ORG/csi-powerflex",
-            "$WF_ORG/csi-powermax",
-            "$WF_ORG/csi-powerscale",
-            "$WF_ORG/csi-powerstore",
-            "$WF_ORG/csi-unity",
-            "$WF_ORG/csi-volumegroup-snapshotter",
-            "$WF_ORG/csm",
-            "$WF_ORG/csm-docs",
-            "$WF_ORG/csm-logcollector",
-            "$WF_ORG/csm-metrics-powermax",
-            "$WF_ORG/csm-metrics-powerscale",
-            "$WF_ORG/csm-metrics-powerstore",
-            "$WF_ORG/csm-metrics-unity",
-            "$WF_ORG/csm-operator",
-            "$WF_ORG/csm-replication",
-            "$WF_ORG/dell-csi-extensions",
-            "$WF_ORG/gobrick",
-            "$WF_ORG/gocsi",
-            "$WF_ORG/gofsutil",
-            "$WF_ORG/goiscsi",
-            "$WF_ORG/gonvme",
-            "$WF_ORG/goobjectscale",
-            "$WF_ORG/gopowermax",
-            "$WF_ORG/gopowerscale",
-            "$WF_ORG/gopowerstore",
-            "$WF_ORG/goscaleio",
-            "$WF_ORG/gounity",
-            "$WF_ORG/karavi-authorization",
-            "$WF_ORG/karavi-metrics-powerflex",
-            "$WF_ORG/karavi-observability",
-            "$WF_ORG/karavi-resiliency",
-            "$WF_ORG/karavi-topology",
+            "dell/cert-csi",
+            "dell/common-github-actions",
+            "dell/cosi",
+            "dell/csi-metadata-retriever",
+            "dell/csi-powerflex",
+            "dell/csi-powermax",
+            "dell/csi-powerscale",
+            "dell/csi-powerstore",
+            "dell/csi-unity",
+            "dell/csi-volumegroup-snapshotter",
+            "dell/csm",
+            "dell/csm-docs",
+            "dell/csm-logcollector",
+            "dell/csm-metrics-powermax",
+            "dell/csm-metrics-powerscale",
+            "dell/csm-metrics-powerstore",
+            "dell/csm-metrics-unity",
+            "dell/csm-operator",
+            "dell/csm-replication",
+            "dell/dell-csi-extensions",
+            "dell/gobrick",
+            "dell/gocsi",
+            "dell/gofsutil",
+            "dell/goiscsi",
+            "dell/gonvme",
+            "dell/goobjectscale",
+            "dell/gopowermax",
+            "dell/gopowerscale",
+            "dell/gopowerstore",
+            "dell/goscaleio",
+            "dell/gounity",
+            "dell/karavi-authorization",
+            "dell/karavi-metrics-powerflex",
+            "dell/karavi-resiliency",
+            "dell/karavi-topology",
           ]
 
     steps:
