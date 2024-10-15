@@ -56,9 +56,9 @@ jobs:
           pwd
           echo ${{ github.workspace }}
 
-          find . -type f -name "${{ env.gomod }}" -execdir sh -c '[ -f ${{ env.gomod }} ] && go mod edit -go=${{ env.GO_VERSION_STRIPPED }} && go mod tidy' \;
+          find . -type f -name "${{ env.gomod }}" -execdir sh -c 'if [ -f ${{ env.gomod }} ]; then go mod edit -go=${{ env.GO_VERSION_STRIPPED }} && go mod tidy; fi'
 
-          find . -type f -name "${{ env.gomod }}" -execdir sh -c '[ -f ${{ env.gomod }} ] && grep -q "toolchain" go.mod && go mod edit -toolchain=${{ env.GO_VERSION }} && go mod tidy' \;
+          find . -type f -name "${{ env.gomod }}" -execdir sh -c 'if [ -f ${{ env.gomod }} ]; then grep -q "toolchain" go.mod && go mod edit -toolchain=${{ env.GO_VERSION }} && go mod tidy; fi'
 
           if [ -f config/csm-common.mk ]; then sed -i "s/DEFAULT_GOVERSION.*/DEFAULT_GOVERSION=\"${{ env.GO_VERSION_STRIPPED }}\"/g" config/csm-common.mk; fi
 
