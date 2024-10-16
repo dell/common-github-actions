@@ -56,13 +56,13 @@ jobs:
           pwd
           echo ${{ github.workspace }}
 
-          find . -type f -name "${{ env.gomod }}" -execdir sh -c 'if [ -f ${{ env.gomod }} ]; then go mod edit -go=${{ env.GO_VERSION_STRIPPED }} && go mod tidy; fi'
+          find . -type f -name "${{ env.gomod }}" -execdir sh -c '[ -f "{}" ] && go mod edit -go=${{ env.GO_VERSION_STRIPPED }} && go mod tidy' \;
 
-          find . -type f -name "${{ env.gomod }}" -execdir sh -c 'if [ -f ${{ env.gomod }} ]; then grep -q "toolchain" go.mod && go mod edit -toolchain=${{ env.GO_VERSION }} && go mod tidy; fi'
+          find . -type f -name "${{ env.gomod }}" -execdir sh -c '[ -f "{}" }} ] && grep -q "toolchain" go.mod && go mod edit -toolchain=${{ env.GO_VERSION }} && go mod tidy' \;
 
           if [ -f config/csm-common.mk ]; then sed -i "s/DEFAULT_GOVERSION.*/DEFAULT_GOVERSION=\"${{ env.GO_VERSION_STRIPPED }}\"/g" config/csm-common.mk; fi
 
-          find . -type f ! -name "${{ env.exclude_file }}" -exec ${{ env.grep_cmd2 }} {} \; | while read -r file; do sed -i "s/go-version:.*/go-version: \"${{ env.GO_VERSION_STRIPPED }}\"/" "$file"; done
+          find . -type f ! -name "${{ env.exclude_file }}" -exec ${{ env.grep_cmd2 }} {} \; | while read -r file; do grep -v "hugo-version" "$file" | sed -i "s/go-version:.*/go-version: \"${{ env.GO_VERSION_STRIPPED }}\"/" "$file"; done
 
           find . -type f ! -name "${{ env.exclude_file }}" -exec ${{ env.grep_cmd3 }} {} \; | while read -r file; do sed -i "s/golang:.*/golang:${{ env.GO_VERSION_STRIPPED }}/" "$file"; done
 
