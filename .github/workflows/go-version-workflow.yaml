@@ -58,7 +58,7 @@ jobs:
 
           find . -type f -name "${{ env.gomod }}" -execdir sh -c '[ -f "{}" ] && go mod edit -go=${{ env.GO_VERSION_STRIPPED }} && go mod tidy' \;
 
-          find . -type f -name "${{ env.gomod }}" -execdir sh -c '[ -f "{}" }} ] && grep -q "toolchain" go.mod && go mod edit -toolchain=${{ env.GO_VERSION }} && go mod tidy' \;
+          find . -type f -name "${{ env.gomod }}" -execdir sh -c '[ -f "{}" ] && grep -q "toolchain" go.mod && go mod edit -toolchain=${{ env.GO_VERSION }} && go mod tidy' \;
 
           if [ -f config/csm-common.mk ]; then sed -i "s/DEFAULT_GOVERSION.*/DEFAULT_GOVERSION=\"${{ env.GO_VERSION_STRIPPED }}\"/g" config/csm-common.mk; fi
 
