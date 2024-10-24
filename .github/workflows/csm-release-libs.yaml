@@ -51,22 +51,21 @@ jobs:
         id: generate_notes
         uses: actions/github-script@v6
         with:
-          script: |
-              const { context, github } = require('@actions/github');
-              const latestRelease = await github.rest.repos.getLatestRelease({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-              });
-  
-              const commits = await github.rest.repos.listCommits({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                since: latestRelease.data.published_at,
-              });
-  
-              const releaseNotes = commits.data.map(commit => `- ${commit.commit.message}`).join('\n');
-  
-              return releaseNotes;
+          script: |            
+            const latestRelease = await github.rest.repos.getLatestRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+
+            const commits = await github.rest.repos.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              since: latestRelease.data.published_at,
+            });
+
+            const releaseNotes = commits.data.map(commit => `- ${commit.commit.message}`).join('\n');
+
+            return releaseNotes;
   
       - name: Create GitHub release
         uses: comnoco/create-release-action@main
