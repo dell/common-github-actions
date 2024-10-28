@@ -11,13 +11,13 @@ name: Release Go Client Libraries
 
 # Invocable as a reusable workflow
 on:
-  workflow_call:  
+  workflow_call:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release (major, minor, patch)'
+        description: 'Version to release (major, minor, patch), ex: 1.0.0'
         required: true
-        default: 'none'
+        default: none
 
 jobs:
   build-and-scan:
@@ -27,9 +27,9 @@ jobs:
       - name: Validate version input
         run: |
           if [[ "${{ github.event.inputs.version }}" == "none" ]]; then
-            echo "Invalid version specified: ${{ github.event.inputs.version }} Must be x.x.x"
+            echo "Invalid version specified: ${{ github.event.inputs.version }} Must follow major, minor, patch versioning."
             exit 1
-          fi      
+          fi
       - name: Checkout the code
         uses: actions/checkout@v4
       - name: Set up Go
@@ -50,21 +50,22 @@ jobs:
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
-          git tag ${{ github.event.inputs.version }}
-          git push origin ${{ github.event.inputs.version }}
+          git tag v${{ github.event.inputs.version }}
+          git push origin v${{ github.event.inputs.version }}
 
       - name: Create Release
         id: release_notes
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.inputs.version }}
-          name: Release ${{ github.event.inputs.version }}
+          tag_name: v${{ github.event.inputs.version }}
+          name: Release v${{ github.event.inputs.version }}
           draft: true
           prerelease: false
           generate_release_notes: true
+          make_latest: true
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
+
       - name: Create release branch
         run: |
           git config --global user.name 'github-actions'
