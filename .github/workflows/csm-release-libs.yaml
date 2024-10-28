@@ -24,6 +24,12 @@ jobs:
     name: Build, Scan and Release
     runs-on: ubuntu-latest
     steps:
+      - name: Validate version input
+        run: |
+          if [[ "${{ github.event.inputs.version }}" != "major" && "${{ github.event.inputs.version }}" != "minor" && "${{ github.event.inputs.version }}" != "patch" ]]; then
+            echo "Invalid version specified: ${{ github.event.inputs.version }}. Must be one of 'major', 'minor', or 'patch'."
+            exit 1
+          fi      
       - name: Checkout the code
         uses: actions/checkout@v4
       - name: Set up Go
