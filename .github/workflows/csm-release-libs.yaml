@@ -47,25 +47,17 @@ jobs:
           git tag ${{ github.event.inputs.version }}
           git push origin ${{ github.event.inputs.version }}
 
-      - name: Generate Release Notes
+      - name: Create Release
         id: release_notes
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.version }}
+          name: Release ${{ github.event.inputs.version }}
+          draft: true
+          prerelease: false
           generate_release_notes: true
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  
-      - name: Create GitHub release
-        uses: comnoco/create-release-action@main
-        with:
-          tag_name: ${{ github.event.inputs.version }}
-          release_name: Release ${{ github.event.inputs.version }}
-          draft: true
-          prerelease: false
-          body: ${{ steps.release_notes.outputs.notes }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
       - name: Create release branch
         run: |
