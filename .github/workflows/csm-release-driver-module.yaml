@@ -52,8 +52,11 @@ jobs:
         with:
           directories: "./..."
 
+      # TODO: run gofmt, go vet, and linting
+
   push-images:
     name: Pull, Tag and Push Images
+    needs: build-and-scan
     runs-on: ubuntu-latest
     steps:
       - name: Log in to Quay.io
@@ -76,6 +79,7 @@ jobs:
 
   create-release:
     name: Create Release
+    needs: push-images
     runs-on: ubuntu-latest
     steps:
       - name: Create new tag

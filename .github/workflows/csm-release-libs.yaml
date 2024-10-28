@@ -17,7 +17,8 @@ on:
       version:
         description: 'Version to release (major, minor, patch), ex: 1.0.0'
         required: true
-        default: none
+        # TODO: remove default from here and caller workflows in goclients
+        default: 'none'
 
 jobs:
   build-and-scan:
