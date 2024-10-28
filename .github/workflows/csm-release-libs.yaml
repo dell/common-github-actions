@@ -51,7 +51,8 @@ jobs:
         id: release_notes
         uses: softprops/action-gh-release@v1
         with:
-            generate_release_notes: true
+          tag_name: ${{ github.event.inputs.version }}
+          generate_release_notes: true
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   
