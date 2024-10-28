@@ -39,7 +39,7 @@ jobs:
         with:
           directories: .
           options: -ri
-      
+
       - name: Create new tag
         run: |
           git config --global user.name 'github-actions'
@@ -47,34 +47,22 @@ jobs:
           git tag ${{ github.event.inputs.version }}
           git push origin ${{ github.event.inputs.version }}
 
-      - name: Generate release notes
-        id: generate_notes
-        uses: actions/github-script@v6
+      - name: Generate Release Notes
+        id: release_notes
+        uses: softprops/action-gh-release@v1
         with:
-          script: |            
-            const latestRelease = await github.rest.repos.getLatestRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-            });
-
-            const commits = await github.rest.repos.listCommits({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              since: latestRelease.data.published_at,
-            });
-
-            const releaseNotes = commits.data.map(commit => `- ${commit.commit.message}`).join('\n');
-
-            return releaseNotes;
+            generate_release_notes: true
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   
       - name: Create GitHub release
         uses: comnoco/create-release-action@main
         with:
           tag_name: ${{ github.event.inputs.version }}
           release_name: Release ${{ github.event.inputs.version }}
-          draft: false
+          draft: true
           prerelease: false
-          body: ${{ steps.generate_notes.outputs.result }}
+          body: ${{ steps.release_notes.outputs.notes }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
