@@ -60,22 +60,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Log in to Quay.io
-        run: echo "${{ secrets.QUAY_PASSWORD }}" | docker login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin # TODO we need to store quay credentials in GitHub Secrets
+        run: echo "${{ secrets.QUAY_PASSWORD }}" | docker login quay.io -u "${{ secrets.QUAY_USERNAME }}" --password-stdin
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login docker.io -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Pull nightly image from Quay.io
         run: docker pull quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly
 
-      - name: Retag image
+      - name: Retag image for Quay.io
         run: |
           docker tag quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
 
           docker tag quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:latest
 
-      - name: Push ${{ github.event.inputs.version }} tag to Quay.io
-        run: docker push quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
+      - name: Retag image for Docker Hub
+        run: |
+          docker tag quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly dellemc/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
 
-      - name: Push latest tag to Quay.io
-        run: docker push quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:latest
+          docker tag quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly dellemc/${{ github.event.inputs.image }}:latest
+
+      - name: Push ${{ github.event.inputs.version }} and latest tag to Quay.io
+        run: |
+          docker push quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
+          docker push quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:latest
+
+      - name: Push ${{ github.event.inputs.version }} and latest tag to Docker Hub
+        run: |
+          docker push dellemc/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
+          docker push dellemc/${{ github.event.inputs.image }}:latest
 
   create-release:
     name: Create Release
