@@ -1,0 +1,76 @@
+# Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+
+# This workflow is used to release libraries like gobrick, gofsutil etc.
+name: Release Go Client Libraries
+
+# Invocable as a reusable workflow
+on:
+  workflow_call:  
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (major, minor, patch)'
+        required: true
+        default: 'none'
+      image:
+        description: 'Image name ex: csm-powerstore'
+        required: true
+        default: 'none'
+
+jobs:
+  build-and-scan:
+    name: Build, Scan and Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate input
+        run: |
+          if [[ "${{ github.event.inputs.version }}" == "none" || "${{ github.event.inputs.image }}" == "none" ]]; then
+            echo "Invalid version specified: ${{ github.event.inputs.version }} Must be x.x.x"
+            exit 1
+          fi      
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      - name: Log in to Quay.io
+        run: echo "${{ secrets.QUAY_PASSWORD }}" | docker login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin # TODO we need to store quay credentials in GitHub Secrets 
+
+      - name: Pull nightly image from Quay.io
+        run: docker pull quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly
+
+      - name: Retag image
+        run: docker tag quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:${{ github.event.inputs.version }}
+
+      - name: Push image to Quay.io
+        run: docker push quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:${{ github.event.inputs.version }}
+
+      - name: Create new tag
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git tag ${{ github.event.inputs.version }}
+          git push origin ${{ github.event.inputs.version }}
+
+      - name: Create Release
+        id: release_notes
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          name: Release ${{ github.event.inputs.version }}
+          draft: true
+          prerelease: false
+          generate_release_notes: true
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+      - name: Create release branch
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git checkout -b release/v${{ github.event.inputs.version }}
+          git push origin release/v${{ github.event.inputs.version }}
