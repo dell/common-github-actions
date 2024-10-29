@@ -11,12 +11,13 @@ name: Release Go Client Libraries
 
 # Invocable as a reusable workflow
 on:
-  workflow_call:  
+  workflow_call:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release (major, minor, patch)'
+        description: 'Version to release (major, minor, patch), ex: 1.0.0'
         required: true
+        # TODO: remove default from here and caller workflows in goclients
         default: 'none'
 
 jobs:
@@ -24,6 +25,12 @@ jobs:
     name: Build, Scan and Release
     runs-on: ubuntu-latest
     steps:
+      - name: Validate version input
+        run: |
+          if [[ "${{ github.event.inputs.version }}" == "none" ]]; then
+            echo "Invalid version specified: ${{ github.event.inputs.version }} Must follow major, minor, patch versioning."
+            exit 1
+          fi
       - name: Checkout the code
         uses: actions/checkout@v4
       - name: Set up Go
@@ -39,27 +46,27 @@ jobs:
         with:
           directories: .
           options: -ri
-      
+
       - name: Create new tag
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
-          git tag ${{ github.event.inputs.version }}
-          git push origin ${{ github.event.inputs.version }}
+          git tag v${{ github.event.inputs.version }}
+          git push origin v${{ github.event.inputs.version }}
 
-      - name: Create GitHub release
-        uses: comnoco/create-release-action@main
+      - name: Create Release
+        id: release_notes
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.inputs.version }}
-          release_name: Release ${{ github.event.inputs.version }}
-          draft: false
+          tag_name: v${{ github.event.inputs.version }}
+          name: Release v${{ github.event.inputs.version }}
+          draft: true
           prerelease: false
-          body: |
-            ## Changes
-            - Describe your changes here
+          generate_release_notes: true
+          make_latest: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create release branch
         run: |
           git config --global user.name 'github-actions'
