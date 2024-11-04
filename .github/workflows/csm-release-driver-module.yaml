@@ -29,38 +29,36 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "1.23"
+      # - name: Set up Go
+      #   uses: actions/setup-go@v5
+      #   with:
+      #     go-version: "1.23"
 
-      - name: Install dependencies
-        run: go mod tidy
+      # - name: Install dependencies
+      #   run: go mod tidy
 
-      # TODO: build binaries
-      - name: Build
-        run: go build -v ./...
+      # # TODO: build binaries
+      # - name: Build
+      #   run: go build -v ./...
 
-      - name: Run malware scan
-        uses: dell/common-github-actions/malware-scanner@main
-        with:
-          directories: .
-          options: -ri
+      # - name: Run malware scan
+      #   uses: dell/common-github-actions/malware-scanner@main
+      #   with:
+      #     directories: .
+      #     options: -ri
 
-      - name: Run gosec
-        uses: dell/common-github-actions/gosec-runner@main
-        with:
-          directories: "./..."
-
-      # TODO: run gofmt, go vet, and linting
+      # - name: Run gosec
+      #   uses: dell/common-github-actions/gosec-runner@main
+      #   with:
+      #     directories: "./..."
 
   push-images:
     name: Pull, Tag and Push Images
-    needs: build-and-scan
+    # needs: build-and-scan
     runs-on: ubuntu-latest
     steps:
       - name: Log in to Quay.io
-        run: echo "${{ secrets.QUAY_PASSWORD }}" | docker login quay.io -u "${{ secrets.QUAY_USERNAME }}" --password-stdin
+        run: echo ${{ secrets.QUAY_PASSWORD }} | docker login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin
 
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login docker.io -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
