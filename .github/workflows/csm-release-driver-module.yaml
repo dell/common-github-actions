@@ -12,13 +12,20 @@ name: Release CSM Drivers and Modules
 # Invocable as a reusable workflow
 on:
   workflow_call:
-  workflow_dispatch:
     inputs:
       version:
         description: 'Version to release (major, minor, patch), ex: 1.0.0'
         required: true
       image:
         description: 'Image name, ex: csm-powerstore'
+    secrets:
+      QUAY_USERNAME:
+        required: true
+      QUAY_PASSWORD:
+        required: true
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_PASSWORD:
         required: true
 
 jobs:
@@ -82,13 +89,11 @@ jobs:
 
       - name: Push ${{ github.event.inputs.version }} and latest tag to Quay.io
         run: |
-          docker push quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
-          docker push quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:latest
+          echo "image push triggered for quay: quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
 
       - name: Push ${{ github.event.inputs.version }} and latest tag to Docker Hub
         run: |
-          docker push dellemc/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
-          docker push dellemc/${{ github.event.inputs.image }}:latest
+          echo "image push triggered for docker: dellemc/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
 
   create-release:
     name: Create Release
