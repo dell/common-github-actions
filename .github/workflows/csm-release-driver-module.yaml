@@ -15,8 +15,10 @@ on:
     inputs:
       version:
         description: 'Version to release (major, minor, patch), ex: 1.0.0'
+        type: string
         required: true
       image:
+        type: string
         description: 'Image name, ex: csm-powerstore'
     secrets:
       QUAY_USERNAME:
