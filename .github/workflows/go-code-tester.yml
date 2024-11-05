@@ -12,6 +12,9 @@ name: Unit Test Checker
 on:
   workflow_call:
 
+env:
+  CODE_COVERAGE_TARGET: ${{ vars.CODE_COVERAGE_TARGET || 90 }}
+
 jobs:
   test:
     name: Run Go unit tests and check package coverage
@@ -23,5 +26,5 @@ jobs:
       - name: Run unit tests and check package coverage
         uses: dell/common-github-actions/go-code-tester@main
         with:
-          threshold: ${{ vars.CODE_COVERAGE_TARGET }}
+          threshold: ${{ env.CODE_COVERAGE_TARGET }}
           test-folder: ${{ vars.CODE_COVERAGE_DIR }}
