@@ -126,6 +126,7 @@ jobs:
 
 This workflow runs unit tests, checks package coverage and runs gosec against repositories that utilize Golang as the primary development language.
 
+```
 name: Common Workflows
 on:  # yamllint disable-line rule:truthy
   push:
@@ -138,7 +139,8 @@ jobs:
   # unit tester and gosec runner
   common:
     name: Run gosec, unit tests, and check package coverage
-    uses: dell/common-github-actions/.github/workflows/go-common.yml@add-code-tester
+    uses: dell/common-github-actions/.github/workflows/go-common.yml@main
+```
 
 ## Support
 
