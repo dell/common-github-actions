@@ -17,7 +17,7 @@ env:
 
 jobs:
   gocoverage:
-    name: Run Go unit tests and check package coverage
+    name: Unit tests and package coverage
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -30,11 +30,11 @@ jobs:
           test-folder: ${{ vars.CODE_COVERAGE_DIR }}
 
   security:
-    name: Run GoSec
+    name: GoSec
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run gosec
+      - name: gosec
         uses: dell/common-github-actions/gosec-runner@main
