@@ -14,6 +14,10 @@ on:
 
 env:
   CODE_COVERAGE_TARGET: ${{ vars.CODE_COVERAGE_TARGET || 90 }}
+  SKIP_LIST: ${{ vars.PACKAGE_SKIP_LIST || '' }}
+  RACE_DETECTOR: ${{ vars.RACE_DETECTOR || '' }}
+  SKIP_TEST: ${{ vars.SKIP_TEST || '' }}
+  RUN_TEST: ${{ vars.RUN_TEST || '' }}
 
 jobs:
   gocoverage:
@@ -28,6 +32,10 @@ jobs:
         with:
           threshold: ${{ env.CODE_COVERAGE_TARGET }}
           test-folder: ${{ vars.CODE_COVERAGE_DIR }}
+          skip-list: ${{ env.SKIP_LIST }}
+          race-detector: ${{ env.RACE_DETECTOR }}
+          skip-test: ${{ env.SKIP_TEST }}
+          run-test: ${{ env.RUN_TEST }}
 
   security:
     name: GoSec
