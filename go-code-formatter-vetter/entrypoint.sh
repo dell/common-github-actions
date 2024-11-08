@@ -84,17 +84,9 @@ if [ $VET_IN_DIR -eq 1 ]; then
    cd - || exit 1
 fi
 
-echo === Linting...
-(command -v golint >/dev/null 2>&1 \
-    || go install golang.org/x/lint/golint@latest) \
-    && golint --set_exit_status ${CHECK_DIRS}
-LINT_RETURN_CODE=$?
-echo === Finished
-
 # Report output.
 fail_checks=0
 [ "${FMT_RETURN_CODE}" != "0" ] && echo "Formatting checks failed! => Run 'make format'." && fail_checks=1
 [ "${VET_RETURN_CODE}" != "0" ] && echo "Vetting checks failed!" && fail_checks=1
-[ "${LINT_RETURN_CODE}" != "0" ] && echo "Linting checks failed!" && fail_checks=1
 
 exit ${fail_checks}

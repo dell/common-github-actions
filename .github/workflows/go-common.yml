@@ -6,7 +6,7 @@
 #
 #  http://www.apache.org/licenses/LICENSE-2.0
 
-# Reusable workflow to run unit tests and gosec on Golang based projects
+# Reusable workflow to run multiple workflow checks on Golang based projects
 name: Common Workflows
 
 on:
@@ -38,3 +38,13 @@ jobs:
 
       - name: gosec
         uses: dell/common-github-actions/gosec-runner@main
+
+  formatter_vetter:
+    name: Go Formatter and Vetter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: gofmt and go vet
+        uses: dell/common-github-actions/go-code-formatter-vetter@main
