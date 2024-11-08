@@ -38,3 +38,13 @@ jobs:
 
       - name: gosec
         uses: dell/common-github-actions/gosec-runner@main
+
+  formatter_vetter:
+    name: Go Formatter and Vetter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: gofmt and go vet
+        uses: dell/common-github-actions/go-code-formatter-vetter@main

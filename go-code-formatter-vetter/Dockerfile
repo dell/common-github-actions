@@ -1,7 +1,7 @@
 FROM golang:1.23
 
-LABEL "com.github.actions.name"="go-code-formatter-linter-vetter"
-LABEL "com.github.actions.description"="Checks for formatting, linting, and vetting issues"
+LABEL "com.github.actions.name"="go-code-formatter-vetter"
+LABEL "com.github.actions.description"="Checks for formatting and vetting issues"
 LABEL "com.github.actions.icon"="eye"
 LABEL "com.github.actions.color"="gray-dark"
 
