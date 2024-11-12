@@ -14,11 +14,16 @@ on:
 
 # Set defaults
 env:
+  # unit test action
   CODE_COVERAGE_TARGET: ${{ vars.CODE_COVERAGE_TARGET || 90 }}
   SKIP_LIST: ${{ vars.PACKAGE_SKIP_LIST || '' }}
   RACE_DETECTOR: ${{ vars.RACE_DETECTOR || true }}
   SKIP_TEST: ${{ vars.SKIP_TEST || '' }}
   RUN_TEST: ${{ vars.RUN_TEST || '' }}
+
+  # gosec action
+  GOSEC_EXCLUDES: ${{ vars.GOSEC_EXCLUDES || '' }}
+  GOSEC_EXCLUDE_DIR: ${{ vars.GOSEC_EXCLUDE_DIR || '' }}
 
 jobs:
   # Run unit tests
