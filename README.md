@@ -55,7 +55,6 @@ In addition to the actions mentioned above, the repository contains workflows th
 This workflow runs static analysis checks against repositories that utilize Golang as the primary development language. The jobs that are run include:
 
 - golanci-lint with gofumpt (stricter version of gofmt), gosec, govet, and revive (replacement for golint). The configuration file for this job can be found at [.github/configs/golangci-lint/golangci.yaml](.github/configs/golangci-lint/golangci.yaml)
-- malware_security_scan, which is the malware-scanner mentioned above
 - yaml_lint_scan which validates yaml files. The yamllint config file for this job is at [.github/configs/yamllint/yamllint.yaml](.github/configs/yamllint/yamllint.yaml)
 
 The workflow does not accept any parameters and can be used from any repo by creating a workflow that resembles the following
@@ -124,7 +123,7 @@ jobs:
 
 ### go-common
 
-This workflow runs multiple checks against repositories that utilize Golang as the primary development language. Currently, this workflow will run unit tests, check package coverage, gosec, and go formatter and vetter.
+This workflow runs multiple checks against repositories that utilize Golang as the primary development language. Currently, this workflow will run unit tests, check package coverage, gosec, go formatter and vetter, and malware scan.
 
 ```
 name: Common Workflows

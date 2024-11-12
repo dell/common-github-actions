@@ -12,14 +12,16 @@ name: Common Workflows
 on:
   workflow_call:
 
+# Set defaults
 env:
   CODE_COVERAGE_TARGET: ${{ vars.CODE_COVERAGE_TARGET || 90 }}
   SKIP_LIST: ${{ vars.PACKAGE_SKIP_LIST || '' }}
-  RACE_DETECTOR: ${{ vars.RACE_DETECTOR || '' }}
+  RACE_DETECTOR: ${{ vars.RACE_DETECTOR || true }}
   SKIP_TEST: ${{ vars.SKIP_TEST || '' }}
   RUN_TEST: ${{ vars.RUN_TEST || '' }}
 
 jobs:
+  # Run unit tests
   gocoverage:
     name: Unit tests and package coverage
     runs-on: ubuntu-latest
@@ -37,6 +39,7 @@ jobs:
           skip-test: ${{ env.SKIP_TEST }}
           run-test: ${{ env.RUN_TEST }}
 
+  # Check sources for security vulnerabilities
   security:
     name: GoSec
     runs-on: ubuntu-latest
@@ -46,7 +49,11 @@ jobs:
 
       - name: gosec
         uses: dell/common-github-actions/gosec-runner@main
+        with:
+          excludes: ${{ vars.GOSEC_EXCLUDES }}
+          exclude-dir: ${{ vars.GOSEC_EXCLUDE_DIR }}
 
+  # Check sources for formatting and vetting
   formatter_vetter:
     name: Go Formatter and Vetter
     runs-on: ubuntu-latest
@@ -56,3 +63,16 @@ jobs:
 
       - name: gofmt and go vet
         uses: dell/common-github-actions/go-code-formatter-vetter@main
+
+  # Check sources files for malware
+  malware_security_scan:
+    name: Malware Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - name: Run malware scan
+        uses: dell/common-github-actions/malware-scanner@main
+        with:
+          directories: .
+          options: -ri
