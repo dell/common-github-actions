@@ -55,8 +55,8 @@ jobs:
       - name: gosec
         uses: dell/common-github-actions/gosec-runner@main
         with:
-          excludes: ${{ vars.GOSEC_EXCLUDES }}
-          exclude-dir: ${{ vars.GOSEC_EXCLUDE_DIR }}
+          excludes: ${{ env.GOSEC_EXCLUDES }}
+          exclude-dir: ${{ env.GOSEC_EXCLUDE_DIR }}
 
   # Check sources for formatting and vetting
   formatter_vetter:
