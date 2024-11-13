@@ -28,6 +28,10 @@ inputs:
     description: 'Regex for skipping tests'
     required: false
     default: ""
+  run-test:
+    description: 'Regex to specify tests to run'
+    required: false
+    default: ""
 runs:
   using: 'docker'
   image: 'Dockerfile'
