@@ -32,6 +32,10 @@ inputs:
     description: 'Regex to specify tests to run'
     required: false
     default: ""
+  exclude-directory:
+    description: 'Name of directory to be excluded from go test'
+    required: false
+    default: ""
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -42,6 +46,7 @@ runs:
     - ${{ inputs.race-detector }}
     - ${{ inputs.skip-test }}
     - ${{ inputs.run-test }}
+    - ${{ inputs.exclude-directory }}
 branding:
   icon: 'shield'
   color: 'blue'

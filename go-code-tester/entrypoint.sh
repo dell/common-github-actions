@@ -14,6 +14,7 @@ SKIP_LIST=$3
 RACE_DETECTOR=$4
 SKIP_TEST=$5
 RUN_TEST=$6
+EXCLUDE_DIRECTORIES=$7
 
 skip_options=""
 run_options=""
@@ -31,10 +32,15 @@ fi
 go clean -testcache
 
 cd ${TEST_FOLDER}
-if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
-  GOEXPERIMENT=nocoverageredesign go test $skip_options -v -short -race -count=1 -cover $run_options ./... > ~/run.log
+if [[ -n $EXCLUDE_DIRECTORIES ]]; then
+  echo "excluding the following directories: $EXCLUDE_DIRECTORIES"
+  if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
+    GOEXPERIMENT=nocoverageredesign go test $skip_options -v $(go list ./... | grep -vE $EXCLUDE_DIRECTORIES) -short -race -count=1 -cover $run_options ./... > ~/run.log
+  else
+    # Run without the race flag
+    GOEXPERIMENT=nocoverageredesign go test $skip_options -v $(go list ./... | grep -vE $EXCLUDE_DIRECTORIES) -short -count=1 -cover $run_options ./... > ~/run.log
+  fi
 else
-  # Run without the race flag
   GOEXPERIMENT=nocoverageredesign go test $skip_options -v -short -count=1 -cover $run_options ./... > ~/run.log
 fi
 
