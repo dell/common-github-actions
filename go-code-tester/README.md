@@ -35,6 +35,8 @@ jobs:
           skip-test: "TestToSkip"
           # Optional parameter to specify regex for tests to run
           run-test: "TestToRun"
+          # Optional paramter to exlude certain directories from go test. Ex. intregration test folders.
+          exclude-directory: "DirectoryToExclude|DirectoryToExclude2"
 ```
 
 The `threshold` for the Action is a coverage percentage threshold that every package must meet. The default `threshold` is 90.
@@ -48,3 +50,5 @@ The `race-detector` is an optional boolean parameter to enable or disable the ra
 The `skip-test` is a regex and passed directly as the -skip option to the `go test` command.
 
 The `run-test` is a regex and passed directly as the -run option to the `go test` command.
+
+The `exclude-directory` is an optional parameter to filter out directories you want to exclude from the `go test` command.
