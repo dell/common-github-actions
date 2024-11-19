@@ -140,6 +140,43 @@ jobs:
     uses: dell/common-github-actions/.github/workflows/go-common.yml@main
 ```
 
+## update-dependencies-to-commits
+
+This workflow updates dell client libraries to the latest commits in repositories that utilize Golang as the primary development language. The workflow is triggered automatically, but can be triggered manually as well.
+
+The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following:
+
+```
+name: Dell Client Pre-release Upgrade
+on:  # yamllint disable-line rule:truthy
+  workflow_dispatch:
+
+jobs:
+  dependency-update:
+    name: Dell Client Pre-release Upgrade
+    uses: dell/common-github-actions/.github/workflows/update-dependencies-to-commits.yml@main
+```
+
+## update-dependencies
+
+This workflow updates dell client libraries to the latest released version in repositories that utilize Golang as the primary development language. The workflow can be manually triggerd only.
+
+The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following:
+
+```
+name: Dell Client Upgrade
+on:  # yamllint disable-line rule:truthy
+  workflow_dispatch:
+  repository_dispatch:
+    types: [dependencies-latest-released]
+
+jobs:
+  dependency-update:
+    name: Dell Client Upgrade
+    uses: dell/common-github-actions/.github/workflows/update-dependencies.yml@main
+```
+
+
 ## Support
 
 Don’t hesitate to ask! Contact the team and community on [our support](./docs/SUPPORT.md).

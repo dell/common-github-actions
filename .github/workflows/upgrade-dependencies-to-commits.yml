@@ -34,7 +34,7 @@ jobs:
       run: |
         REPOS=(
           "github.com/dell/goscaleio"
-          "github.com/dell/gopowermax"
+          "github.com/dell/gopowermax/v2"
           "github.com/dell/gounity"
           "github.com/dell/gopowerscale"
           "github.com/dell/gopowerstore"
