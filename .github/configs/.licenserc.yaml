@@ -10,5 +10,5 @@ header:
     - '**/*.md'
     - 'LICENSE'
     - 'NOTICE'
-    - '.github'
+    - '.github/CODEOWNERS'
   comment: on-failure
