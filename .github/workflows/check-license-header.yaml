@@ -1,6 +1,7 @@
 name: Check License Header
 
-on: [push, pull_request]
+on:
+  workflow_call:
 
 jobs:
   check-license-header:
