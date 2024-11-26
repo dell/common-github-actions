@@ -12,7 +12,7 @@ jobs:
     - name: Check License Header
       uses: apache/skywalking-eyes/header@main
       with:
-        config: ../configs/.licenserc.yaml
+        config: .licenserc.yaml
         mode: check
 
   # fix-license-headers:
