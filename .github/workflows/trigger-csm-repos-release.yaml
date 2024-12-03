@@ -1,0 +1,65 @@
+# Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+
+# This WorkFlow is used to trigger the release of csm repos using one-click action
+
+name: Get Latest Release Version and Trigger Release
+on:
+  workflow_dispatch:
+
+jobs:
+  get-release-and-trigger:
+    runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{ steps.calculate_version.outputs.new_version }}
+      repo: ${{ steps.define_repo.outputs.repository }}
+    steps:
+      - name: Define Repository Name
+        id: define_repo
+        run: |
+          REPO="meggm/test-gofsutil-release"
+          echo "repository=$REPO" >> $GITHUB_OUTPUT
+          echo "::set-output name=repository::$REPO"
+      - name: Get Latest Release Version
+        id: get_release
+        run: |
+          REPO="${{ steps.define_repo.outputs.repository }}"
+          echo "Fetching latest release for $REPO"
+          
+          RELEASE_VERSION=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | jq -r '.tag_name')
+          
+          if [[ "$RELEASE_VERSION" == "null" ]]; then
+            echo "No release found for $REPO"
+            RELEASE_VERSION="v0.0.0"
+          fi
+          echo "Latest release version: $RELEASE_VERSION"
+          echo "::set-output name=release_version::$RELEASE_VERSION"
+      - name: Print Latest Release Version
+        run: |
+          echo "The latest release version for the repository is: ${{ steps.get_release.outputs.release_version }}"
+      - name: Calculate Next Minor Version
+        id: calculate_version
+        run: |
+          RELEASE_VERSION="${{ steps.get_release.outputs.release_version }}"
+          
+          VERSION="${RELEASE_VERSION#v}"
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+          NEXT_MINOR=$((MINOR + 1))
+          NEW_VERSION="v$MAJOR.$NEXT_MINOR.0"
+          
+          echo "Next version: $NEW_VERSION"
+          echo "::set-output name=new_version::$NEW_VERSION"
+
+  trigger-release:
+    needs: get-release-and-trigger
+    uses: dell/common-github-actions-test/.github/workflows/trigger-release.yaml@libs-release-workflow
+    with:
+      version: ${{ needs.get-release-and-trigger.outputs.new_version }}
+      repo: ${{ needs.get-release-and-trigger.outputs.repo }}
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.CSMBOT_PAT }}
