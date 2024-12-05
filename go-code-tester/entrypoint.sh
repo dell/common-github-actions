@@ -37,6 +37,7 @@ if [[ -n $EXCLUDE_DIRECTORIES ]]; then
   echo "excluding the following directories: $EXCLUDE_DIRECTORIES"
   if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
     echo $PWD
+    ls
     GOEXPERIMENT=nocoverageredesign go test $skip_options -v $(go list ./... | grep -vE $EXCLUDE_DIRECTORIES) -short -race -count=1 -cover $run_options > ~/run.log
   else
     # Run without the race flag
