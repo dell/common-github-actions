@@ -31,21 +31,18 @@ fi
 
 go env -w GOFLAGS=-buildvcs=false
 go clean -testcache
-go mod tidy
 
 cd ${TEST_FOLDER}
 if [[ -n $EXCLUDE_DIRECTORIES ]]; then
   echo "excluding the following directories: $EXCLUDE_DIRECTORIES"
   if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
-    go list -x ./... > go_list_output.txt 2>&1
-    echo "AARON" && cat go_list_output.txt
     GOEXPERIMENT=nocoverageredesign go test $skip_options -v $(go list ./... | grep -vE $EXCLUDE_DIRECTORIES) -short -race -count=1 -cover $run_options ./... > ~/run.log
   else
     # Run without the race flag
-    GOEXPERIMENT=nocoverageredesign go test $skip_options -v $(go list ./... | grep -vE $EXCLUDE_DIRECTORIES) -short -count=1 -cover $run_options > ~/run.log
+    GOEXPERIMENT=nocoverageredesign go test $skip_options -v $(go list ./... | grep -vE $EXCLUDE_DIRECTORIES) -short -count=1 -cover $run_options ./... > ~/run.log
   fi
 else
-  GOEXPERIMENT=nocoverageredesign go test $skip_options -v -short -count=1 -cover $run_options > ~/run.log
+  GOEXPERIMENT=nocoverageredesign go test $skip_options -v -short -count=1 -cover $run_options ./... > ~/run.log
 fi
 
 TEST_RETURN_CODE=$?
