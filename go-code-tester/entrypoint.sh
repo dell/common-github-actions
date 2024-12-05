@@ -37,9 +37,9 @@ if [[ -n $EXCLUDE_DIRECTORIES ]]; then
   if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
     echo ${TEST_FOLDER}
     echo $EXCLUDE_DIRECTORIES
-    ex=$(go list ./... | grep -vE "${EXCLUDE_DIRECTORIES}")
-    echo "${ex}"
-    GOEXPERIMENT=nocoverageredesign go test $skip_options -v $(go list ./... | grep -vE $EXCLUDE_DIRECTORIES) -short -race -count=1 -cover $run_options > ~/run.log
+    ex=$(echo $EXCLUDE_DIRECTORIES && go list ./... | grep -vE "$EXCLUDE_DIRECTORIES")
+    echo "$ex"
+    GOEXPERIMENT=nocoverageredesign go test $skip_options -v $(go list ./... | grep -vE "$EXCLUDE_DIRECTORIES") -short -race -count=1 -cover $run_options > ~/run.log
   else
     # Run without the race flag
     GOEXPERIMENT=nocoverageredesign go test $skip_options -v $(go list ./... | grep -vE $EXCLUDE_DIRECTORIES) -short -count=1 -cover $run_options > ~/run.log
