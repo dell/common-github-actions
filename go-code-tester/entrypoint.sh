@@ -29,6 +29,7 @@ if [[ -n $RUN_TEST ]]; then
   run_options="-run $RUN_TEST"
 fi
 
+go env -w GOFLAGS=-buildvcs=false
 go clean -testcache
 
 cd ${TEST_FOLDER}
