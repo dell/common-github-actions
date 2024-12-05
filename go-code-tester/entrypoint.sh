@@ -30,6 +30,7 @@ if [[ -n $RUN_TEST ]]; then
 fi
 
 go clean -testcache
+go mod tidy
 
 cd ${TEST_FOLDER}
 if [[ -n $EXCLUDE_DIRECTORIES ]]; then
