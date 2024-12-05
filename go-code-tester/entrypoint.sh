@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 # Copyright (c) 2020-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
