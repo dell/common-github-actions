@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 
 # Copyright (c) 2020-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
@@ -36,6 +35,7 @@ cd ${TEST_FOLDER}
 if [[ -n $EXCLUDE_DIRECTORIES ]]; then
   echo "excluding the following directories: $EXCLUDE_DIRECTORIES"
   if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
+    ls -al
     output=$(go list ./...)
     echo "go list output: $output"
     GOEXPERIMENT=nocoverageredesign go test $skip_options -v $(go list ./... | grep -vE $EXCLUDE_DIRECTORIES) -short -race -count=1 -cover $run_options ./... > ~/run.log
