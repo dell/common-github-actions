@@ -31,7 +31,8 @@ if [[ -n $RUN_TEST ]]; then
 fi
 
 go clean -testcache
-go mod tidy
+export GO111MODULE=on
+export GOPATH=$(go env GOPATH)
 
 cd ${TEST_FOLDER}
 if [[ -n $EXCLUDE_DIRECTORIES ]]; then
