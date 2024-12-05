@@ -35,10 +35,8 @@ cd ${TEST_FOLDER}
 if [[ -n $EXCLUDE_DIRECTORIES ]]; then
   echo "excluding the following directories: $EXCLUDE_DIRECTORIES"
   if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
-    ls -al
-    go list ./... || echo "go list command failed with exit status $?"
-    output=$(go list ./... 2>&1)
-    echo "go list output: $output"
+    go list ./... 2>&1 | tee go_list_output.txt
+    cat go_list_output.txt
     GOEXPERIMENT=nocoverageredesign go test $skip_options -v $(go list ./... | grep -vE $EXCLUDE_DIRECTORIES) -short -race -count=1 -cover $run_options ./... > ~/run.log
   else
     # Run without the race flag
