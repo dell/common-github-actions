@@ -39,7 +39,7 @@ if [[ -n $EXCLUDE_DIRECTORIES ]]; then
     echo $EXCLUDE_DIRECTORIES
     ex=$(echo $EXCLUDE_DIRECTORIES && go list ./... | grep -vE "$EXCLUDE_DIRECTORIES")
     echo "$ex"
-    go list ./... | grep -vE $EXCLUDE_DIRECTORIES
+    go list ./...
     GOEXPERIMENT=nocoverageredesign go test $skip_options -v $(go list ./... | grep -vE "$EXCLUDE_DIRECTORIES") -short -race -count=1 -cover $run_options > ~/run.log
   else
     # Run without the race flag
