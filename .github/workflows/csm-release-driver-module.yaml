@@ -77,9 +77,9 @@ jobs:
         run: |
           curl -s -H "Authorization: Bearer ${{ steps.get_quay_token.outputs.token }}" -H "Accept: application/vnd.docker.distribution.manifest.v2+json" https://quay.io/v2/delltech/csm/${{ github.event.inputs.image }}/manifests/nightly > manifest.json
 
-      - name: Push Quay Manifest
-        run: |
-          curl -XPUT -s -H "Authorization: Bearer ${{ steps.get_quay_token.outputs.token }}" -H "Content-type: application/vnd.docker.distribution.manifest.v2+json" https://quay.io/v2/delltech/csm${{ github.event.inputs.image }}/manifests/v${{ github.event.inputs.version }} -d '@manifest.json'
+#      - name: Push Quay Manifest
+#        run: |
+#          curl -XPUT -s -H "Authorization: Bearer ${{ steps.get_quay_token.outputs.token }}" -H "Content-type: application/vnd.docker.distribution.manifest.v2+json" https://quay.io/v2/delltech/csm${{ github.event.inputs.image }}/manifests/v${{ github.event.inputs.version }} -d '@manifest.json'
 
   create-release:
     name: Create Release
