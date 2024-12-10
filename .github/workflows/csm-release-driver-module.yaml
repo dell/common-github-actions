@@ -15,10 +15,10 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release (major, minor, patch), ex: 1.0.0'
+        description: 'Version to release (major, minor, patch), ex: 2.2.0'
         required: true
       image:
-        description: 'Image name, ex: csi-powerstore'
+        description: 'Image name, example: csi-powerstore'
         required: true
 
 jobs:
