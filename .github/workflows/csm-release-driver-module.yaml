@@ -59,10 +59,11 @@ jobs:
       - name: Get Docker Manifest
         run: |
           curl -s -H "Authorization: Bearer ${{ steps.get_token.outputs.token }}" -H "Accept: application/vnd.docker.distribution.manifest.v2+json" https://index.docker.io/v2/dellemc/${{ github.event.inputs.image }}/manifests/nightly > manifest.json
+          cat manifest.json
 
-      - name: Push Docker Manifest
-        run: |
-          curl -XPUT -s -H "Authorization: Bearer ${{ steps.get_token.outputs.token }}" -H "Content-type: application/vnd.docker.distribution.manifest.v2+json" https://index.docker.io/v2/dellemc/${{ github.event.inputs.image }}/manifests/v${{ github.event.inputs.version }} -d '@manifest.json'
+#      - name: Push Docker Manifest
+#        run: |
+#          curl -XPUT -s -H "Authorization: Bearer ${{ steps.get_token.outputs.token }}" -H "Content-type: application/vnd.docker.distribution.manifest.v2+json" https://index.docker.io/v2/dellemc/${{ github.event.inputs.image }}/manifests/v${{ github.event.inputs.version }} -d '@manifest.json'
 
       - name: Log in to Quay
         run: echo "${{ secrets.QUAY_PASSWORD }}" | docker login quay.io -u "${{ secrets.QUAY_USERNAME }}" --password-stdin
@@ -76,6 +77,7 @@ jobs:
       - name: Get Quay Manifest
         run: |
           curl -s -H "Authorization: Bearer ${{ steps.get_quay_token.outputs.token }}" -H "Accept: application/vnd.docker.distribution.manifest.v2+json" https://quay.io/v2/delltech/csm/${{ github.event.inputs.image }}/manifests/nightly > manifest.json
+          cat manifest.json
 
 #      - name: Push Quay Manifest
 #        run: |
