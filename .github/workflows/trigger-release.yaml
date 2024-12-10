@@ -1,0 +1,84 @@
+name: Release Libraries
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      repo:
+        required: true
+        type: string
+permissions:
+  contents: write
+
+jobs:
+  build-and-scan:
+    name: Build, Scan and Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate version input
+        run: |
+          if [[ "${{ inputs.version }}" == "none" ]]; then
+            echo "Invalid version specified: ${{ inputs.version }}. Must follow major, minor, patch versioning."
+            exit 1
+          fi
+
+      - name: Checkout the code
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.repo }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+
+      - name: Install dependencies
+        run: go mod tidy
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Run malware scan
+        uses: dell/common-github-actions/malware-scanner@main
+        with:
+          directories: .
+          options: -ri
+
+      - name: Create new tag
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git tag ${{ inputs.version }}
+          echo "Pushing new tag to GitHub"
+          curl -X POST \
+            https://api.github.com/repos/${{ inputs.repo }}/git/refs \
+            -H "Authorization: Bearer ${{ secrets.CSMBOT_PAT }}" \
+            -H "Content-Type: application/json" \
+            -d '{"ref": "refs/tags/${{ inputs.version }}", "sha": "'$(git rev-parse HEAD)'"}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.CSMBOT_PAT }}
+
+     # - name: Create Release
+     #   uses: softprops/action-gh-release@v2
+     #   with:
+     #     tag_name: ${{ inputs.version }}
+     #     name: Release ${{ inputs.version }}
+     #     draft: true
+     #     prerelease: false
+     #     generate_release_notes: true
+     #     make_latest: true
+     #     repository: ${{ inputs.repo }}
+     #   env:
+     #     GITHUB_TOKEN: ${{ secrets.CSMBOT_PAT }}
+
+     # - name: Create release branch
+     #  env:
+     #    GITHUB_TOKEN: ${{ secrets.CSMBOT_PAT }}
+     #   run: |
+     #     git config --global user.name 'github-actions'
+     #     git config --global user.email 'github-actions@github.com'
+     #     git checkout -b release/${{ inputs.version }}
+     #     git push https://${{ github.actor }}:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ inputs.repo }} release/${{ inputs.version }}
