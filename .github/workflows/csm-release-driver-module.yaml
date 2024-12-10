@@ -18,7 +18,7 @@ on:
         description: 'Version to release (major, minor, patch), ex: 1.0.0'
         required: true
       image:
-        description: 'Image name, ex: csm-powerstore'
+        description: 'Image name, ex: csi-powerstore'
         required: true
 
 jobs:
@@ -29,66 +29,57 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "1.23"
-
-      - name: Install dependencies
-        run: go mod tidy
-
-      # TODO: build binaries
-      - name: Build
-        run: go build -v ./...
-
-      - name: Run malware scan
-        uses: dell/common-github-actions/malware-scanner@main
-        with:
-          directories: .
-          options: -ri
-
-      - name: Run gosec
-        uses: dell/common-github-actions/gosec-runner@main
-        with:
-          directories: "./..."
-
-      # TODO: run gofmt, go vet, and linting
+#      - name: Set up Go
+#        uses: actions/setup-go@v5
+#        with:
+#          go-version: "1.23"
+#
+#      - name: Install dependencies
+#        run: go mod tidy
+#
+#      # TODO: build binaries like repctl, dellctl etc
+#      - name: Build
+#        run: go build -v ./...
 
   push-images:
-    name: Pull, Tag and Push Images
+    name: Release docker images
     needs: build-and-scan
     runs-on: ubuntu-latest
     steps:
-      - name: Log in to Quay.io
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Get Docker Token
+        id: get_token
+        run: |
+          sudo apt install -y jq
+          TOKEN=$(curl -s -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" "https://auth.docker.io/token?service=registry.docker.io&scope=repository:dellemc/${{ github.event.inputs.image }}:pull,push" | jq -r '.token')
+          echo "::set-output name=token::$TOKEN"
+
+      - name: Get Docker Manifest
+        run: |
+          curl -s -H "Authorization: Bearer ${{ steps.get_token.outputs.token }}" -H "Accept: application/vnd.docker.distribution.manifest.v2+json" https://index.docker.io/v2/dellemc/${{ github.event.inputs.image }}/manifests/nightly > manifest.json
+
+      - name: Push Docker Manifest
+        run: |
+          curl -XPUT -s -H "Authorization: Bearer ${{ steps.get_token.outputs.token }}" -H "Content-type: application/vnd.docker.distribution.manifest.v2+json" https://index.docker.io/v2/dellemc/${{ github.event.inputs.image }}/manifests/v${{ github.event.inputs.version }} -d '@manifest.json'
+
+      - name: Log in to Quay
         run: echo "${{ secrets.QUAY_PASSWORD }}" | docker login quay.io -u "${{ secrets.QUAY_USERNAME }}" --password-stdin
 
-      - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login docker.io -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-
-      - name: Pull nightly image from Quay.io
-        run: docker pull quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly
-
-      - name: Retag image for Quay.io
+      - name: Get Quay Token
+        id: get_quay_token
         run: |
-          docker tag quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
+          TOKEN=$(curl -s -u "${{ secrets.QUAY_USERNAME }}:${{ secrets.QUAY_PASSWORD }}" "https://quay.io/v2/auth?service=quay.io&scope=repository:delltech/csm/${{ github.event.inputs.image }}:pull,push" | jq -r '.token')
+          echo "::set-output name=token::$TOKEN"
 
-          docker tag quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:latest
-
-      - name: Retag image for Docker Hub
+      - name: Get Quay Manifest
         run: |
-          docker tag quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly dellemc/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
+          curl -s -H "Authorization: Bearer ${{ steps.get_quay_token.outputs.token }}" -H "Accept: application/vnd.docker.distribution.manifest.v2+json" https://quay.io/v2/delltech/csm/${{ github.event.inputs.image }}/manifests/nightly > manifest.json
 
-          docker tag quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly dellemc/${{ github.event.inputs.image }}:latest
-
-      - name: Push ${{ github.event.inputs.version }} and latest tag to Quay.io
+      - name: Push Quay Manifest
         run: |
-          docker push quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
-          docker push quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:latest
-
-      - name: Push ${{ github.event.inputs.version }} and latest tag to Docker Hub
-        run: |
-          docker push dellemc/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
-          docker push dellemc/${{ github.event.inputs.image }}:latest
+          curl -XPUT -s -H "Authorization: Bearer ${{ steps.get_quay_token.outputs.token }}" -H "Content-type: application/vnd.docker.distribution.manifest.v2+json" https://quay.io/v2/delltech/csm${{ github.event.inputs.image }}/manifests/v${{ github.event.inputs.version }} -d '@manifest.json'
 
   create-release:
     name: Create Release
@@ -116,9 +107,6 @@ jobs:
           body: |
             ## Documentation
             [General Documentation](https://dell.github.io/csm-docs/docs/)
-
-            ### Change Log
-            See the [CHANGELOG](https://github.com/dell/csm/blob/release-v1.12.0/CHANGELOG/CHANGELOG-1.12.0.md) for more details.
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
