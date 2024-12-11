@@ -14,7 +14,7 @@ on:
 
 jobs:
   trigger:
-    name: Trigger Auto Release
+    name: Trigger Release of CSM Drivers and Modules
     runs-on: ubuntu-latest
 
     strategy:
@@ -22,9 +22,9 @@ jobs:
         repo:
           [
             "dell/csi-metadata-retriever",
-            #"dell/csi-powerflex",
+            "dell/csi-powerflex",
             "dell/csi-powermax",
-            #"dell/csi-powerscale",
+            "dell/csi-powerscale",
             "dell/csi-powerstore",
             "dell/csi-unity",
             "dell/csm-metrics-powermax",
@@ -33,10 +33,13 @@ jobs:
             "dell/csm-metrics-unity",
             "dell/csm-operator",
             "dell/csm-replication",
+            "dell/karavi-authorization"
+            "dell/karavi-resiliency"
+            "dell/karavi-observability"
           ]
 
     steps:
-      - name: Trigger Auto Release
+      - name: Trigger Release of CSM Drivers and Modules
         uses: peter-evans/repository-dispatch@v3
         with:
           # For token information, see: https://github.com/peter-evans/repository-dispatch/tree/main?tab=readme-ov-file#token
