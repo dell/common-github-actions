@@ -42,7 +42,7 @@ jobs:
 #        run: go build -v ./...
 
   push-images:
-    name: Release docker images
+    name: Release images to Dockerhub and Quay
     needs: build-and-scan
     runs-on: ubuntu-latest
     steps:
@@ -51,8 +51,7 @@ jobs:
 
       - name: Get Docker Token
         id: get_token
-        run: |
-          sudo apt install -y jq
+        run: |          
           TOKEN=$(curl -s -u "${{ secrets.DOCKERHUB_USERNAME }}:${{ secrets.DOCKERHUB_PASSWORD }}" "https://auth.docker.io/token?service=registry.docker.io&scope=repository:dellemc/${{ github.event.inputs.image }}:pull,push" | jq -r '.token')
           echo "::set-output name=token::$TOKEN"
 
@@ -61,9 +60,9 @@ jobs:
           curl -s -H "Authorization: Bearer ${{ steps.get_token.outputs.token }}" -H "Accept: application/vnd.docker.distribution.manifest.v2+json" https://index.docker.io/v2/dellemc/${{ github.event.inputs.image }}/manifests/nightly > manifest.json
           cat manifest.json
 
-#      - name: Push Docker Manifest
-#        run: |
-#          curl -XPUT -s -H "Authorization: Bearer ${{ steps.get_token.outputs.token }}" -H "Content-type: application/vnd.docker.distribution.manifest.v2+json" https://index.docker.io/v2/dellemc/${{ github.event.inputs.image }}/manifests/v${{ github.event.inputs.version }} -d '@manifest.json'
+      - name: Push Docker Manifest
+        run: |
+          curl -XPUT -s -H "Authorization: Bearer ${{ steps.get_token.outputs.token }}" -H "Content-type: application/vnd.docker.distribution.manifest.v2+json" https://index.docker.io/v2/dellemc/${{ github.event.inputs.image }}/manifests/v${{ github.event.inputs.version }} -d '@manifest.json'
 
       - name: Log in to Quay
         run: echo "${{ secrets.QUAY_PASSWORD }}" | docker login quay.io -u "${{ secrets.QUAY_USERNAME }}" --password-stdin
@@ -83,38 +82,38 @@ jobs:
 #        run: |
 #          curl -XPUT -s -H "Authorization: Bearer ${{ steps.get_quay_token.outputs.token }}" -H "Content-type: application/vnd.docker.distribution.manifest.v2+json" https://quay.io/v2/delltech/csm${{ github.event.inputs.image }}/manifests/v${{ github.event.inputs.version }} -d '@manifest.json'
 
-  create-release:
-    name: Create Release
-    needs: push-images
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create new tag
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git tag v${{ github.event.inputs.version }}
-          git push origin v${{ github.event.inputs.version }}
-
-      # TODO: attach built binaries to the release
-      - name: Create Release
-        id: release_notes
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ github.event.inputs.version }}
-          name: Release v${{ github.event.inputs.version }}
-          draft: true
-          prerelease: false
-          generate_release_notes: true
-          make_latest: true
-          body: |
-            ## Documentation
-            [General Documentation](https://dell.github.io/csm-docs/docs/)
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create release branch
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git checkout -b release/v${{ github.event.inputs.version }}
-          git push origin release/v${{ github.event.inputs.version }}
+#  create-release:
+#    name: Create Release
+#    needs: push-images
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Create new tag
+#        run: |
+#          git config --global user.name 'github-actions'
+#          git config --global user.email 'github-actions@github.com'
+#          git tag v${{ github.event.inputs.version }}
+#          git push origin v${{ github.event.inputs.version }}
+#
+#      # TODO: attach built binaries to the release
+#      - name: Create Release
+#        id: release_notes
+#        uses: softprops/action-gh-release@v2
+#        with:
+#          tag_name: v${{ github.event.inputs.version }}
+#          name: Release v${{ github.event.inputs.version }}
+#          draft: true
+#          prerelease: false
+#          generate_release_notes: true
+#          make_latest: true
+#          body: |
+#            ## Documentation
+#            [General Documentation](https://dell.github.io/csm-docs/docs/)
+#        env:
+#            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#
+#      - name: Create release branch
+#        run: |
+#          git config --global user.name 'github-actions'
+#          git config --global user.email 'github-actions@github.com'
+#          git checkout -b release/v${{ github.event.inputs.version }}
+#          git push origin release/v${{ github.event.inputs.version }}
