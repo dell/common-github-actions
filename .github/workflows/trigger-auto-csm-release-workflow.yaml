@@ -36,6 +36,8 @@ jobs:
             "dell/karavi-authorization"
             "dell/karavi-resiliency"
             "dell/karavi-observability"
+            "dell/karavi-metrics-powerflex"
+            "dell/karavi-topology"
           ]
 
     steps:

@@ -140,6 +140,87 @@ jobs:
     uses: dell/common-github-actions/.github/workflows/go-common.yml@main
 ```
 
+### csm-release-driver-module
+
+This workflow automates the release of CSM drivers and modules repositories. The workflow accepts two parameters as version and image, and can be used from any repo by creating a workflow that resembles the following.
+
+For manual trigger from driver and module repositories, here is the example for the csi-powerscale repo:
+
+```yaml
+name: Release CSIPowerScale
+on:
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (major, minor, patch) Ex: 1.0.0'
+        required: true
+      image:
+        description: 'Image name to release Ex: csi-isilon'
+        required: true
+
+jobs:
+  release:
+    uses: dell/common-github-actions/.github/workflows/csm-release-driver-module.yaml@main
+    name: Release CSM Drivers and Modules
+    with:
+      version: ${{ github.event.inputs.version }}
+      image: ${{ github.event.inputs.image }}
+    secrets: inherit
+```
+
+For Auto release of the driver and module repositories, here is the example for the csi-powerscale repo:
+
+```yaml
+name: Auto Release CSIPowerScale
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [auto-driver-module-release-workflow]
+
+jobs:
+  calculate-version:
+    runs-on: ubuntu-latest
+    outputs:
+      new-version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetch the full history including tags
+
+      - name: Get latest release version
+        id: get-latest-version
+        run: |
+          latest_version=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "latest_version=${latest_version}" >> $GITHUB_ENV
+
+      - name: Increment minor version and remove 'v' prefix
+        id: set-version
+        run: |
+          version=${{ env.latest_version }}
+          clean_version=${version#v} 
+
+          # Parse version parts
+          major=$(echo $clean_version | cut -d'.' -f1)
+          minor=$(echo $clean_version | cut -d'.' -f2)
+          patch=$(echo $clean_version | cut -d'.' -f3)
+          new_minor=$((minor + 1)) 
+          new_version="${major}.${new_minor}.0"
+
+          echo "New version: $new_version"
+          echo "::set-output name=version::$new_version"
+
+  csm-release:
+    needs: calculate-version
+    uses: dell/common-github-actions/.github/workflows/csm-release-driver-module.yaml@main
+    with:
+      version: ${{ inputs.version || needs.calculate-version.outputs.new-version }}
+      image: "csi-isilon"  # Please provide the appropriate image name
+    secrets: inherit
+```
+
+
 ## Support
 
 Don’t hesitate to ask! Contact the team and community on [our support](./docs/SUPPORT.md).
