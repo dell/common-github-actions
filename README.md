@@ -143,6 +143,7 @@ jobs:
 ### csm-release-driver-module
 
 This workflow automates the release of CSM drivers and modules repositories. The workflow accepts two parameters as version and image, and can be used from any repo by creating a workflow that resembles the following.
+The manual workflow is recommended to be used for out of band releases such as patch releases or when the increment is a major version change.
 
 For manual trigger from driver and module repositories, here is the example for the csi-powerscale repo:
 
@@ -176,7 +177,7 @@ name: Auto Release CSIPowerScale
 on:
   workflow_dispatch:
   repository_dispatch:
-    types: [auto-driver-module-release-workflow]
+    types: [auto-release-workflow]
 
 jobs:
   calculate-version:
