@@ -12,14 +12,14 @@ name: Release CSM Drivers and Modules
 # Invocable as a reusable workflow
 on:
   workflow_call:
-#  workflow_dispatch:
-#    inputs:
-#      version:
-#        description: 'Version to release (major, minor, patch), example: 2.2.0'
-#        required: true
-#      image:
-#        description: 'Image name, example: csi-powerstore'
-#        required: true
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (major, minor, patch), example: 2.2.0'
+        required: true
+      image:
+        description: 'Image name, example: csi-powerstore'
+        required: true
 
 jobs:
   build-and-scan:
