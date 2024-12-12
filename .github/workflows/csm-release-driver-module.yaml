@@ -82,8 +82,6 @@ jobs:
         run: |
           SHA=$(curl -s -H "Content-Type: application/json" -H "Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}" "https://quay.io/api/v1/repository/delltech/csm/${{ github.event.inputs.image }}/tag?specificTag=nightly" | jq -r '.manifest_digest')
           echo "::set-output name=sha::$SHA"
-          echo $SHA
-
 
   #      - name: Push Quay Manifest
   #        env:
