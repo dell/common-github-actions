@@ -85,11 +85,8 @@ jobs:
           echo "SHA: $SHA"
 
       - name: Push Quay Manifest
-        env:
-          REPO: "delltech/csm/${{ github.event.inputs.image }}"
-          TARGET_TAG: ${{ github.event.inputs.version }}
         run: |
-          curl --location --request PUT 'https://quay.io/api/v1/repository/$REPO/tag/$TARGET_TAG' \
+          curl --location --request PUT 'https://quay.io/api/v1/repository/delltech/csm/${{ github.event.inputs.image }}/tag/${{ github.event.inputs.version }}' \
           --header 'Content-Type: application/json' \
           --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' \
           --data-raw '{
