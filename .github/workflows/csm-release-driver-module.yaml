@@ -12,14 +12,15 @@ name: Release CSM Drivers and Modules
 # Invocable as a reusable workflow
 on:
   workflow_call:
-  workflow_dispatch:
     inputs:
       version:
         description: 'Version to release (major, minor, patch), ex: 1.0.0'
         required: true
+        type: string
       image:
         description: 'Image name, ex: csm-powerstore'
         required: true
+        type: string
 
 jobs:
   build-and-scan:
@@ -59,56 +60,61 @@ jobs:
     needs: build-and-scan
     runs-on: ubuntu-latest
     steps:
-      - name: Log in to Quay.io
-        run: echo "${{ secrets.QUAY_PASSWORD }}" | docker login quay.io -u "${{ secrets.QUAY_USERNAME }}" --password-stdin
+      - name: Image name
+        run: echo "Image name:" "${{ inputs.image }}"
+    #  - name: Log in to Quay.io
+    #    run: echo "${{ secrets.QUAY_PASSWORD }}" | docker login quay.io -u "${{ secrets.QUAY_USERNAME }}" --password-stdin
 
-      - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login docker.io -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+    #  - name: Log in to Docker Hub
+    #    run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login docker.io -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-      - name: Pull nightly image from Quay.io
-        run: docker pull quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly
+    #  - name: Pull nightly image from Quay.io
+    #    run: docker pull quay.io/dell/container-storage-modules/${{ inputs.image }}:nightly
 
-      - name: Retag image for Quay.io
-        run: |
-          docker tag quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
+    #  - name: Retag image for Quay.io
+    #    run: |
+    #      docker tag quay.io/dell/container-storage-modules/${{ inputs.image }}:nightly quay.io/dell/container-storage-modules/${{ inputs.image }}:v${{ inputs.version }}
+          
+    #      docker tag quay.io/dell/container-storage-modules/${{ inputs.image }}:nightly quay.io/dell/container-storage-modules/${{ inputs.image }}:latest
 
-          docker tag quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:latest
+    #  - name: Retag image for Docker Hub
+    #    run: |
+    #      docker tag quay.io/dell/container-storage-modules/${{ inputs.image }}:nightly dellemc/${{ inputs.image }}:v${{ inputs.version }}
 
-      - name: Retag image for Docker Hub
-        run: |
-          docker tag quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly dellemc/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
+    #      docker tag quay.io/dell/container-storage-modules/${{ inputs.image }}:nightly dellemc/${{ inputs.image }}:latest
 
-          docker tag quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly dellemc/${{ github.event.inputs.image }}:latest
+    #  - name: Push ${{ inputs.version }} and latest tag to Quay.io
+    #    run: |
+    #      docker push quay.io/dell/container-storage-modules/${{ inputs.image }}:v${{ inputs.version }}
+    #      docker push quay.io/dell/container-storage-modules/${{ inputs.image }}:latest
 
-      - name: Push ${{ github.event.inputs.version }} and latest tag to Quay.io
-        run: |
-          docker push quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
-          docker push quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:latest
-
-      - name: Push ${{ github.event.inputs.version }} and latest tag to Docker Hub
-        run: |
-          docker push dellemc/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
-          docker push dellemc/${{ github.event.inputs.image }}:latest
+    #  - name: Push ${{ inputs.version }} and latest tag to Docker Hub
+    #    run: |
+    #      docker push dellemc/${{ inputs.image }}:v${{ inputs.version }}
+    #      docker push dellemc/${{ inputs.image }}:latest
 
   create-release:
     name: Create Release
     needs: push-images
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Create new tag
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
-          git tag v${{ github.event.inputs.version }}
-          git push origin v${{ github.event.inputs.version }}
+          git tag v${{ inputs.version }}
+          git push origin v${{ inputs.version }}
 
       # TODO: attach built binaries to the release
       - name: Create Release
         id: release_notes
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ github.event.inputs.version }}
-          name: Release v${{ github.event.inputs.version }}
+          tag_name: v${{ inputs.version }}
+          name: Release v${{ inputs.version }}
           draft: true
           prerelease: false
           generate_release_notes: true
@@ -126,5 +132,5 @@ jobs:
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
-          git checkout -b release/v${{ github.event.inputs.version }}
-          git push origin release/v${{ github.event.inputs.version }}
+          git checkout -b release/v${{ inputs.version }}
+          git push origin release/v${{ inputs.version }}
