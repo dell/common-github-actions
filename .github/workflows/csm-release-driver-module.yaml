@@ -12,7 +12,6 @@ name: Release CSM Drivers and Modules
 # Invocable as a reusable workflow
 on:
   workflow_call:
-    secrets: inherit
   workflow_dispatch:
     inputs:
       version:
