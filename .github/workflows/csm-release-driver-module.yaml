@@ -12,6 +12,7 @@ name: Release CSM Drivers and Modules
 # Invocable as a reusable workflow
 on:
   workflow_call:
+  workflow_dispatch:
     inputs:
       version:
         description: 'Version to release (major, minor, patch), example: 2.2.0'
