@@ -14,13 +14,11 @@ on:
   workflow_call:
     inputs:
       version:
-        description: 'Version to release (major, minor, patch), ex: 1.0.0'
+        description: 'Version to release (major, minor, patch), example: 2.2.0'
         required: true
-        type: string
       image:
-        description: 'Image name, ex: csm-powerstore'
+        description: 'Image name, example: csi-powerstore'
         required: true
-        type: string
 
 jobs:
   build-and-scan:
@@ -99,44 +97,44 @@ jobs:
   #          "manifest_digest": ${{ steps.get_quay_manifest.outputs.sha }}
   #          }'
 
-  create-release:
-    name: Create Release
-    needs: push-images
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Create new tag
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git tag v${{ inputs.version }}
-          git push origin v${{ inputs.version }}
-
-      # TODO: attach built binaries to the release
-      - name: Create Release
-        id: release_notes
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ inputs.version }}
-          name: Release v${{ inputs.version }}
-          draft: true
-          prerelease: false
-          generate_release_notes: true
-          make_latest: true
-          body: |
-            ## Documentation
-            [General Documentation](https://dell.github.io/csm-docs/docs/)
-
-            ### Change Log
-            See the [CHANGELOG](https://github.com/dell/csm/blob/release-v1.12.0/CHANGELOG/CHANGELOG-1.12.0.md) for more details.
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create release branch
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git checkout -b release/v${{ inputs.version }}
-          git push origin release/v${{ inputs.version }}
+#  create-release:
+#    name: Create Release
+#    needs: push-images
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#
+#      - name: Create new tag
+#        run: |
+#          git config --global user.name 'github-actions'
+#          git config --global user.email 'github-actions@github.com'
+#          git tag v${{ inputs.version }}
+#          git push origin v${{ inputs.version }}
+#
+#      # TODO: attach built binaries to the release
+#      - name: Create Release
+#        id: release_notes
+#        uses: softprops/action-gh-release@v2
+#        with:
+#          tag_name: v${{ inputs.version }}
+#          name: Release v${{ inputs.version }}
+#          draft: true
+#          prerelease: false
+#          generate_release_notes: true
+#          make_latest: true
+#          body: |
+#            ## Documentation
+#            [General Documentation](https://dell.github.io/csm-docs/docs/)
+#
+#            ### Change Log
+#            See the [CHANGELOG](https://github.com/dell/csm/blob/release-v1.12.0/CHANGELOG/CHANGELOG-1.12.0.md) for more details.
+#        env:
+#            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#
+#      - name: Create release branch
+#        run: |
+#          git config --global user.name 'github-actions'
+#          git config --global user.email 'github-actions@github.com'
+#          git checkout -b release/v${{ inputs.version }}
+#          git push origin release/v${{ inputs.version }}
