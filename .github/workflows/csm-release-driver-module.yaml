@@ -81,7 +81,7 @@ jobs:
           }'
 
   create-release:
-    name: Create Release
+    name: Create release and branch
     needs: push-images
     runs-on: ubuntu-latest
     steps:
