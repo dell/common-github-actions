@@ -72,7 +72,6 @@ jobs:
 
       - name: Push Quay Manifest
         run: |
-          echo "secret-key: ${{secrets.QUAY_API_TOKEN}}"
           curl -s --location --request PUT 'https://quay.io/api/v1/repository/delltech/csm/${{ github.event.inputs.image }}/tag/v${{ github.event.inputs.version }}' \
           --header 'Content-Type: application/json' \
           --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' \
