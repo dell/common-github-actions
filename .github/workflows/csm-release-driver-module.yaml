@@ -15,10 +15,10 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version to release (major, minor, patch), example: 2.2.0"
+        description: "Version to release (major, minor, patch). Example: 1.x.x"
         required: true
       image:
-        description: "Image name, example: csi-powerstore"
+        description: "Image name. Example: csi-powerstore"
         required: true
 
 jobs:
@@ -58,7 +58,6 @@ jobs:
       - name: Get Docker Manifest
         run: |
           curl -s -H "Authorization: Bearer ${{ steps.get_token.outputs.token }}" -H "Accept: application/vnd.docker.distribution.manifest.v2+json" https://index.docker.io/v2/dellemc/${{ github.event.inputs.image }}/manifests/nightly > manifest.json
-          cat manifest.json
 
       - name: Push Docker Manifest
         run: |
@@ -66,13 +65,13 @@ jobs:
 
       - name: Get Quay Manifest
         id: get_quay_manifest
-        run: | # TODO: Change delltech/csm to our production repo
-          SHA=$(curl -s --location --request GET 'https://quay.io/api/v1/repository/delltech/csm/${{ github.event.inputs.image }}/tag?specificTag=nightly' --header 'Content-Type: application/json' --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' | jq -r '.tags[0].manifest_digest')
+        run: |
+          SHA=$(curl -s --location --request GET 'https://quay.io/api/v1/repository/dell/container-storage-modules/${{ github.event.inputs.image }}/tag?specificTag=nightly' --header 'Content-Type: application/json' --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' | jq -r '.tags[0].manifest_digest')
           echo "::set-output name=sha::$SHA"
 
       - name: Push Quay Manifest
         run: |
-          curl -s --location --request PUT 'https://quay.io/api/v1/repository/delltech/csm/${{ github.event.inputs.image }}/tag/v${{ github.event.inputs.version }}' \
+          curl -s --location --request PUT 'https://quay.io/api/v1/repository/dell/container-storage-modules/${{ github.event.inputs.image }}/tag/v${{ github.event.inputs.version }}' \
           --header 'Content-Type: application/json' \
           --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' \
           --data-raw '{
