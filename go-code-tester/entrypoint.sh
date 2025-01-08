@@ -66,11 +66,24 @@ FAIL=0
 check_coverage() {
   pkg=$1
   cov=$2
-  if [[ ${THRESHOLD} -gt ${cov%.*} ]]; then
-     echo "FAIL: coverage for package $pkg is ${cov}%, lower than ${THRESHOLD}%"
-     FAIL=1
+
+  # Check if coverage is [no statements]
+  if [[ "$cov" == "[n" ]]; then
+    echo "WARNING: coverage for package $pkg is not available: [no statements]"
+    return 0
+  # Check if coverage is a valid number
+  elif ! [[ $cov =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
+    echo "WARNING: coverage for package $pkg is not a valid threshold: $cov"
+    return 0
+  # Check if coverage is empty
+  elif [[ -z "$cov" ]]; then
+    echo "WARNING: coverage for package $pkg is not available"
+    return 0
+  elif [[ ${THRESHOLD} -gt ${cov%.*} ]]; then
+    echo "FAIL: coverage for package $pkg is ${cov}%, lower than ${THRESHOLD}%"
+    FAIL=1
   else
-     echo "PASS: coverage for package $pkg is ${cov}%, not lower than ${THRESHOLD}%"
+    echo "PASS: coverage for package $pkg is ${cov}%, not lower than ${THRESHOLD}%"
   fi
 
   return 0
