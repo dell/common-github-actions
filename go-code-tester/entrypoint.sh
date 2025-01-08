@@ -69,11 +69,11 @@ check_coverage() {
 
   # Check if coverage is a valid number
   if ! [[ $cov =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
-    echo "WARNING: coverage for package $pkg is not a valid number: $cov"
+    echo "WARNING: coverage for package $pkg is not a valid threshold: $cov"
     return 0
   # Check if coverage is empty
   elif [[ -z "$cov" ]]; then
-    echo "WARNING: coverage for package $pkg is not available"
+    echo "WARNING: coverage for package $pkg is not available: $cov"
     return 0
   elif [[ ${THRESHOLD} -gt ${cov%.*} ]]; then
     echo "FAIL: coverage for package $pkg is ${cov}%, lower than ${THRESHOLD}%"
@@ -85,19 +85,25 @@ check_coverage() {
   return 0
 }
 
-if [ -z "$SKIP_LIST" ]; then
-  # If there is no skip-list, just search for cases where the word coverage is preceded by whitespace. We want the space because
-  # this distinguishes between the final coverage report and the intermediate coverage printouts that happen earlier in the output
-  while read pkg cov;
-  do
-    check_coverage $pkg $cov
-  done <<< $(cat ~/run.log | grep ^ok | awk '{print $2, substr($5, 1, length($5)-1)}')
-else
-  # this is the same as the above, except it includes a filter that gets rid of all the packages that appear in the skip-list
-  while read pkg cov;
-  do
-    check_coverage $pkg $cov
-  done <<< $(cat ~/run.log | grep ^ok | grep -vw -e $SKIP_LIST_FOR_GREP | awk '{print $2, substr($5, 1, length($5)-1)}')
-fi
+# Search for cases where the word coverage is preceded by whitespace. We want the space because
+# this distinguishes between the final coverage report and the intermediate coverage printouts that happen earlier in the output.
+# If theres a skip-list, if will exclude those packages from the final result.
+while read pkg cov;
+do
+  check_coverage $pkg $cov
+done <<< $(cat ~/run.log | grep ^ok | awk -v skip_list="$SKIP_LIST_FOR_GREP" '{
+  pkg=$2;
+  if ($4 == "coverage:") {
+    cov=$5;
+  } else {
+    cov="[no statements]";
+  }
+  if (cov == "[no statements]") {
+    print pkg, cov;
+  } else {
+    print pkg, substr($5, 1, length($5)-1);
+  }
+}' | grep -vw -e "$SKIP_LIST_FOR_GREP")
+
 
 exit ${FAIL}

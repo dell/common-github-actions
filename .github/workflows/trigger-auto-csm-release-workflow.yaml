@@ -33,11 +33,11 @@ jobs:
             "dell/csm-metrics-unity",
             "dell/csm-operator",
             "dell/csm-replication",
-            "dell/karavi-authorization"
-            "dell/karavi-resiliency"
-            "dell/karavi-observability"
-            "dell/karavi-metrics-powerflex"
-            "dell/karavi-topology"
+            "dell/karavi-authorization",
+            "dell/karavi-resiliency",
+            "dell/karavi-observability",
+            "dell/karavi-metrics-powerflex",
+            "dell/karavi-topology",
           ]
 
     steps:
