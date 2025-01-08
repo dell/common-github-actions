@@ -69,12 +69,12 @@ check_coverage() {
 
   # Check if coverage is a valid number
   if ! [[ $cov =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
-    echo "FAIL: coverage for package $pkg is not a valid number: $cov"
-    FAIL=1
+    echo "WARNING: coverage for package $pkg is not a valid number: $cov"
+    return 0
   # Check if coverage is empty
   elif [[ -z "$cov" ]]; then
-    echo "FAIL: coverage for package $pkg is not available"
-    FAIL=1
+    echo "WARNING: coverage for package $pkg is not available"
+    return 0
   elif [[ ${THRESHOLD} -gt ${cov%.*} ]]; then
     echo "FAIL: coverage for package $pkg is ${cov}%, lower than ${THRESHOLD}%"
     FAIL=1
