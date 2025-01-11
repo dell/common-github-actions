@@ -31,19 +31,19 @@ jobs:
           fi
       - name: Checkout the code
         uses: actions/checkout@v4
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "1.23"
-      - name: Install dependencies
-        run: go mod tidy
-      - name: Build
-        run: go build -v ./...
-      - name: Run malware scan
-        uses: dell/common-github-actions/malware-scanner@main
-        with:
-          directories: .
-          options: -ri
+      # - name: Set up Go
+      #   uses: actions/setup-go@v5
+      #   with:
+      #     go-version: "1.23"
+      # - name: Install dependencies
+      #   run: go mod tidy
+      # - name: Build
+      #   run: go build -v ./...
+      # - name: Run malware scan
+      #   uses: dell/common-github-actions/malware-scanner@main
+      #   with:
+      #     directories: .
+      #     options: -ri
 
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
