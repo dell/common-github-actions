@@ -46,18 +46,25 @@ jobs:
         with:
           directories: .
           options: -ri
-      - name: Set up GPG
-        run: |
-            echo "$GPG_PRIVATE_KEY" | gpg --import
-            echo "$GPG_PRIVATE_KEY" | gpg --import-ownertrust
-        env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      # - name: Set up GPG
+      #   run: |
+      #       echo "$GPG_PRIVATE_KEY" | gpg --import
+      #       echo "$GPG_PRIVATE_KEY" | gpg --import-ownertrust
+      #   env:
+      #     GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
     
-      - name: Configure Git to sign commits
-        run: |
-            git config --global user.signingkey ${{ secrets.GPG_KEY_ID }}
-            git config --global commit.gpgSign true
-    
+      # - name: Configure Git to sign commits
+      #   run: |
+      #       git config --global user.signingkey ${{ secrets.GPG_KEY_ID }}
+      #       git config --global commit.gpgSign true
+          # Needed for signing commits using Github App tokens
+      # See: https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#commit-signing
+      - uses: actions/create-github-app-token@v1.11.0
+        id: generate-token
+        with:
+          app-id: ${{ vars.CSM_RELEASE_APP_ID }}
+          private-key: ${{ secrets.CSM_RELEASE_APP_PRIVATE_KEY }}
+
       - name: Create new tag
         run: |
           git config --global user.name 'github-actions'
