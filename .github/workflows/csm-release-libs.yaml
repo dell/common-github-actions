@@ -31,19 +31,19 @@ jobs:
           fi
       - name: Checkout the code
         uses: actions/checkout@v4
-      # - name: Set up Go
-      #   uses: actions/setup-go@v5
-      #   with:
-      #     go-version: "1.23"
-      # - name: Install dependencies
-      #   run: go mod tidy
-      # - name: Build
-      #   run: go build -v ./...
-      # - name: Run malware scan
-      #   uses: dell/common-github-actions/malware-scanner@main
-      #   with:
-      #     directories: .
-      #     options: -ri
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+      - name: Install dependencies
+        run: go mod tidy
+      - name: Build
+        run: go build -v ./...
+      - name: Run malware scan
+        uses: dell/common-github-actions/malware-scanner@main
+        with:
+          directories: .
+          options: -ri
 
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
@@ -60,8 +60,6 @@ jobs:
         run: |
             git tag -s -a v${{ github.event.inputs.version }} -m "Release v${{ github.event.inputs.version }}"
             git push origin v${{ github.event.inputs.version }}
-        # env:
-        #   GPG_PRIVATE_KEY: ${{ secrets.CSM_GPG_PRIVATE_KEY }}
 
       - name: Create Release
         id: release_notes
@@ -78,8 +76,6 @@ jobs:
 
       - name: Create release branch
         run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
           git checkout -b release/v${{ github.event.inputs.version }}
           git push origin release/v${{ github.event.inputs.version }}
     
