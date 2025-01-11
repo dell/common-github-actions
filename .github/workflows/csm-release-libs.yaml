@@ -48,18 +48,20 @@ jobs:
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
         with:
-            gpg_private_key: ${{ secrets.CSM_GPG_PRIVATE_KEY }}
+            gpg_private_key: ${{ env.GPG_PRIVATE_KEY }}
             git_user_signingkey: true
             git_commit_gpgsign: true
             git_tag_gpgsign: true
             git_config_global: true
-    
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.CSM_GPG_PRIVATE_KEY }}
+
       - name: Create new tag
         run: |
             git tag -s -a v${{ github.event.inputs.version }} -m "Release v${{ github.event.inputs.version }}"
             git push origin v${{ github.event.inputs.version }}
-        env:
-          GPG_PRIVATE_KEY: ${{ secrets.CSM_GPG_PRIVATE_KEY }}
+        # env:
+        #   GPG_PRIVATE_KEY: ${{ secrets.CSM_GPG_PRIVATE_KEY }}
 
       - name: Create Release
         id: release_notes
