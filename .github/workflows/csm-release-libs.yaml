@@ -17,11 +17,11 @@ on:
       version:
         description: 'Version to release (major, minor, patch), ex: 1.0.0'
         required: true
-        type: string
+        type: string      
 jobs:
-  build-and-scan:
+  build-and-scan:    
     name: Build, Scan and Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest    
     steps:
       - name: Validate version input
         run: |
@@ -48,13 +48,13 @@ jobs:
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
         with:
-            gpg_private_key: ${{ env.GPG_PRIVATE_KEY }}
+            gpg_private_key: "$CSM_GPG_PRIVATE_KEY"
             git_user_signingkey: true
             git_commit_gpgsign: true
             git_tag_gpgsign: true
-            git_config_global: true
+            git_config_global: true            
         env:
-          GPG_PRIVATE_KEY: ${{ secrets.CSM_GPG_PRIVATE_KEY }}
+          CSM_GPG_PRIVATE_KEY: ${{ secrets.CSM_GPG_PRIVATE_KEY }}
 
       - name: Create new tag
         run: |
@@ -82,3 +82,4 @@ jobs:
           git config --global user.email 'github-actions@github.com'
           git checkout -b release/v${{ github.event.inputs.version }}
           git push origin release/v${{ github.event.inputs.version }}
+    
