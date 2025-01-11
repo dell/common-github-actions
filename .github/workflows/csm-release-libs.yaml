@@ -59,14 +59,7 @@ jobs:
             git tag -s -a v${{ github.event.inputs.version }} -m "Release v${{ github.event.inputs.version }}"
             git push origin v${{ github.event.inputs.version }}
         env:
-          GPG_PRIVATE_KEY: ${{ secrets.CSM_RELEASE_APP_PRIVATE_KEY }}
-
-      - name: Create new tag
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git tag -s -a v${{ github.event.inputs.version }} -m "Release v${{ github.event.inputs.version }}"
-          git push origin v${{ github.event.inputs.version }}
+          GPG_PRIVATE_KEY: ${{ secrets.CSM_GPG_PRIVATE_KEY }}
 
       - name: Create Release
         id: release_notes
