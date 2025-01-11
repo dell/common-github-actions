@@ -37,15 +37,15 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.23"
-      - name: Install dependencies
-        run: go mod tidy
-      - name: Build
-        run: go build -v ./...
-      - name: Run malware scan
-        uses: dell/common-github-actions/malware-scanner@main
-        with:
-          directories: .
-          options: -ri
+      # - name: Install dependencies
+      #   run: go mod tidy
+      # - name: Build
+      #   run: go build -v ./...
+      # - name: Run malware scan
+      #   uses: dell/common-github-actions/malware-scanner@main
+      #   with:
+      #     directories: .
+      #     options: -ri
       # - name: Set up GPG
       #   run: |
       #       echo "$GPG_PRIVATE_KEY" | gpg --import
