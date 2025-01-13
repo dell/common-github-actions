@@ -115,9 +115,6 @@ jobs:
           body: |
             ## Documentation
             [General Documentation](https://dell.github.io/csm-docs/docs/)
-
-            ### Change Log
-            See the [CHANGELOG](https://github.com/dell/csm/blob/release-v1.12.0/CHANGELOG/CHANGELOG-1.12.0.md) for more details.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
