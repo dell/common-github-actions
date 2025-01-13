@@ -76,4 +76,3 @@ jobs:
         run: |
           git checkout -b release/v${{ github.event.inputs.version }}
           git push origin release/v${{ github.event.inputs.version }}
-    
