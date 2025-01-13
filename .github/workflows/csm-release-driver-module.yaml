@@ -87,13 +87,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+            gpg_private_key: ${{ secrets.CSM_GPG_PRIVATE_KEY }}
+            git_user_signingkey: true
+            git_commit_gpgsign: true
+            git_tag_gpgsign: true
+            git_config_global: true
+
       - name: Create new tag
         run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git tag v${{ inputs.version }}
-          git push origin v${{ inputs.version }}
-
+            git tag -s -a v${{ inputs.version }} -m "Release v${{ inputs.version }}"
+            git push origin v${{ inputs.version }}
+      
       # TODO: attach built binaries to the release (if any like repctl, dellctl etc.)
       - name: Create Release
         id: release_notes
