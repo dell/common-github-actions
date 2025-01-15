@@ -56,7 +56,10 @@ jobs:
     - name: Update packages in go.mod
       run: |
         while IFS= read -r line; do
-          go get $line
+          if [[ $line == *"/v2"* ]]; then
+            go get ${line}/v2
+          else
+            go get $line
         done < latest-shas.txt
         go mod tidy
 
