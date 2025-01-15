@@ -200,13 +200,13 @@ jobs:
         id: set-version
         run: |
           version=${{ env.latest_version }}
-          clean_version=${version#v} 
+          clean_version=${version#v}
 
           # Parse version parts
           major=$(echo $clean_version | cut -d'.' -f1)
           minor=$(echo $clean_version | cut -d'.' -f2)
           patch=$(echo $clean_version | cut -d'.' -f3)
-          new_minor=$((minor + 1)) 
+          new_minor=$((minor + 1))
           new_version="${major}.${new_minor}.0"
 
           echo "New version: $new_version"
@@ -219,6 +219,20 @@ jobs:
       version: ${{ inputs.version || needs.calculate-version.outputs.new-version }}
       image: "csi-isilon"  # Please provide the appropriate image name
     secrets: inherit
+```
+
+## update-dependencies-to-commits
+This workflow updates Dell libraries to their **latest commits** in repositories that utilize Golang as the primary development language. The workflow is triggered automatically, but can be triggered manually as well.
+The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following:
+```
+name: Dell Libraries Commit Update
+on:  # yamllint disable-line rule:truthy
+  workflow_dispatch:
+
+jobs:
+  package-update:
+    uses: dell/common-github-actions/.github/workflows/update-dependencies-to-commits.yml@main
+    name: Dell Libraries Update
 ```
 
 
