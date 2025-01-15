@@ -34,7 +34,7 @@ jobs:
       run: |
         REPOS=(
           "github.com/dell/goscaleio"
-          "github.com/dell/gopowermax/v2"
+          "github.com/dell/gopowermax"
           "github.com/dell/gounity"
           "github.com/dell/goisilon"
           "github.com/dell/gopowerstore"
@@ -44,11 +44,7 @@ jobs:
           "github.com/dell/gonvme"
           "github.com/dell/goobjectscale"
           "github.com/dell/gofsutil"
-          "github.com/dell/dell-csi-extensions/common"
-          "github.com/dell/dell-csi-extensions/migration"
-          "github.com/dell/dell-csi-extensions/podmon"
-          "github.com/dell/dell-csi-extensions/replication"
-          "github.com/dell/dell-csi-extensions/volumeGroupSnapshot"
+          "github.com/dell/dell-csi-extensions"
           "github.com/dell/csi-metadata-retriever"
           "github.com/dell/csi-volumegroup-snapshotter"
         )
