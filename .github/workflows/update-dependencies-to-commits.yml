@@ -60,6 +60,7 @@ jobs:
             go get ${line}/v2
           else
             go get $line
+          fi
         done < latest-shas.txt
         go mod tidy
 
