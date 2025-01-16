@@ -56,10 +56,14 @@ jobs:
     - name: Update packages in go.mod
       run: |
         while IFS= read -r line; do
-          if [[ $line == *"/v2"* ]]; then
-            go get ${line}/v2
+          REPO=$(echo $line | cut -d'@' -f1)
+          SHA=$(echo $line | cut -d'@' -f2)
+          MODULE_PATH=$(go list -m -f '{{.Path}}' $REPO)
+
+          if [[ $MODULE_PATH == *"/v2"* ]]; then
+            go get ${REPO}/v2@${SHA}
           else
-            go get $line
+            go get ${REPO}@${SHA}
           fi
         done < latest-shas.txt
         go mod tidy
