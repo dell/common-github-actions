@@ -60,6 +60,7 @@ jobs:
 
     - name: Update packages in go.mod
       run: |
+        set +e
         while IFS= read -r line; do
           REPO=$(echo $line | cut -d'@' -f1)
           SHA=$(echo $line | cut -d'@' -f2)
