@@ -29,6 +29,10 @@ jobs:
       with:
         go-version: '1.23'
 
+    - name: Clean Go module cache
+      run: |
+        go clean -modcache
+
     - name: Get latest commit SHAs
       id: get-latest-shas
       run: |
@@ -66,6 +70,7 @@ jobs:
             SUBPACKAGES=("common" "migration" "podmon" "replication" "volumeGroupSnapshot")
             for SUBPACKAGE in "${SUBPACKAGES[@]}"; do
               if grep -q "$REPO/$SUBPACKAGE" go.mod; then
+                echo "Updating $REPO/$SUBPACKAGE@$SHA"
                 go get ${REPO}/${SUBPACKAGE}@${SHA}
               else
                 echo "Skipping $REPO/$SUBPACKAGE: not a known dependency"
@@ -81,8 +86,10 @@ jobs:
           fi
 
           if [[ $MODULE_PATH == *"/v2"* ]]; then
+            echo "Updating ${REPO}/v2@$SHA"
             go get ${REPO}/v2@${SHA}
           else
+            echo "Updating $REPO@$SHA"
             go get ${REPO}@${SHA}
           fi
         done < latest-shas.txt
