@@ -87,10 +87,10 @@ jobs:
 
           if [[ $MODULE_PATH == *"/v2"* ]]; then
             echo "Updating ${REPO}/v2@$SHA"
-            go get ${REPO}/v2@${SHA}
+            go get ${REPO}/v2@${SHA}  || echo "Failed to update ${REPO}/v2@$SHA"
           else
             echo "Updating $REPO@$SHA"
-            go get ${REPO}@${SHA}
+            go get ${REPO}@${SHA} || echo "Failed to update ${REPO}@$SHA"
           fi
         done < latest-shas.txt
         go mod tidy
