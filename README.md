@@ -242,6 +242,8 @@ The workflow does not accept any parameters and can be used from any repository 
 name: Dell Libraries Latest Update
 on:  # yamllint disable-line rule:truthy
   workflow_dispatch:
+  repository_dispatch:
+    types: [latest-released-libraries]
 
 jobs:
   library-update:
