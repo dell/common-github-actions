@@ -35,28 +35,12 @@ jobs:
 
     - name: Get latest commit SHAs
       run: |
-        REPOS=(
-          "github.com/dell/goscaleio"
-          "github.com/dell/gopowermax"
-          "github.com/dell/gounity"
-          "github.com/dell/goisilon"
-          "github.com/dell/gopowerstore"
-          "github.com/dell/gobrick"
-          "github.com/dell/gocsi"
-          "github.com/dell/goiscsi"
-          "github.com/dell/gonvme"
-          "github.com/dell/goobjectscale"
-          "github.com/dell/gofsutil"
-          "github.com/dell/dell-csi-extensions"
-          "github.com/dell/csi-metadata-retriever"
-          "github.com/dell/csi-volumegroup-snapshotter"
-        )
-
         SHAS=""
         for REPO in "${REPOS[@]}"; do
           LATEST_SHA=$(git ls-remote https://$REPO HEAD | awk '{print $1}')
           SHAS+="$REPO@$LATEST_SHA\n"
-        done
+        done < configs/dell-libraries-list.txt
+
         echo "SHAS<<EOF" >> $GITHUB_ENV
         echo -e "$SHAS" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
@@ -76,15 +60,15 @@ jobs:
             for SUBPACKAGE in "${SUBPACKAGES[@]}"; do
               if grep -q "$REPO/$SUBPACKAGE" go.mod; then
                 echo "Updating $REPO/$SUBPACKAGE@$SHA"
-                go get ${REPO}/${SUBPACKAGE}@${SHA}
+                go get ${REPO}/${SUBPACKAGE}@${SHA} || echo "Failed to update $REPO/$SUBPACKAGE@$SHA"
               else
-                echo "Skipping $REPO/$SUBPACKAGE: not a known dependency"
+                echo "Skipping $REPO/$SUBPACKAGE: not imported in go.mod"
               fi
             done
             continue
           fi
 
-          MODULE_PATH=$(go list -m -f '{{.Path}}' $REPO  2>/dev/null)
+          MODULE_PATH=$(go list -m -f '{{.Path}}' $REPO 2>/dev/null)
           if [[ $? -ne 0 ]]; then
             echo "Skipping $REPO: not a known dependency"
             continue
@@ -92,9 +76,9 @@ jobs:
 
           if [[ $MODULE_PATH == *"/v2"* ]]; then
             echo "Updating ${REPO}/v2@$SHA"
-            go get ${REPO}/v2@${SHA}  || echo "Failed to update ${REPO}/v2@$SHA"
+            go get ${REPO}/v2@${SHA} || echo "Failed to update ${REPO}/v2@$SHA"
           else
-            echo "Updating $REPO@$SHA"
+            echo "Updating ${REPO}@$SHA"
             go get ${REPO}@${SHA} || echo "Failed to update ${REPO}@$SHA"
           fi
         done

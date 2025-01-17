@@ -230,11 +230,24 @@ on:  # yamllint disable-line rule:truthy
   workflow_dispatch:
 
 jobs:
-  package-update:
-    uses: dell/common-github-actions/.github/workflows/update-dependencies-to-commits.yml@main
+  library-update:
+    uses: dell/common-github-actions/.github/workflows/update-libraries-to-commits.yml@main
     name: Dell Libraries Update
 ```
 
+## update-libraries
+This workflow updates Dell libraries to the **latest released** version in repositories that utilize Golang as the primary development language. The workflow can be manually triggered only.
+The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following:
+```
+name: Dell Libraries Latest Update
+on:  # yamllint disable-line rule:truthy
+  workflow_dispatch:
+
+jobs:
+  library-update:
+    uses: dell/common-github-actions/.github/workflows/update-libraries.yml@main
+    name: Dell Libraries Update
+```
 
 ## Support
 
