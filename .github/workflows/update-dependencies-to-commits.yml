@@ -57,8 +57,10 @@ jobs:
           LATEST_SHA=$(git ls-remote https://$REPO HEAD | awk '{print $1}')
           SHAS+="$REPO@$LATEST_SHA\n"
         done
-        echo -e "SHAS=$SHAS" >> $GITHUB_ENV
-        echo "Latest SHAS: $SHAS"
+        echo "SHAS<<EOF" >> $GITHUB_ENV
+        echo -e "$SHAS" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+        echo "Latest SHAs: $SHAS"
 
     - name: Update packages in go.mod
       run: |
@@ -95,7 +97,7 @@ jobs:
             echo "Updating $REPO@$SHA"
             go get ${REPO}@${SHA} || echo "Failed to update ${REPO}@$SHA"
           fi
-        done < latest-shas.txt
+        done
         go mod tidy
 
     # Needed for signing commits using Github App tokens
