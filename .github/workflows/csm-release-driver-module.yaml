@@ -51,33 +51,15 @@ jobs:
         run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Push Docker Image
-        run: |
-          docker pull dellemc/${{ inputs.image }}:nightly
-          docker tag dellemc/${{ inputs.image }}:nightly dellemc/${{ inputs.image }}:v${{ inputs.version }}
-          docker push dellemc/${{ inputs.image }}:v${{ inputs.version }}
-          docker tag dellemc/${{ inputs.image }}:v${{ inputs.version }} dellemc/${{ inputs.image }}:latest
-          docker push dellemc/${{ inputs.image }}:latest
+        run: echo "will push docker image later ..."
 
       - name: Get Quay Manifest
         id: get_quay_manifest
-        run: |
-          SHA=$(curl -s --location --request GET 'https://quay.io/api/v1/repository/dell/container-storage-modules/${{ inputs.image }}/tag?specificTag=nightly' --header 'Content-Type: application/json' --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' | jq -r '.tags[0].manifest_digest')
-          echo "::set-output name=sha::$SHA"
+        run: echo "get Quay Manifest"
 
       - name: Push Quay Manifest
-        run: |
-          curl -s --location --request PUT 'https://quay.io/api/v1/repository/dell/container-storage-modules/${{ inputs.image }}/tag/v${{ inputs.version }}' \
-          --header 'Content-Type: application/json' \
-          --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' \
-          --data-raw '{
-            "manifest_digest": "${{ steps.get_quay_manifest.outputs.sha }}"
-          }'
-          curl -s --location --request PUT 'https://quay.io/api/v1/repository/dell/container-storage-modules/${{ inputs.image }}/tag/latest' \
-          --header 'Content-Type: application/json' \
-          --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' \
-          --data-raw '{
-            "manifest_digest": "${{ steps.get_quay_manifest.outputs.sha }}"
-          }'
+        run: echo "will push quay images later ..."
+        
   create-release:
     name: Create release and branch
     needs: push-images
