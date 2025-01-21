@@ -36,13 +36,13 @@ cd ${TEST_FOLDER}
 if [[ -n $EXCLUDE_DIRECTORIES ]]; then
   echo "excluding the following directories: $EXCLUDE_DIRECTORIES"
   if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
-    GOEXPERIMENT=nocoverageredesign go test $skip_options -v $(go list ./... | grep -vE $EXCLUDE_DIRECTORIES) -short -race -count=1 -cover $run_options ./... > ~/run.log
+    go test $skip_options -v $(go list ./... | grep -vE $EXCLUDE_DIRECTORIES) -short -race -count=1 -coverprofile=coverage.out $run_options ./... > ~/run.log
   else
     # Run without the race flag
-    GOEXPERIMENT=nocoverageredesign go test $skip_options -v $(go list ./... | grep -vE $EXCLUDE_DIRECTORIES) -short -count=1 -cover $run_options ./... > ~/run.log
+    go test $skip_options -v $(go list ./... | grep -vE $EXCLUDE_DIRECTORIES) -short -count=1 -coverprofile=coverage.out $run_options ./... > ~/run.log
   fi
 else
-  GOEXPERIMENT=nocoverageredesign go test $skip_options -v -short -count=1 -cover $run_options ./... > ~/run.log
+  go test $skip_options -v -short -count=1 -coverprofile=coverage.out $run_options ./... > ~/run.log
 fi
 
 TEST_RETURN_CODE=$?
@@ -89,19 +89,22 @@ check_coverage() {
   return 0
 }
 
+# Generate coverage report
+go tool cover -func=coverage.out > coverage_report.txt
+
 if [ -z "$SKIP_LIST" ]; then
   # If there is no skip-list, just search for cases where the word coverage is preceded by whitespace. We want the space because
   # this distinguishes between the final coverage report and the intermediate coverage printouts that happen earlier in the output
   while read pkg cov;
   do
     check_coverage $pkg $cov
-  done <<< $(cat ~/run.log | grep ^ok | awk '{print $2, substr($5, 1, length($5)-1)}')
+  done <<< $(cat coverage_report.txt | grep total | awk '{print $1, substr($3, 1, length($3)-1)}')
 else
   # this is the same as the above, except it includes a filter that gets rid of all the packages that appear in the skip-list
   while read pkg cov;
   do
     check_coverage $pkg $cov
-  done <<< $(cat ~/run.log | grep ^ok | grep -vw -e $SKIP_LIST_FOR_GREP | awk '{print $2, substr($5, 1, length($5)-1)}')
+  done <<< $(cat coverage_report.txt | grep total | grep -vw -e $SKIP_LIST_FOR_GREP | awk '{print $1, substr($3, 1, length($3)-1)}')
 fi
 
 exit ${FAIL}
