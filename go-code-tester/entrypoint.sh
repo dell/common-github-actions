@@ -19,6 +19,8 @@ EXCLUDE_DIRECTORIES=$7
 skip_options=""
 run_options=""
 
+declare -A coverage_results
+
 if [[ -n $SKIP_TEST ]]; then
   echo "skipping the following tests (regex): $SKIP_TEST"
   skip_options="-skip $SKIP_TEST"
@@ -94,8 +96,8 @@ for package in $packages; do
       coverage=0
   fi
 
-  # Check if coverage meets the minimum threshold
-  check_coverage $package $coverage
+  # Store the package and coverage to be accessed later
+  coverage_results["$package"]=$coverage
 done
 
 TEST_RETURN_CODE=$?
@@ -104,5 +106,11 @@ if [ "${TEST_RETURN_CODE}" != "0" ]; then
   echo "test failed with return code $TEST_RETURN_CODE, not proceeding with coverage check"
   exit 1
 fi
+
+# Check if coverage meets the minimum threshold
+echo "Coverage results:"
+for pkg in "${!coverage_results[@]}"; do
+  check_coverage $pkg ${coverage_results[$pkg]}
+done
 
 exit ${FAIL}
