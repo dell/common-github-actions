@@ -22,6 +22,38 @@ jobs:
     name: Create tag and release
     runs-on: ubuntu-latest
     steps:
+      - name: Get latest release version
+        id: get-latest-version
+        run: |
+          latest_version=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "latest_version=${latest_version}" >> $GITHUB_ENV
+
+      - name: Increment minor version and remove 'v' prefix
+        id: set-version
+        run: |
+          version=${{ github.env.get-latest-version.latest_version }}
+          clean_version=${version#v}
+
+            IFS='.' read -r -a version_parts <<< "$latest_version"
+            
+            if "${{ inputs.version == 'major' }}"; then
+              # major version bump up
+              ((version_parts[0]++))
+            fi
+            if "${{ inputs.version == 'minor' }}"; then
+              # minor version bump up
+              ((version_parts[1]++))
+            fi
+            if "${{ inputs.version == 'patch' }}"; then
+              # patch version bump up
+              ((version_parts[2]++))
+            fi
+            
+            new_version="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
+
+          echo "New version: $new_version"
+          echo "::set-output name=version::$new_version"
+
       - name: Checkout the code
         uses: actions/checkout@v4
       - name: Import GPG key
@@ -35,7 +67,7 @@ jobs:
 
       - name: Create new tag
         run: |
-          git tag -s -a v${{ github.event.inputs.version }} -m "Release v${{ github.event.inputs.version }}"
+          git tag -s -a v${{ github.event.actions.set-version.outputs.version }} -m "Release v${{ github.event.inputs.version }}"
           git push origin v${{ github.event.inputs.version }}
 
       - name: Create Release
