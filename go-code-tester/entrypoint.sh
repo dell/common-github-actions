@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2020-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2020-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,34 +33,6 @@ go env -w GOFLAGS=-buildvcs=false
 go clean -testcache
 
 cd ${TEST_FOLDER}
-if [[ -n $EXCLUDE_DIRECTORIES ]]; then
-  echo "excluding the following directories: $EXCLUDE_DIRECTORIES"
-  if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
-    go test $skip_options -v $(go list ./... | grep -vE $EXCLUDE_DIRECTORIES) -short -race -count=1 -coverprofile=coverage.out $run_options ./... > ~/run.log
-  else
-    # Run without the race flag
-    go test $skip_options -v $(go list ./... | grep -vE $EXCLUDE_DIRECTORIES) -short -count=1 -coverprofile=coverage.out $run_options ./... > ~/run.log
-  fi
-else
-  go test $skip_options -v -short -count=1 -coverprofile=coverage.out $run_options ./... > ~/run.log
-fi
-
-TEST_RETURN_CODE=$?
-cat ~/run.log
-if [ "${TEST_RETURN_CODE}" != "0" ]; then
-  echo "test failed with return code $TEST_RETURN_CODE, not proceeding with coverage check"
-  exit 1
-fi
-
-if [ -z "$SKIP_LIST" ]
-then
-  echo "No packages in skip-list"
-else
-  # Put skip list in grep-friendly and human-friendly formats
-  SKIP_LIST_FOR_GREP=${SKIP_LIST//[,]/ -e }
-  SKIP_LIST_FOR_ECHO=${SKIP_LIST//[,]/, }
-  echo "skipping the following packages: $SKIP_LIST_FOR_ECHO"
-fi
 
 FAIL=0
 check_coverage() {
@@ -89,22 +61,48 @@ check_coverage() {
   return 0
 }
 
-# Generate coverage report
-go tool cover -func=coverage.out > coverage_report.txt
-
-if [ -z "$SKIP_LIST" ]; then
-  # If there is no skip-list, just search for cases where the word coverage is preceded by whitespace. We want the space because
-  # this distinguishes between the final coverage report and the intermediate coverage printouts that happen earlier in the output
-  while read pkg cov;
-  do
-    check_coverage $pkg $cov
-  done <<< $(cat coverage_report.txt | grep total | awk '{print $1, substr($3, 1, length($3)-1)}')
+# Get the list of packages
+if [[ -n $EXCLUDE_DIRECTORIES ]]; then
+  echo "excluding the following directories: $EXCLUDE_DIRECTORIES"
+  packages=$(go list ./... | grep -vE $EXCLUDE_DIRECTORIES)
 else
-  # this is the same as the above, except it includes a filter that gets rid of all the packages that appear in the skip-list
-  while read pkg cov;
-  do
-    check_coverage $pkg $cov
-  done <<< $(cat coverage_report.txt | grep total | grep -vw -e $SKIP_LIST_FOR_GREP | awk '{print $1, substr($3, 1, length($3)-1)}')
+  packages=$(go list ./...)
+fi
+
+# Process each package
+for package in $packages; do
+  # Skip packages in the skip list
+  if [[ -n "$SKIP_LIST" && $SKIP_LIST =~ $package ]]; then
+    echo "Skipping package $package"
+    continue
+  fi
+
+  # Run go test with coverage for the package
+  if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
+    # Run with the race flag
+    output=$(go test $skip_options -v -short -race -count=1 -cover $package $run_options >> ~/run.log)
+  else
+    # Run without the race flag
+    output=$(go test $skip_options -v -short -count=1 -cover $package $run_options >> ~/run.log)
+  fi
+
+  # Extract coverage percentage
+  coverage=$(echo "$output" | grep -oP 'coverage: \d+\.\d+%' | grep -oP '\d+\.\d+')
+
+  # Handle packages with no test files or 0% coverage
+  if [[ -z $coverage ]]; then
+      coverage=0
+  fi
+
+  # Check if coverage meets the minimum threshold
+  check_coverage $package $coverage
+done
+
+TEST_RETURN_CODE=$?
+cat ~/run.log
+if [ "${TEST_RETURN_CODE}" != "0" ]; then
+  echo "test failed with return code $TEST_RETURN_CODE, not proceeding with coverage check"
+  exit 1
 fi
 
 exit ${FAIL}
