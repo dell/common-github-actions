@@ -83,18 +83,19 @@ for package in $packages; do
   if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
     # Run with the race flag
     output=$(go test $skip_options -v -short -race -count=1 -cover $package $run_options 2>&1)
+    TEST_RETURN_CODE=$?
   else
     # Run without the race flag
     output=$(go test $skip_options -v -short -count=1 -cover $package $run_options 2>&1)
+    TEST_RETURN_CODE=$?
   fi
 
-  TEST_RETURN_CODE=$?
+  echo "$output"
+
   if [ "${TEST_RETURN_CODE}" != "0" ]; then
     echo "test failed for package $package with return code $TEST_RETURN_CODE, not proceeding with coverage check"
     exit 1
   fi
-
-  echo "$output"
 
   # Extract coverage percentage
   coverage=$(echo "$output" | grep -oP 'coverage: \d+\.\d+%' | grep -oP '\d+\.\d+')
