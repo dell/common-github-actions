@@ -82,10 +82,18 @@ for package in $packages; do
   # Run go test with coverage for the package
   if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
     # Run with the race flag
-    output=$(go test $skip_options -v -short -race -count=1 -cover $package $run_options >> ~/run.log)
+    output=$(go test $skip_options -v -short -race -count=1 -cover $package $run_options 2>&1)
   else
     # Run without the race flag
-    output=$(go test $skip_options -v -short -count=1 -cover $package $run_options >> ~/run.log)
+    output=$(go test $skip_options -v -short -count=1 -cover $package $run_options 2>&1)
+  fi
+
+  echo "$output" >> ~/run.log
+
+  TEST_RETURN_CODE=$?
+  if [ "${TEST_RETURN_CODE}" != "0" ]; then
+    echo "test failed for package $package with return code $TEST_RETURN_CODE, not proceeding with coverage check"
+    exit 1
   fi
 
   # Extract coverage percentage
@@ -99,13 +107,6 @@ for package in $packages; do
   # Store the package and coverage to be accessed later
   coverage_results["$package"]=$coverage
 done
-
-TEST_RETURN_CODE=$?
-cat ~/run.log
-if [ "${TEST_RETURN_CODE}" != "0" ]; then
-  echo "test failed with return code $TEST_RETURN_CODE, not proceeding with coverage check"
-  exit 1
-fi
 
 # Check if coverage meets the minimum threshold
 echo "Coverage results:"
