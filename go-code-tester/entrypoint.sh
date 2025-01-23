@@ -71,7 +71,6 @@ else
   packages=$(go list ./...)
 fi
 
-# Process each package
 for package in $packages; do
   # Skip packages in the skip list
   if [[ -n "$SKIP_LIST" && $SKIP_LIST =~ $package ]]; then
@@ -104,14 +103,15 @@ for package in $packages; do
       coverage=0
   fi
 
-  # Store the package and coverage to be accessed later
   coverage_results["$package"]=$coverage
 done
 
 # Check if coverage meets the minimum threshold
-echo "Coverage results:"
+echo "Coverage results:" | tee coverage.txt
 for pkg in "${!coverage_results[@]}"; do
-  check_coverage $pkg ${coverage_results[$pkg]} >> coverage.txt
+  check_coverage $pkg ${coverage_results[$pkg]} | tee -a coverage.txt
 done
+
+echo "coverage=$(cat coverage_results.txt)" >> $GITHUB_OUTPUT
 
 exit ${FAIL}

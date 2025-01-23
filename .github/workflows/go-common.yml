@@ -49,8 +49,7 @@ jobs:
           exclude-directory: ${{ env.EXCLUDE_DIRECTORIES }}
 
       - name: Set coverage result
-        run: echo "##[set-output name=coverage;]$(cat coverage.txt)"
-        shell: bash
+        run: echo "coverage=$(cat coverage.txt)" >> $GITHUB_OUTPUT
 
       - name: Coverage results
         run: |
