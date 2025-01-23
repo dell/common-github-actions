@@ -94,6 +94,8 @@ for package in $packages; do
     exit 1
   fi
 
+  echo "$output"
+
   # Extract coverage percentage
   coverage=$(echo "$output" | grep -oP 'coverage: \d+\.\d+%' | grep -oP '\d+\.\d+')
 
