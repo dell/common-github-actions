@@ -107,9 +107,9 @@ for package in $packages; do
 done
 
 # Check if coverage meets the minimum threshold
-echo "Coverage results:" | tee coverage.txt
+echo "Coverage results:" | tee coverage_results.txt
 for pkg in "${!coverage_results[@]}"; do
-  check_coverage $pkg ${coverage_results[$pkg]} | tee -a coverage.txt
+  check_coverage $pkg ${coverage_results[$pkg]} | tee -a coverage_results.txt
 done
 
 echo "coverage=$(cat coverage_results.txt)" >> $GITHUB_OUTPUT
