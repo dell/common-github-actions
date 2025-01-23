@@ -48,9 +48,6 @@ jobs:
           run-test: ${{ env.RUN_TEST }}
           exclude-directory: ${{ env.EXCLUDE_DIRECTORIES }}
 
-      - name: Set coverage result
-        run: echo "coverage=$(cat coverage.txt)" >> $GITHUB_OUTPUT
-
       - name: Coverage results
         run: |
           echo "Coverage results: ${{ steps.test_coverage.outputs.coverage }}"
