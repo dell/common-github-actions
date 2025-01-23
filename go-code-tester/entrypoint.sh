@@ -111,7 +111,7 @@ done
 # Check if coverage meets the minimum threshold
 echo "Coverage results:"
 for pkg in "${!coverage_results[@]}"; do
-  check_coverage $pkg ${coverage_results[$pkg]}
+  check_coverage $pkg ${coverage_results[$pkg]} >> coverage.txt
 done
 
 exit ${FAIL}
