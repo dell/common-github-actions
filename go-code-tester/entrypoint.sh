@@ -88,8 +88,6 @@ for package in $packages; do
     output=$(go test $skip_options -v -short -count=1 -cover $package $run_options 2>&1)
   fi
 
-  echo "$output" >> ~/run.log
-
   TEST_RETURN_CODE=$?
   if [ "${TEST_RETURN_CODE}" != "0" ]; then
     echo "test failed for package $package with return code $TEST_RETURN_CODE, not proceeding with coverage check"
