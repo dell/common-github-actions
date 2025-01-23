@@ -18,9 +18,9 @@ on:
         type: string
         required: true
       images:
-          description: "List of image names. Example: csi-powerstore, csi-isilon"
-          type: string
-          required: true
+        description: "List of image names. Example: csi-powerstore,csi-isilon"
+        type: string
+        required: true
 
 jobs:
   build-and-scan:
@@ -29,16 +29,18 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch the full history including tags
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: "1.23"
       - name: Install dependencies
-        run: go mod tidy      
+        run: go mod tidy
       - name: Build
         if: ${{ inputs.images == 'cert-csi' }}
         run: |
-          echo "Building binaries"
+          echo "Building cert-csi binary..."
           make build
 
   release-and-tag:
@@ -46,7 +48,7 @@ jobs:
     needs: build-and-scan
     uses: dell/common-github-actions/.github/workflows/release-creator.yaml@main
     with:
-      version: ${{ github.event.inputs.version }}
+      version: ${{ inputs.version }}
     secrets: inherit
 
   push-images:
@@ -67,21 +69,23 @@ jobs:
             echo "Current latest version of $image:$latest_version"
 
             IFS='.' read -r -a version_parts <<< "$latest_version"
-            
+          
             if "${{ inputs.version == 'major' }}"; then
               # major version bump up
-              ((version_parts[0]++))
+              version_parts[0]=$(expr ${version_parts[0]} + 1)
+              new_version="${version_parts[0]}.0.0"
             fi
             if "${{ inputs.version == 'minor' }}"; then
               # minor version bump up
-              ((version_parts[1]++))
+              version_parts[1]=$(expr ${version_parts[1]} + 1)
+              new_version="${version_parts[0]}.${version_parts[1]}.0"
             fi
             if "${{ inputs.version == 'patch' }}"; then
               # patch version bump up
-              ((version_parts[2]++))
+              version_parts[2]=$(expr ${version_parts[2]} + 1)
+              new_version="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
             fi
-            
-            new_version="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
+          
             echo "Pushing image: $image:$new_version"
             docker pull dellemc/$image:nightly
             docker tag dellemc/$image:nightly dellemc/$image:$new_version
@@ -95,32 +99,34 @@ jobs:
           # Push each comma seperated images by splitting the string with ','
           images_list=$(echo '${{ inputs.images }}' | tr -d '[]"' | tr ',' ' ')
           for image in $images_list; do
-              
+          
             latest_version=$(curl -s https://quay.io/api/v1/repository/dell/container-storage-modules/$image/tag/?limit=100 | jq -r '.tags[].name' | sort -V | tail -n 1)
             echo "Current latest version of $image:$latest_version"
 
             IFS='.' read -r -a version_parts <<< "$latest_version"
-            
+          
             if "${{ inputs.version == 'major' }}"; then
               # major version bump up
-              ((version_parts[0]++))
+              version_parts[0]=$(expr ${version_parts[0]} + 1)
+              new_version="${version_parts[0]}.0.0"
             fi
             if "${{ inputs.version == 'minor' }}"; then
               # minor version bump up
-              ((version_parts[1]++))
+              version_parts[1]=$(expr ${version_parts[1]} + 1)
+              new_version="${version_parts[0]}.${version_parts[1]}.0"
             fi
             if "${{ inputs.version == 'patch' }}"; then
               # patch version bump up
-              ((version_parts[2]++))
+              version_parts[2]=$(expr ${version_parts[2]} + 1)
+              new_version="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
             fi
 
             repository='dell/container-storage-modules'
             # Get manifest digest
-            SHA=$(curl -s --location --request GET 'https://quay.io/api/v1/repository/$repository/$image/tag?specificTag=nightly' --header 'Content-Type: application/json' --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' | jq -r '.tags[0].manifest_digest')
-            
-            new_version="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
+            SHA=$(curl -s --location --request GET 'https://quay.io/api/v1/repository/$repository/$image/tag?specificTag=nightly' --header 'Content-Type: application/json' --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' | jq -r '.tags[0].manifest_digest')         
+          
             echo "Pushing image: $image:$new_version"
-            
+          
             # Create version and latest tags
             curl -s --location --request PUT 'https://quay.io/api/v1/repository/$repository/$image/tag/$new_version' \
             --header 'Content-Type: application/json' \

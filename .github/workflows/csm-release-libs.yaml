@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release (major, minor, patch), ex: 1.0.0'
+        description: 'Version to release (major, minor, patch)'
         required: true
         type: string
 jobs:
@@ -23,14 +23,10 @@ jobs:
     name: Build, Scan and Release
     runs-on: ubuntu-latest
     steps:
-      - name: Validate version input
-        run: |
-          if [[ "${{ github.event.inputs.version }}" == "none" ]]; then
-            echo "Invalid version specified: ${{ github.event.inputs.version }} Must follow major, minor, patch versioning."
-            exit 1
-          fi
       - name: Checkout the code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch the full history including tags
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
@@ -39,6 +35,12 @@ jobs:
         run: go mod tidy
       - name: Build
         run: go build -v ./...
+      - name: Run malware scan
+        uses: dell/common-github-actions/malware-scanner@main
+        with:
+          directories: .
+          options: -ri
+
   release-and-tag:
     name: Tag and Release
     needs: build-and-scan

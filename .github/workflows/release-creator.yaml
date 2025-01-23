@@ -14,7 +14,7 @@ on:
   workflow_call:
     inputs:
       version:
-        description: 'Version to release (major, minor, patch), ex: 1.0.0'
+        description: 'Version to release (major, minor, patch)'
         required: true
         type: string
 jobs:
@@ -22,40 +22,46 @@ jobs:
     name: Create tag and release
     runs-on: ubuntu-latest
     steps:
-      - name: Get latest release version
-        id: get-latest-version
-        run: |
-          latest_version=$(git describe --tags $(git rev-list --tags --max-count=1))
-          echo "latest_version=${latest_version}" >> $GITHUB_ENV
-
-      - name: Increment minor version and remove 'v' prefix
-        id: set-version
-        run: |
-          version=${{ github.env.get-latest-version.latest_version }}
-          clean_version=${version#v}
-
-            IFS='.' read -r -a version_parts <<< "$latest_version"
-            
-            if "${{ inputs.version == 'major' }}"; then
-              # major version bump up
-              ((version_parts[0]++))
-            fi
-            if "${{ inputs.version == 'minor' }}"; then
-              # minor version bump up
-              ((version_parts[1]++))
-            fi
-            if "${{ inputs.version == 'patch' }}"; then
-              # patch version bump up
-              ((version_parts[2]++))
-            fi
-            
-            new_version="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
-
-          echo "New version: $new_version"
-          echo "::set-output name=version::$new_version"
-
       - name: Checkout the code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch the full history including tags
+
+      - name: Get latest release
+        run: |
+          latest_version=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "MY_VAR=${latest_version}" >> $GITHUB_ENV            
+          echo "latest_version=${latest_version}"
+
+      - name: Increment version
+        env:
+          MY_VAR: ${{ env.MY_VAR }}
+        run: |
+          current_version=$MY_VAR
+          current_version=(${current_version#v}) # remove 'v' prefix from $current_version"
+          
+          IFS='.' read -r -a version_parts <<< "$current_version"              
+          
+          if "${{ inputs.version == 'major' }}"; then
+              # major version bump up
+              version_parts[0]=$(expr ${version_parts[0]} + 1)
+              new_version="${version_parts[0]}.0.0"
+          fi
+          
+          if "${{ inputs.version == 'minor' }}"; then
+              # minor version bump up
+              version_parts[1]=$(expr ${version_parts[1]} + 1)
+              new_version="${version_parts[0]}.${version_parts[1]}.0"
+          fi
+          
+          if "${{ inputs.version == 'patch' }}"; then
+              # patch version bump up
+              version_parts[2]=$(expr ${version_parts[2]} + 1)
+              new_version="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
+          fi
+          echo "New version to be released:v$new_version"
+          echo "REL_VERSION=v${new_version}" >> $GITHUB_ENV
+
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
         with:
@@ -66,27 +72,29 @@ jobs:
           git_config_global: true
 
       - name: Create new tag
+        env:
+          REL_VERSION: ${{ env.REL_VERSION }}
         run: |
-          git tag -s -a v${{ github.event.actions.set-version.outputs.version }} -m "Release v${{ github.event.inputs.version }}"
-          git push origin v${{ github.event.inputs.version }}
+          echo "new version to be released:$REL_VERSION"
+          git tag -s -a $REL_VERSION -m "Release $REL_VERSION"
+          git push origin $REL_VERSION              
 
       - name: Create Release
-        id: release_notes
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ github.event.inputs.version }}
-          name: Release v${{ github.event.inputs.version }}
+          tag_name: ${{ env.REL_VERSION }}
+          name: Release ${{ env.REL_VERSION }}
           draft: true
           prerelease: false
           generate_release_notes: true
           make_latest: true
-          body: |
-            ## Documentation
-            [General Documentation](https://dell.github.io/csm-docs/docs/)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REL_VERSION: ${{ env.REL_VERSION }}
 
       - name: Create release branch
+        env:
+          REL_VERSION: ${{ env.REL_VERSION }}
         run: |
-          git checkout -b release/v${{ github.event.inputs.version }}
-          git push origin release/v${{ github.event.inputs.version }}
+          git checkout -b release/$REL_VERSION
+          git push origin release/$REL_VERSION
