@@ -56,6 +56,7 @@ check_coverage() {
   elif [[ ${THRESHOLD} -gt ${cov%.*} ]]; then
     echo "FAIL: coverage for package $pkg is ${cov}%, lower than ${THRESHOLD}%"
     FAIL=1
+    return 1
   else
     echo "PASS: coverage for package $pkg is ${cov}%, not lower than ${THRESHOLD}%"
   fi
@@ -107,9 +108,12 @@ for package in $packages; do
 done
 
 # Check if coverage meets the minimum threshold
-echo "Coverage results:" | tee coverage_results.txt
+echo "Coverage results:"
 for pkg in "${!coverage_results[@]}"; do
   check_coverage $pkg ${coverage_results[$pkg]} | tee -a coverage_results.txt
+  if [[ $? -ne 0 ]]; then
+    exit 1
+  fi
 done
 
 # Escape newlines and special characters before writing to $GITHUB_OUTPUT
