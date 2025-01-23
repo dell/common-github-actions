@@ -50,7 +50,7 @@ jobs:
 
       - name: Coverage results
         run: |
-          echo "Coverage results: ${{ steps.test_coverage.outputs.coverage }}"
+          echo -e "Coverage results: ${{ steps.test_coverage.outputs.coverage }}"
 
   # Check sources for security vulnerabilities
   security:

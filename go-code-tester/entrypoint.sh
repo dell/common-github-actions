@@ -112,6 +112,8 @@ for pkg in "${!coverage_results[@]}"; do
   check_coverage $pkg ${coverage_results[$pkg]} | tee -a coverage_results.txt
 done
 
-echo "coverage=$(cat coverage_results.txt)" >> $GITHUB_OUTPUT
+# Escape newlines and special characters before writing to $GITHUB_OUTPUT
+escaped_coverage=$(cat coverage_results.txt | awk '{printf "%s\\n", $0}')
+echo "coverage=$escaped_coverage" >> $GITHUB_OUTPUT
 
 exit ${FAIL}
