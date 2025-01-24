@@ -46,7 +46,7 @@ jobs:
   release-and-tag:
     name: Tag and Release
     needs: build-and-scan
-    uses: dell/common-github-actions/.github/workflows/release-creator.yaml@main
+    uses: dell/common-github-actions/.github/workflows/release-creator.yaml@feature/release-creator
     with:
       version: ${{ inputs.version }}
     secrets: inherit
@@ -86,12 +86,12 @@ jobs:
               new_version="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
             fi
           
-            echo "Pushing image: $image:$new_version"
-#            docker pull dellemc/$image:nightly
-#            docker tag dellemc/$image:nightly dellemc/$image:$new_version
-#            docker push dellemc/$image:$new_version
-#            docker tag dellemc/$image:$new_version dellemc/$image:latest
-#            docker push dellemc/$image:latest
+           echo "Pushing image: $image:$new_version"
+          #  docker pull dellemc/$image:nightly
+          #  docker tag dellemc/$image:nightly dellemc/$image:$new_version
+          #  docker push dellemc/$image:$new_version
+          #  docker tag dellemc/$image:$new_version dellemc/$image:latest
+          #  docker push dellemc/$image:latest
           done
 
       - name: Push images to Quay.io
@@ -121,23 +121,23 @@ jobs:
               new_version="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
             fi
 
-#            repository='dell/container-storage-modules'
-#            # Get manifest digest
-#            SHA=$(curl -s --location --request GET 'https://quay.io/api/v1/repository/$repository/$image/tag?specificTag=nightly' --header 'Content-Type: application/json' --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' | jq -r '.tags[0].manifest_digest')
-#
-#            echo "Pushing image: $image:$new_version"
-#
-#            # Create version and latest tags
-#            curl -s --location --request PUT 'https://quay.io/api/v1/repository/$repository/$image/tag/$new_version' \
-#            --header 'Content-Type: application/json' \
-#            --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' \
-#            --data-raw '{
-#              "manifest_digest": "$SHA"
-#            }'
-#            curl -s --location --request PUT 'https://quay.io/api/v1/repository/$repository/$image/tag/latest' \
-#            --header 'Content-Type: application/json' \
-#            --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' \
-#            --data-raw '{
-#              "manifest_digest": "$SHA"
-#            }'
+          #  repository='dell/container-storage-modules'
+          #  # Get manifest digest
+          #  SHA=$(curl -s --location --request GET 'https://quay.io/api/v1/repository/$repository/$image/tag?specificTag=nightly' --header 'Content-Type: application/json' --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' | jq -r '.tags[0].manifest_digest')
+
+          #  echo "Pushing image: $image:$new_version"
+
+          #  # Create version and latest tags
+          #  curl -s --location --request PUT 'https://quay.io/api/v1/repository/$repository/$image/tag/$new_version' \
+          #  --header 'Content-Type: application/json' \
+          #  --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' \
+          #  --data-raw '{
+          #    "manifest_digest": "$SHA"
+          #  }'
+          #  curl -s --location --request PUT 'https://quay.io/api/v1/repository/$repository/$image/tag/latest' \
+          #  --header 'Content-Type: application/json' \
+          #  --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' \
+          #  --data-raw '{
+          #    "manifest_digest": "$SHA"
+          #  }'
           done

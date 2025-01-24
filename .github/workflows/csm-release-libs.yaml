@@ -12,7 +12,6 @@ name: Release Go Client Libraries
 # Invocable as a reusable workflow
 on:
   workflow_call:
-  workflow_dispatch:
     inputs:
       version:
         description: 'Version to release (major, minor, patch)'
@@ -44,7 +43,7 @@ jobs:
   release-and-tag:
     name: Tag and Release
     needs: build-and-scan
-    uses: dell/common-github-actions/.github/workflows/release-creator.yaml@main
+    uses: dell/common-github-actions/.github/workflows/release-creator.yaml@feature/release-creator
     with:
       version: ${{ github.event.inputs.version }}
     secrets: inherit
