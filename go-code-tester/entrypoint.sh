@@ -120,7 +120,7 @@ echo "Coverage results:"
 for pkg in "${!coverage_results[@]}"; do
   check_coverage $pkg ${coverage_results[$pkg]}
   RETURN_CODE=$?
-  echo "$RETURN_CODE" | tee -a coverage_results.txt
+  echo "$RETURN_CODE" >> coverage_results.txt
 done
 
 # Escape newlines and special characters before writing to $GITHUB_OUTPUT
