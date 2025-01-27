@@ -60,6 +60,7 @@ check_coverage() {
     FAIL=1
   else
     echo "PASS: coverage for package $pkg is ${cov}%, not lower than ${THRESHOLD}%"
+    return 0
   fi
 }
 
