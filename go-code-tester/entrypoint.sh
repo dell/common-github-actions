@@ -127,10 +127,10 @@ done
 # Check if coverage meets the minimum threshold
 echo "Coverage results:"
 for pkg in "${!coverage_results[@]}"; do
-  check_coverage $pkg ${coverage_results[$pkg]}
+  coverage_output=$(check_coverage $pkg ${coverage_results[$pkg]})
   RETURN_CODE=$?
   echo "$RETURN_CODE"
-  echo "$RETURN_CODE" >> coverage_results.txt
+  echo "$coverage_output" >> coverage_results.txt
 done
 
 # Escape newlines and special characters before writing to $GITHUB_OUTPUT
