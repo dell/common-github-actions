@@ -59,15 +59,13 @@ check_coverage() {
   else
     echo "PASS: coverage for package $pkg is ${cov}%, not lower than ${THRESHOLD}%"
   fi
-
-  return 0
 }
 
 # Find all directories containing go.mod files
 submodules=$(find . -name 'go.mod' -exec dirname {} \;)
 
 for submodule in $submodules; do
-  echo "Running coverage for submodule: $submodule"
+  echo "Running coverage at $submodule"
   cd "$submodule"
 
   # Get the list of packages
