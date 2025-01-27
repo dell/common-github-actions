@@ -10,7 +10,7 @@
 name: Operator version update
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       latest-version:
         description: 'Version to update operator, ex: v2.0.0'
