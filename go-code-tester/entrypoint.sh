@@ -56,7 +56,6 @@ check_coverage() {
   elif [[ ${THRESHOLD} -gt ${cov%.*} ]]; then
     echo "FAIL: coverage for package $pkg is ${cov}%, lower than ${THRESHOLD}%"
     FAIL=1
-    return 1
   else
     echo "PASS: coverage for package $pkg is ${cov}%, not lower than ${THRESHOLD}%"
   fi
@@ -64,48 +63,58 @@ check_coverage() {
   return 0
 }
 
-# Get the list of packages
-if [[ -n $EXCLUDE_DIRECTORIES ]]; then
-  echo "excluding the following directories: $EXCLUDE_DIRECTORIES"
-  packages=$(go list ./... | grep -vE $EXCLUDE_DIRECTORIES)
-else
-  packages=$(go list ./...)
-fi
+# Find all directories containing go.mod files
+submodules=$(find . -name 'go.mod' -exec dirname {} \;)
 
-for package in $packages; do
-  # Skip packages in the skip list
-  if [[ -n "$SKIP_LIST" && $SKIP_LIST =~ $package ]]; then
-    echo "Skipping package $package"
-    continue
-  fi
+for submodule in $submodules; do
+  echo "Running coverage for submodule: $submodule"
+  cd "$submodule"
 
-  # Run go test with coverage for the package
-  if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
-    # Run with the race flag
-    output=$(go test $skip_options -v -short -race -count=1 -cover $package $run_options 2>&1)
-    TEST_RETURN_CODE=$?
+  # Get the list of packages
+  if [[ -n $EXCLUDE_DIRECTORIES ]]; then
+    echo "excluding the following directories: $EXCLUDE_DIRECTORIES"
+    packages=$(go list ./... | grep -vE $EXCLUDE_DIRECTORIES)
   else
-    # Run without the race flag
-    output=$(go test $skip_options -v -short -count=1 -cover $package $run_options 2>&1)
-    TEST_RETURN_CODE=$?
+    packages=$(go list ./...)
   fi
 
-  echo "$output"
+  for package in $packages; do
+    # Skip packages in the skip list
+    if [[ -n "$SKIP_LIST" && $SKIP_LIST =~ $package ]]; then
+      echo "Skipping package $package"
+      continue
+    fi
 
-  if [ "${TEST_RETURN_CODE}" != "0" ]; then
-    echo "test failed for package $package with return code $TEST_RETURN_CODE, not proceeding with coverage check"
-    exit 1
-  fi
+    # Run go test with coverage for the package
+    if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
+      # Run with the race flag
+      output=$(go test $skip_options -v -short -race -count=1 -cover $package $run_options 2>&1)
+      TEST_RETURN_CODE=$?
+    else
+      # Run without the race flag
+      output=$(go test $skip_options -v -short -count=1 -cover $package $run_options 2>&1)
+      TEST_RETURN_CODE=$?
+    fi
 
-  # Extract coverage percentage
-  coverage=$(echo "$output" | grep -oP 'coverage: \d+\.\d+%' | grep -oP '\d+\.\d+')
+    echo "$output"
 
-  # Handle packages with no test files or 0% coverage
-  if [[ -z $coverage ]]; then
-      coverage=0
-  fi
+    if [ "${TEST_RETURN_CODE}" != "0" ]; then
+      echo "test failed for package $package with return code $TEST_RETURN_CODE, not proceeding with coverage check"
+      FAIL=1
+    fi
 
-  coverage_results["$package"]=$coverage
+    # Extract coverage percentage
+    coverage=$(echo "$output" | grep -oP 'coverage: \d+\.\d+%' | grep -oP '\d+\.\d+')
+
+    # Handle packages with no test files or 0% coverage
+    if [[ -z $coverage ]]; then
+        coverage=0
+    fi
+
+    coverage_results["$package"]=$coverage
+  done
+
+  cd - > /dev/null
 done
 
 # Check if coverage meets the minimum threshold
@@ -113,7 +122,7 @@ echo "Coverage results:"
 for pkg in "${!coverage_results[@]}"; do
   check_coverage $pkg ${coverage_results[$pkg]} | tee -a coverage_results.txt
   if [[ $? -ne 0 ]]; then
-    exit 1
+    FAIL=1
   fi
 done
 
