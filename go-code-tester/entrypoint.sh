@@ -34,7 +34,9 @@ fi
 go env -w GOFLAGS=-buildvcs=false
 go clean -testcache
 
-cd ${TEST_FOLDER}
+if [[ -n $TEST_FOLDER ]]; then
+  cd ${TEST_FOLDER}
+fi
 
 FAIL=0
 check_coverage() {
@@ -63,6 +65,12 @@ check_coverage() {
 
 # Find all directories containing go.mod files
 submodules=$(find . -name 'go.mod' -exec dirname {} \;)
+
+# Submodules may not exist if testing in a specific TEST_FOLDER
+if [[ -z "$submodules" ]]; then
+  echo "No submodules found. Proceeding at $pwd"
+  submodules="."
+fi
 
 for submodule in $submodules; do
   echo "Running coverage at $submodule"
