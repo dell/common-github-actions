@@ -56,6 +56,7 @@ check_coverage() {
   elif [[ ${THRESHOLD} -gt ${cov%.*} ]]; then
     echo "FAIL: coverage for package $pkg is ${cov}%, lower than ${THRESHOLD}%"
     FAIL=1
+    return 1
   else
     echo "PASS: coverage for package $pkg is ${cov}%, not lower than ${THRESHOLD}%"
   fi
@@ -128,4 +129,10 @@ done
 escaped_coverage=$(cat coverage_results.txt | awk '{printf "%s\\n", $0}')
 echo "coverage=$escaped_coverage" >> $GITHUB_OUTPUT
 
-exit ${FAIL}
+if [[ $FAIL -ne 0 ]]; then
+  echo "One or more tests/coverage checks failed."
+  exit 1
+else
+  echo "All tests/coverage checks passed."
+  exit 0
+fi
