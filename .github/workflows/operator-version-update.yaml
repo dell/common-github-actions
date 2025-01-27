@@ -12,18 +12,21 @@ name: Operator version update
 on:
   workflow_call:
     inputs:
+      csm-version:
+        description: 'CSM program version, ex: v1.12.0, v1.13.0, ...'
+        required: true
+        type: string
       latest-version:
-        description: 'Version to update operator, ex: v2.0.0'
+        description: 'Latest operator version, ex: v1.7.0, v1.8.0, ...'
         required: true
         type: string
       existing-version:
-        description: 'Existing operator version, ex: v1.0.0'
+        description: 'Existing operator version, ex: v1.6.0, 1.7.0, ...'
         required: true
         type: string
 
 jobs:
   operator-version-update:
-    name: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -33,3 +36,14 @@ jobs:
         run: |
           echo "Latest version provided --> ${{ github.event.inputs.latest-version }}"
           echo "Existing version provided --> ${{ github.event.inputs.existing-version }}"
+          echo "CSM program version --> ${{ github.event.inputs.csm-version }}
+      - name: Update version
+        env:
+        run: |
+          echo "Updating Operator version to ${{ github.event.inputs.latest-version }}"
+          
+          if [ -f "scripts/operator-version-update.sh" ]; then
+          cd scripts
+          bash operator-version-update.sh ${{ github.event.inputs.latest-version }} ${{ github.event.inputs.existing-version }} ${{ github.event.inputs.csm-version }}
+          cd ..
+          fi
