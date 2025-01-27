@@ -38,7 +38,7 @@ jobs:
 
       - name: Run unit tests and check package coverage
         id: test_coverage
-        uses: dell/common-github-actions/go-code-tester@modify-UT-action
+        uses: dell/common-github-actions/go-code-tester@main
         with:
           threshold: ${{ env.CODE_COVERAGE_TARGET }}
           test-folder: ${{ env.CODE_COVERAGE_DIR }}
