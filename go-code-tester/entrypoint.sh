@@ -127,6 +127,8 @@ done
 echo "Coverage results:"
 for pkg in "${!coverage_results[@]}"; do
   coverage_output=$(check_coverage $pkg ${coverage_results[$pkg]})
+  RETURN_CODE=$?
+  echo "$RETURN_CODE"
   echo "$coverage_output"
   echo "$coverage_output" >> coverage_results.txt
 done
@@ -135,4 +137,5 @@ done
 escaped_coverage=$(cat coverage_results.txt | awk '{printf "%s\\n", $0}')
 echo "coverage=$escaped_coverage" >> $GITHUB_OUTPUT
 
+echo "$FAIL"
 exit ${FAIL}
