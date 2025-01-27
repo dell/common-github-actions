@@ -57,7 +57,6 @@ check_coverage() {
     return 0
   elif [[ ${THRESHOLD} -gt ${cov%.*} ]]; then
     echo "FAIL: coverage for package $pkg is ${cov}%, lower than ${THRESHOLD}%"
-    FAIL=1
     return 1
   else
     echo "PASS: coverage for package $pkg is ${cov}%, not lower than ${THRESHOLD}%"
@@ -130,8 +129,10 @@ echo "Coverage results:"
 for pkg in "${!coverage_results[@]}"; do
   coverage_output=$(check_coverage $pkg ${coverage_results[$pkg]})
   RETURN_CODE=$?
-  echo "$RETURN_CODE"
   echo "$coverage_output"
+  if [[ $RETURN_CODE -ne 0 ]]; then
+    FAIL=1
+  fi
   echo "$coverage_output" >> coverage_results.txt
 done
 
