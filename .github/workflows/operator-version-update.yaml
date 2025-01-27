@@ -26,11 +26,6 @@ jobs:
     name: build
     runs-on: ubuntu-latest
     steps:
-      - name: Validate input versions
-        run: |
-          if [[ -n ${{github.event.inputs.latest-version}} || -n ${{github.event.inputs.existing-version}} ]]; then
-             echo "Invalid inputs, Kindly provide latest-version and existing-version as mentioned" 
-          fi
       - name: Checkout code
         uses: actions/checkout@v4
 
