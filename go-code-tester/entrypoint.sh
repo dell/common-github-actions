@@ -68,7 +68,7 @@ submodules=$(find . -name 'go.mod' -exec dirname {} \;)
 
 # Submodules may not exist if testing in a specific TEST_FOLDER
 if [[ -z "$submodules" ]]; then
-  echo "No submodules found. Proceeding at $pwd"
+  echo "No submodules found. Proceeding at $(pwd)"
   submodules="."
 fi
 
@@ -128,6 +128,7 @@ echo "Coverage results:"
 for pkg in "${!coverage_results[@]}"; do
   check_coverage $pkg ${coverage_results[$pkg]}
   RETURN_CODE=$?
+  echo "$RETURN_CODE"
   echo "$RETURN_CODE" >> coverage_results.txt
 done
 
