@@ -140,5 +140,4 @@ done
 escaped_coverage=$(cat coverage_results.txt | awk '{printf "%s\\n", $0}')
 echo "coverage=$escaped_coverage" >> $GITHUB_OUTPUT
 
-echo "$FAIL"
 exit ${FAIL}
