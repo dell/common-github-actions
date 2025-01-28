@@ -50,7 +50,7 @@ jobs:
             for SUBPACKAGE in "${SUBPACKAGES[@]}"; do
               if grep -q "$REPO/$SUBPACKAGE" go.mod; then
                 echo "Updating $REPO/$SUBPACKAGE"
-                go get ${REPO}/${SUBPACKAGE}@latest
+                go get ${REPO}/${SUBPACKAGE}@latest || echo "Failed to update $REPO/$SUBPACKAGE@$SHA"
               else
                 echo "Skipping $REPO/$SUBPACKAGE: not a known dependency"
               fi
