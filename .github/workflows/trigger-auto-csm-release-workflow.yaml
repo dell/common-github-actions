@@ -21,26 +21,18 @@ jobs:
       matrix:
         repo:
           [
-            "dell/csi-metadata-retriever",
-            "dell/csi-powerflex",
-            "dell/csi-powermax",
-            "dell/csi-powerscale",
-            "dell/csi-powerstore",
-            "dell/csi-unity",
-            "dell/csm-metrics-powermax",
-            "dell/csm-metrics-powerscale",
-            "dell/csm-metrics-powerstore",
-            "dell/csm-metrics-unity",
-            "dell/csm-operator",
-            "dell/csm-replication",
-            "dell/karavi-authorization"
-            "dell/karavi-resiliency"
-            "dell/karavi-observability"
-            "dell/karavi-metrics-powerflex"
-            "dell/karavi-topology"
+            "meggm/test-csi-powerflex",
           ]
 
     steps:
+      # Sanitize the GPG key to escape any line breaks
+      - name: Sanitize GPG Key
+        id: sanitize_key
+        run: |
+          echo "${{ secrets.CSM_GPG_PRIVATE_KEY }}" | awk '{printf "%s\\n", $0}' > sanitized_gpg_key.txt
+          SANITIZED_KEY=$(cat sanitized_gpg_key.txt)
+          echo "sanitized_key=$SANITIZED_KEY" >> $GITHUB_ENV
+
       - name: Trigger Release of CSM Drivers and Modules
         uses: peter-evans/repository-dispatch@v3
         with:
@@ -48,4 +40,9 @@ jobs:
           token: ${{ secrets.CSMBOT_PAT }}
           repository: ${{ matrix.repo }}
           event-type: auto-release-workflow
-          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
+          client-payload: >
+            {
+              "ref": "${{ github.ref }}",
+              "sha": "${{ github.sha }}",
+              "gpg_key": "${{ env.sanitized_key }}"
+            }

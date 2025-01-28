@@ -14,123 +14,43 @@ on:
   workflow_call:
     inputs:
       version:
-        description: 'Version to release (major, minor, patch), ex: 1.0.0'
+        description: "Version to release (major, minor, patch)"
+        type: string
+        required: true
+      images:
+        description: "List of image names. Example: csi-powerstore,csi-isilon"
+        type: string
+        required: true
+      gpg_key:
         required: true
         type: string
-      image:
-        description: 'Image name, ex: csm-powerstore'
-        required: true
-        type: string
-
+        
 jobs:
   build-and-scan:
-    name: Build, Scan and Release
+    name: Build and Scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
-
+        with:
+          fetch-depth: 0 # Fetch the full history including tags
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: "1.23"
-
       - name: Install dependencies
         run: go mod tidy
-
-      # TODO: build binaries
       - name: Build
-        run: go build -v ./...
+        if: ${{ inputs.images == 'cert-csi' }}
+        run: |
+          echo "Building cert-csi binary..."
+          make build
 
-      - name: Run malware scan
-        uses: dell/common-github-actions/malware-scanner@main
-        with:
-          directories: .
-          options: -ri
-
-      - name: Run gosec
-        uses: dell/common-github-actions/gosec-runner@main
-        with:
-          directories: "./..."
-
-      # TODO: run gofmt, go vet, and linting
-
-  push-images:
-    name: Pull, Tag and Push Images
+  release-and-tag:
+    name: Tag and Release
     needs: build-and-scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Image name
-        run: echo "Image name:" "${{ inputs.image }}"
-    #  - name: Log in to Quay.io
-    #    run: echo "${{ secrets.QUAY_PASSWORD }}" | docker login quay.io -u "${{ secrets.QUAY_USERNAME }}" --password-stdin
-
-    #  - name: Log in to Docker Hub
-    #    run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login docker.io -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-
-    #  - name: Pull nightly image from Quay.io
-    #    run: docker pull quay.io/dell/container-storage-modules/${{ inputs.image }}:nightly
-
-    #  - name: Retag image for Quay.io
-    #    run: |
-    #      docker tag quay.io/dell/container-storage-modules/${{ inputs.image }}:nightly quay.io/dell/container-storage-modules/${{ inputs.image }}:v${{ inputs.version }}
-          
-    #      docker tag quay.io/dell/container-storage-modules/${{ inputs.image }}:nightly quay.io/dell/container-storage-modules/${{ inputs.image }}:latest
-
-    #  - name: Retag image for Docker Hub
-    #    run: |
-    #      docker tag quay.io/dell/container-storage-modules/${{ inputs.image }}:nightly dellemc/${{ inputs.image }}:v${{ inputs.version }}
-
-    #      docker tag quay.io/dell/container-storage-modules/${{ inputs.image }}:nightly dellemc/${{ inputs.image }}:latest
-
-    #  - name: Push ${{ inputs.version }} and latest tag to Quay.io
-    #    run: |
-    #      docker push quay.io/dell/container-storage-modules/${{ inputs.image }}:v${{ inputs.version }}
-    #      docker push quay.io/dell/container-storage-modules/${{ inputs.image }}:latest
-
-    #  - name: Push ${{ inputs.version }} and latest tag to Docker Hub
-    #    run: |
-    #      docker push dellemc/${{ inputs.image }}:v${{ inputs.version }}
-    #      docker push dellemc/${{ inputs.image }}:latest
-
-  create-release:
-    name: Create Release
-    needs: push-images
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Create new tag
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git tag v${{ inputs.version }}
-          git push origin v${{ inputs.version }}
-
-      # TODO: attach built binaries to the release
-      - name: Create Release
-        id: release_notes
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ inputs.version }}
-          name: Release v${{ inputs.version }}
-          draft: true
-          prerelease: false
-          generate_release_notes: true
-          make_latest: true
-          body: |
-            ## Documentation
-            [General Documentation](https://dell.github.io/csm-docs/docs/)
-
-            ### Change Log
-            See the [CHANGELOG](https://github.com/dell/csm/blob/release-v1.12.0/CHANGELOG/CHANGELOG-1.12.0.md) for more details.
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create release branch
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git checkout -b release/v${{ inputs.version }}
-          git push origin release/v${{ inputs.version }}
+    uses: meggm/common-github-actions-test/.github/workflows/release-creator.yaml@main
+    with:
+      version: ${{ inputs.version }}
+      gpg_key: ${{ inputs.gpg_key }}
+    secrets: inherit
