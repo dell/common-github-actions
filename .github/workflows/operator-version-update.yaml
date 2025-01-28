@@ -40,13 +40,13 @@ jobs:
       - name: Update version
         run: |
           echo "Updating Operator version to ${{ github.event.inputs.latest-version }}"
-          echo "GITHUB_WORKSPACE --> ${{ GITHUB_WORKSPACE }}"
+          echo "GITHUB_WORKSPACE --> ${GITHUB_WORKSPACE }"
           pwd 
-          if [ -f "${{ GITHUB_WORKSPACE }}/dell/common-github-actions/.github/scripts/operator-version-update.sh" ]; then
+          if [ -f "${GITHUB_WORKSPACE}/dell/common-github-actions/.github/scripts/operator-version-update.sh" ]; then
           echo "INSIDE IF"
           pwd
           echo " before bash script"
-          bash ${{ GITHUB_WORKSPACE }}/dell/common-github-actions/.github/scripts/operator-version-update.sh ${{ github.event.inputs.latest-version }} ${{ github.event.inputs.existing-version }} ${{ github.event.inputs.csm-version }}
+          bash ${GITHUB_WORKSPACE}/dell/common-github-actions/.github/scripts/operator-version-update.sh ${{ github.event.inputs.latest-version }} ${{ github.event.inputs.existing-version }} ${{ github.event.inputs.csm-version }}
           echo " bash execution completed"
           cd ..
           fi
