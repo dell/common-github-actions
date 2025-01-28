@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+echo "INSIDE BASH SCRIPT"
 
 op_version="$1"
 op_skip_version="$2"
@@ -22,10 +23,22 @@ op_version_v="${op_version:1}"
 csm_ver_v="$3"
 csm_ver_wv="${csm_ver_v:1}"
 
+
+echo "Latest version -->> $op_version"
+echo "Existing version -->> $op_skip_version"
+echo "CSM Version -->> $csm_ver_v"
+
+echo "part-1"
+pwd
+
         # part-1
         sed -i "s/release=\"[^\"]*\"/release=\"${csm_ver_wv}\"/g" Dockerfile
         sed -i "s/version=\"[^\"]*\"/version=\"${op_version_v}\"/g" Dockerfile
         echo "Done updating Dockerfile"
+
+echo "part-2"
+pwd
+
         # part-2
         k_file="kustomization.yaml"
         for k_dir in {'config/install/','config/manager/'}; do
@@ -33,6 +46,9 @@ csm_ver_wv="${csm_ver_v:1}"
         sed -i "s/newTag: .*/newTag: ${op_version}/" $k_file
         done
         echo "Done updating kustomization.yaml"
+
+echo "part-3"
+pwd
 
         cd "$BASE_DIR/csm-operator"
         # part-3: update CSMVersion

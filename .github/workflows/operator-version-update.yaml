@@ -43,7 +43,11 @@ jobs:
           echo "Updating Operator version to ${{ github.event.inputs.latest-version }}"
           
           if [ -f "scripts/operator-version-update.sh" ]; then
+          echo "INSIDE IF"
           cd scripts
+          pwd
+          echo " before bash script"
           bash operator-version-update.sh ${{ github.event.inputs.latest-version }} ${{ github.event.inputs.existing-version }} ${{ github.event.inputs.csm-version }}
+          echo " bash execution completed"
           cd ..
           fi
