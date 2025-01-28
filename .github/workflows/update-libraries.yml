@@ -32,14 +32,17 @@ jobs:
         go clean -modcache
 
     - name: Grab Dell libraries file
-      continue-on-error: true
       run: |
         export LIST="https://raw.githubusercontent.com/dell/common-github-actions/main/.github/configs/dell-libraries-list.txt"
         curl -O -f $LIST
 
     - name: Update packages to latest versions in go.mod
       run: |
-        for REPO in "${REPOS[@]}"; do
+        # temporarily disable the scripts exit on error
+        set +e
+
+        while IFS= read -r REPO
+        do
           echo "Processing $REPO"
 
           if [[ $REPO == "github.com/dell/dell-csi-extensions" ]]; then
@@ -62,7 +65,7 @@ jobs:
           fi
 
           if [[ $MODULE_PATH == *"/v2"* ]]; then
-            echo "Updating ${REPO}/v2"
+            echo "Updating ${REPO}/v2@latest"
             go get ${REPO}/v2@latest || echo "Failed to update ${REPO}/v2"
           else
             echo "Updating ${REPO}@latest"

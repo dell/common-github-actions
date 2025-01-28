@@ -221,7 +221,7 @@ jobs:
     secrets: inherit
 ```
 
-## update-dependencies-to-commits
+## update-libraries-to-commits
 This workflow updates Dell libraries to their **latest commits** in repositories that utilize Golang as the primary development language. The workflow is triggered automatically, but can be triggered manually as well.
 The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following:
 ```
@@ -242,8 +242,6 @@ The workflow does not accept any parameters and can be used from any repository 
 name: Dell Libraries Latest Update
 on:  # yamllint disable-line rule:truthy
   workflow_dispatch:
-  repository_dispatch:
-    types: [latest-released-libraries]
 
 jobs:
   library-update:

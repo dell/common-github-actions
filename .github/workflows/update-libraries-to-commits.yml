@@ -34,7 +34,6 @@ jobs:
         go clean -modcache
 
     - name: Grab list of Dell libraries
-      continue-on-error: true
       run: |
         export LIST="https://raw.githubusercontent.com/dell/common-github-actions/main/.github/configs/dell-libraries-list.txt"
         curl -O -f $LIST
@@ -42,7 +41,8 @@ jobs:
     - name: Get latest commit SHAs
       run: |
         SHAS=""
-        for REPO in "${REPOS[@]}"; do
+        while IFS= read -r REPO
+        do
           LATEST_SHA=$(git ls-remote https://$REPO HEAD | awk '{print $1}')
           SHAS+="$REPO@$LATEST_SHA\n"
         done < dell-libraries-list.txt
@@ -54,7 +54,9 @@ jobs:
 
     - name: Update packages in go.mod
       run: |
+        # temporarily disable the scripts exit on error
         set +e
+
         echo "${{ env.SHAS }}" | while IFS= read -r line; do
           REPO=$(echo $line | cut -d'@' -f1)
           SHA=$(echo $line | cut -d'@' -f2)
