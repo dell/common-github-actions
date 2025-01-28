@@ -29,6 +29,11 @@ jobs:
   operator-version-update:
     runs-on: ubuntu-latest
     steps:
+      - name: Absolute path
+        run: |
+          echo "Absolute path --> "
+          pwd
+          
       - name: Checkout code
         uses: actions/checkout@v4
 
