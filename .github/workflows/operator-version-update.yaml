@@ -38,7 +38,6 @@ jobs:
           echo "Existing version provided --> ${{ github.event.inputs.existing-version }}"
           echo "CSM program version --> ${{ github.event.inputs.csm-version }}
       - name: Update version
-        env:
         run: |
           echo "Updating Operator version to ${{ github.event.inputs.latest-version }}"
           
