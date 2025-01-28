@@ -49,7 +49,7 @@ jobs:
   release-and-tag:
     name: Tag and Release
     needs: build-and-scan
-    uses: dell/common-github-actions/.github/workflows/release-creator.yaml@main
+    uses: dell/common-github-actions/.github/workflows/release-creator.yaml@meggm/test-oneclick
     with:
       version: ${{ inputs.version }}
       gpg_key: ${{ inputs.gpg_key }}
