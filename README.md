@@ -89,14 +89,22 @@ on:
   workflow_call:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Version to release (major, minor, patch)'
+      option:
+        description: 'Select version to release'
         required: true
-        default: 'none'
+        type: choice
+        default: 'minor'
+        options:
+          - major
+          - minor
+          - patch
 jobs:
   csm-release:
     uses: dell/common-github-actions/.github/workflows/csm-release-libs.yaml@main
     name: Release Go Client Libraries
+    with:
+      version: ${{ github.event.inputs.option }}
+    secrets: inherit
 ```
 
 ### go-version-workflow
@@ -148,26 +156,31 @@ The manual workflow is recommended to be used for out of band releases such as p
 For manual trigger from driver and module repositories, here is the example for the csi-powerscale repo:
 
 ```yaml
-name: Release CSIPowerScale
-on:
+name: Release CSI-Powerscale
+# Invocable as a reusable workflow
+# Can be manually triggered
+on:  # yamllint disable-line rule:truthy
   workflow_call:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Version to release (major, minor, patch) Ex: 1.0.0'
+      option:
+        description: 'Select version to release'
         required: true
-      image:
-        description: 'Image name to release Ex: csi-isilon'
-        required: true
-
+        type: choice
+        default: 'minor'
+        options:
+          - major
+          - minor
+          - patch
 jobs:
-  release:
-    uses: dell/common-github-actions/.github/workflows/csm-release-driver-module.yaml@main
+  csm-release:
+    uses: dell/common-github-actions/.github/workflows/csm-release-driver-module.yaml@main    
     name: Release CSM Drivers and Modules
     with:
-      version: ${{ github.event.inputs.version }}
-      image: ${{ github.event.inputs.image }}
+      version: ${{ github.event.inputs.option }}
+      images: csi-powerscale
     secrets: inherit
+
 ```
 
 For Auto release of the driver and module repositories, here is the example for the csi-powerscale repo:

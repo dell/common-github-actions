@@ -19,7 +19,7 @@ on:
         type: string
 jobs:
   build-and-scan:
-    name: Build, Scan and Release
+    name: Build and Scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
@@ -43,7 +43,7 @@ jobs:
   release-and-tag:
     name: Tag and Release
     needs: build-and-scan
-    uses: dell/common-github-actions/.github/workflows/release-creator.yaml@feature/release-creator
+    uses: dell/common-github-actions/.github/workflows/release-creator.yaml@main
     with:
       version: ${{ inputs.version }}
     secrets: inherit
