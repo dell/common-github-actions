@@ -14,7 +14,7 @@ on:
   workflow_call:
     inputs:
       version:
-        description: 'Version to release (major, minor, patch)'
+        description: 'Semantic version to release. Ex: major, minor, or patch'
         required: true
         type: string
 jobs:
