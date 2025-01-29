@@ -52,7 +52,8 @@ jobs:
           pwd
           fi
 
-      - uses: actions/create-github-app-token@v1.11.1
+      - name: Generate GitHub App Token
+        uses: actions/create-github-app-token@v1.11.1
         id: generate-token
         with:
           app-id: ${{ vars.CSM_RELEASE_APP_ID }}
