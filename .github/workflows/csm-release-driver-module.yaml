@@ -14,7 +14,7 @@ on:
   workflow_call:
     inputs:
       version:
-        description: "Version to release (major, minor, patch)"
+        description: "Semantic version to release. Ex: major, minor, or patch"
         type: string
         required: true
       images:
@@ -37,10 +37,15 @@ jobs:
           go-version: "1.23"
       - name: Install dependencies
         run: go mod tidy
-      - name: Build
+      - name: Build cert-csi binary
         if: ${{ inputs.images == 'cert-csi' }}
         run: |
           echo "Building cert-csi binary..."
+          make build
+      - name: Build cert-csi binary
+        if: ${{ inputs.images == '' }}
+        run: |
+          echo "Building repctl binary..."
           make build
 
   release-and-tag:
