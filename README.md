@@ -233,6 +233,7 @@ jobs:
   library-update:
     uses: dell/common-github-actions/.github/workflows/update-libraries-to-commits.yml@main
     name: Dell Libraries Update
+    secrets: inherit
 ```
 
 ## update-libraries
@@ -242,11 +243,14 @@ The workflow does not accept any parameters and can be used from any repository 
 name: Dell Libraries Latest Update
 on:  # yamllint disable-line rule:truthy
   workflow_dispatch:
+  repository_dispatch:
+    types: [latest-released-libraries]
 
 jobs:
   library-update:
     uses: dell/common-github-actions/.github/workflows/update-libraries.yml@main
     name: Dell Libraries Update
+    secrets: inherit
 ```
 
 ## Support
