@@ -7,7 +7,7 @@
 #  http://www.apache.org/licenses/LICENSE-2.0
 
 # Reusable workflow to perform go version update on Golang based projects
-name: Go Version Update
+name: Image Version Update
 
 on:
   workflow_dispatch:
@@ -17,6 +17,6 @@ on:
 jobs:
   # go version update
   image-version-update:
-    uses: dell/common-github-actions/.github/workflows/image-version-workflow.yaml@main
+    uses: dell/common-github-actions/.github/workflows/image-version-workflow.yaml@update-img-version
     name: Image Version Update
     secrets: inherit
