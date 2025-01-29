@@ -89,3 +89,7 @@ jobs:
         with:
           directories: .
           options: -ri
+
+  dependabot_automerge:
+    name: Automerge Dependabot PRs
+    uses: dell/common-github-actions/.github/workflows/dependabot-automerge.yml@main
