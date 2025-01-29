@@ -123,7 +123,7 @@ jobs:
 
 ### go-common
 
-This workflow runs multiple checks against repositories that utilize Golang as the primary development language. Currently, this workflow will run unit tests, check package coverage, gosec, go formatter and vetter, and malware scan.
+This workflow runs multiple checks against repositories that utilize Golang as the primary development language. Currently, this workflow will run unit tests, check package coverage, gosec, go formatter and vetter, malware scan, and auto-merge Dependabot PRs only.
 
 ```
 name: Common Workflows
