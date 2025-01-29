@@ -32,26 +32,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: print operator version after update
+      - name: Update operator version
         run: |
-          echo "Latest version provided --> ${{ github.event.inputs.latest-version }}"
-          echo "Existing version provided --> ${{ github.event.inputs.existing-version }}"
-          echo "CSM program version --> ${{ github.event.inputs.csm-version }}"
-      - name: Update version
-        run: |
-          echo "Updating Operator version to ${{ github.event.inputs.latest-version }}"
-          echo "GITHUB_WORKSPACE --> $GITHUB_WORKSPACE"
-          echo "github.workspace --> ${{ github.workspace }}" 
-          
+          echo "Updating Operator version to --> ${{ github.event.inputs.latest-version }}"
+         
           if [ -f "$GITHUB_WORKSPACE/.github/scripts/operator-version-update.sh" ]; then
-          echo "INSIDE IF"
-          pwd
-          echo " before bash script"
           bash $GITHUB_WORKSPACE/.github/scripts/operator-version-update.sh ${{ github.event.inputs.latest-version }} ${{ github.event.inputs.existing-version }} ${{ github.event.inputs.csm-version }}
-          echo " bash execution completed"
-          pwd
           fi
 
+      # Needed for signing commits using Github App tokens
+      # See: https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#commit-signing
       - name: Generate GitHub App Token
         uses: actions/create-github-app-token@v1.11.1
         id: generate-token
