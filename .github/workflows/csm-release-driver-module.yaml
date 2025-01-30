@@ -40,8 +40,11 @@ jobs:
       - name: Build binaries        
         run: |
           echo "Building binaries to attach to the release if any..."
-          if "${{ inputs.images == 'cert-csi' || contains(inputs.images, 'dell-csi-replicator') || contains(inputs.images, 'dell-replication-controller') }}"; then
+          if "${{ inputs.images == 'cert-csi' }}"; then
               make build
+          fi
+          if "${{ contains(inputs.images, 'dell-csi-replicator') || contains(inputs.images, 'dell-replication-controller') }}; then
+              cd repctl && make build                        
           fi
 
   # release-and-tag:
