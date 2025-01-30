@@ -87,9 +87,13 @@ for submodule in $submodules; do
 
   for package in $packages; do
     # Skip packages in the skip list
-    if [[ -n "$SKIP_LIST" && $SKIP_LIST =~ $package ]]; then
-      echo "Skipping package $package"
-      continue
+    if [[ -n "$SKIP_LIST" ]]; then
+      for skip in $SKIP_LIST; do
+        if [[ $skip == $package ]]; then
+          echo "Skipping package $package"
+          continue 2
+        fi
+      done
     fi
 
     # Run go test with coverage for the package
