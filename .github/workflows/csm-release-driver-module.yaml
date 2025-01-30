@@ -43,7 +43,7 @@ jobs:
           if "${{ inputs.images == 'cert-csi' }}"; then
               make build
           fi
-          if "${{ contains(inputs.images, 'dell-csi-replicator') || contains(inputs.images, 'dell-replication-controller') }}; then
+          if "${{ contains(inputs.images, 'dell-csi-replicator') || contains(inputs.images, 'dell-replication-controller') }}"; then
               cd repctl && make build                        
           fi
 
