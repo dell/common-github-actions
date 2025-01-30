@@ -37,16 +37,12 @@ jobs:
           go-version: "1.23"
       - name: Install dependencies
         run: go mod tidy
-      - name: Build cert-csi binary
-        if: ${{ inputs.images == 'cert-csi' }}
+      - name: Build binaries        
         run: |
-          echo "Building cert-csi binary..."
-          make build
-      - name: Build cert-csi binary
-        if: ${{ inputs.images == '' }}
-        run: |
-          echo "Building repctl binary..."
-          make build
+          echo "Building binaries to attach to the release if any..."
+          if "${{ inputs.images == 'cert-csi' || contains(inputs.images, 'dell-csi-replicator') }}"; then
+              make build
+          fi
 
   release-and-tag:
     name: Tag and Release
