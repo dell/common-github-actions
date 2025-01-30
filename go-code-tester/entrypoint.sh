@@ -87,13 +87,19 @@ for submodule in $submodules; do
 
   for package in $packages; do
     # Skip packages in the skip list
-    if [[ -n "$SKIP_LIST" ]]; then
-      for skip in $SKIP_LIST; do
-        if [[ $skip == $package ]]; then
-          echo "Skipping package $package"
-          continue 2
-        fi
-      done
+    if [ -z "$SKIP_LIST" ]; then
+      echo "No packages in skip-list"
+    else
+      # Put skip list in grep-friendly and human-friendly formats
+      SKIP_LIST_FOR_GREP=${SKIP_LIST//[,]/ -e }
+      SKIP_LIST_FOR_ECHO=${SKIP_LIST//[,]/, }
+      echo "Skipping the following packages: $SKIP_LIST_FOR_ECHO"
+    fi
+
+    # Check if the package is in the skip list
+    if echo "$package" | grep -q -e "$SKIP_LIST_FOR_GREP"; then
+      echo "Skipping package $package"
+      continue
     fi
 
     # Run go test with coverage for the package
