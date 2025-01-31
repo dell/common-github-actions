@@ -89,22 +89,14 @@ on:
   workflow_call:
   workflow_dispatch:
     inputs:
-      option:
-        description: 'Select version to release'
+      version:
+        description: 'Version to release (major, minor, patch)'
         required: true
-        type: choice
-        default: 'minor'
-        options:
-          - major
-          - minor
-          - patch
+        default: 'none'
 jobs:
   csm-release:
     uses: dell/common-github-actions/.github/workflows/csm-release-libs.yaml@main
     name: Release Go Client Libraries
-    with:
-      version: ${{ github.event.inputs.option }}
-    secrets: inherit
 ```
 
 ### go-version-workflow
@@ -131,7 +123,7 @@ jobs:
 
 ### go-common
 
-This workflow runs multiple checks against repositories that utilize Golang as the primary development language. Currently, this workflow will run unit tests, check package coverage, gosec, go formatter and vetter, malware scan, and auto-merge Dependabot PRs only.
+This workflow runs multiple checks against repositories that utilize Golang as the primary development language. Currently, this workflow will run unit tests, check package coverage, gosec, go formatter and vetter, and malware scan.
 
 ```
 name: Common Workflows
@@ -156,31 +148,26 @@ The manual workflow is recommended to be used for out of band releases such as p
 For manual trigger from driver and module repositories, here is the example for the csi-powerscale repo:
 
 ```yaml
-name: Release CSI-Powerscale
-# Invocable as a reusable workflow
-# Can be manually triggered
-on:  # yamllint disable-line rule:truthy
+name: Release CSIPowerScale
+on:
   workflow_call:
   workflow_dispatch:
     inputs:
-      option:
-        description: 'Select version to release'
+      version:
+        description: 'Version to release (major, minor, patch) Ex: 1.0.0'
         required: true
-        type: choice
-        default: 'minor'
-        options:
-          - major
-          - minor
-          - patch
+      image:
+        description: 'Image name to release Ex: csi-isilon'
+        required: true
+
 jobs:
-  csm-release:
-    uses: dell/common-github-actions/.github/workflows/csm-release-driver-module.yaml@main    
+  release:
+    uses: dell/common-github-actions/.github/workflows/csm-release-driver-module.yaml@main
     name: Release CSM Drivers and Modules
     with:
-      version: ${{ github.event.inputs.option }}
-      images: csi-powerscale
+      version: ${{ github.event.inputs.version }}
+      image: ${{ github.event.inputs.image }}
     secrets: inherit
-
 ```
 
 For Auto release of the driver and module repositories, here is the example for the csi-powerscale repo:
@@ -234,7 +221,7 @@ jobs:
     secrets: inherit
 ```
 
-## update-libraries-to-commits
+## update-dependencies-to-commits
 This workflow updates Dell libraries to their **latest commits** in repositories that utilize Golang as the primary development language. The workflow is triggered automatically, but can be triggered manually as well.
 The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following:
 ```
@@ -243,29 +230,47 @@ on:  # yamllint disable-line rule:truthy
   workflow_dispatch:
 
 jobs:
-  library-update:
-    uses: dell/common-github-actions/.github/workflows/update-libraries-to-commits.yml@main
+  package-update:
+    uses: dell/common-github-actions/.github/workflows/update-dependencies-to-commits.yml@main
     name: Dell Libraries Update
-    secrets: inherit
 ```
 
-## update-libraries
-This workflow updates Dell libraries to the **latest released** version in repositories that utilize Golang as the primary development language. The workflow can be manually triggered only.
-The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following:
+## csm-operator version update to latest
+This workflow updates csm-operator repository with latest version of the operator for the given release. 
+It also updates the CSM program version wherever it is used in csm-operator repository.
+
+
+This workflow accepts total three parameters as input to the workflow (csm version, latest operator version, existing operator version). The workflow accepts version as an input and releases that particular version. Below is the example usage in csm-operator repository.
+
+It expects a script to be present in the csm-operator repository ".github/scripts/operator-version-update.sh".
+
+Workflow needs to be triggered manually from csm-operator repository.
 ```
-name: Dell Libraries Latest Update
+name: Update CSM Operator version
+# reusable workflow
 on:  # yamllint disable-line rule:truthy
+  workflow_call:
   workflow_dispatch:
-  repository_dispatch:
-    types: [latest-released-libraries]
-
+    inputs:
+      csm-version:
+        description: 'CSM program version, ex: v1.12.0, v1.13.0, ...'
+        required: true
+      latest-version:
+        description: 'Latest operator version, ex: v1.7.0, v1.8.0, ...'
+        required: true
+      existing-version:
+        description: 'Existing operator version, ex: v1.6.0, 1.7.0, ...'
+        required: true
 jobs:
-  library-update:
-    uses: dell/common-github-actions/.github/workflows/update-libraries.yml@main
-    name: Dell Libraries Update
+  version-update:
+    uses: dell/common-github-actions/.github/workflows/operator-version-update.yaml@main
+    name: Operator version update
+    with:
+      latest-version: ${{ inputs.latest-version }}
+      existing-version: ${{ inputs.existing-version }}
+      csm-version: ${{ inputs.csm-version }}
     secrets: inherit
 ```
-
 ## Support
 
 Don’t hesitate to ask! Contact the team and community on [our support](./docs/SUPPORT.md).
