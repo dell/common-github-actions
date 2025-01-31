@@ -123,7 +123,7 @@ jobs:
 
 ### go-common
 
-This workflow runs multiple checks against repositories that utilize Golang as the primary development language. Currently, this workflow will run unit tests, check package coverage, gosec, go formatter and vetter, and malware scan.
+This workflow runs multiple checks against repositories that utilize Golang as the primary development language. Currently, this workflow will run unit tests, check package coverage, gosec, go formatter and vetter, malware scan, and auto-merge Dependabot PRs only.
 
 ```
 name: Common Workflows
@@ -221,7 +221,7 @@ jobs:
     secrets: inherit
 ```
 
-## update-dependencies-to-commits
+## update-libraries-to-commits
 This workflow updates Dell libraries to their **latest commits** in repositories that utilize Golang as the primary development language. The workflow is triggered automatically, but can be triggered manually as well.
 The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following:
 ```
@@ -230,8 +230,8 @@ on:  # yamllint disable-line rule:truthy
   workflow_dispatch:
 
 jobs:
-  package-update:
-    uses: dell/common-github-actions/.github/workflows/update-dependencies-to-commits.yml@main
+  library-update:
+    uses: dell/common-github-actions/.github/workflows/update-libraries-to-commits.yml@main
     name: Dell Libraries Update
 ```
 
