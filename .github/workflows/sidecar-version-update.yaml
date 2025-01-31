@@ -6,9 +6,9 @@
 #
 #  http://www.apache.org/licenses/LICENSE-2.0
 
-# Reusable workflow to perform operator version update
-# To perform csm-operator version update, needs three arguments as input to the workflow
-name: Operator version update
+# Reusable workflow to perform sidecar version update
+# To perform sidecar version update, needs eight arguments as input to the workflow
+name: Sidecar version update
 
 on:
   workflow_call:
@@ -52,7 +52,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Update operator version
+      - name: Update sidecar version
         run: |
           echo "Updating SIDECAR's version"
          
