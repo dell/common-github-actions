@@ -20,6 +20,16 @@ skip_options=""
 run_options=""
 
 declare -A coverage_results
+declare -a failed_packages
+
+# Skip packages in the skip list
+if [ -z "$SKIP_LIST" ]; then
+  echo "No packages in skip-list"
+else
+  # Put skip list in human-friendly formats
+  SKIP_LIST_FOR_ECHO=${SKIP_LIST//[,]/, }
+  echo "Skipping the following packages: $SKIP_LIST_FOR_ECHO"
+fi
 
 if [[ -n $SKIP_TEST ]]; then
   echo "skipping the following tests (regex): $SKIP_TEST"
@@ -86,12 +96,6 @@ for submodule in $submodules; do
   fi
 
   for package in $packages; do
-    # Skip packages in the skip list
-    if [[ -n "$SKIP_LIST" && $SKIP_LIST =~ $package ]]; then
-      echo "Skipping package $package"
-      continue
-    fi
-
     # Run go test with coverage for the package
     if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
       # Run with the race flag
@@ -107,6 +111,7 @@ for submodule in $submodules; do
 
     if [ "${TEST_RETURN_CODE}" != "0" ]; then
       echo "test failed for package $package with return code $TEST_RETURN_CODE, not proceeding with coverage check"
+      failed_packages+=("$package")
       FAIL=1
     fi
 
@@ -123,6 +128,23 @@ for submodule in $submodules; do
 
   cd - > /dev/null
 done
+
+# Remove skipped packages from coverage_results, but the unit tests will still run
+if [ -n "$SKIP_LIST" ]; then
+  for pkg in ${SKIP_LIST//,/ }; do
+    unset coverage_results["$pkg"]
+  done
+fi
+
+# Report failed packages
+if [ ${#failed_packages[@]} -ne 0 ]; then
+  echo ""
+  echo "The following packages failed tests and were not checked for coverage:"
+  for pkg in "${failed_packages[@]}"; do
+    echo "$pkg"
+  done
+  echo ""
+fi
 
 # Check if coverage meets the minimum threshold
 echo "Coverage results:"
