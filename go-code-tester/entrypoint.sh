@@ -20,6 +20,7 @@ skip_options=""
 run_options=""
 
 declare -A coverage_results
+declare -a failed_packages
 
 # Skip packages in the skip list
 if [ -z "$SKIP_LIST" ]; then
