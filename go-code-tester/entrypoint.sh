@@ -95,11 +95,11 @@ for submodule in $submodules; do
     # Run go test with coverage for the package
     if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
       # Run with the race flag
-      output=$(go test $skip_options -v -short -race -count=1 -cover $package $run_options 2>&1)
+      output=$(go test $skip_options -v -short -race -count=1 -cover -coverprofile=coverage.txt $package $run_options 2>&1)
       TEST_RETURN_CODE=$?
     else
       # Run without the race flag
-      output=$(go test $skip_options -v -short -count=1 -cover $package $run_options 2>&1)
+      output=$(go test $skip_options -v -short -count=1 -cover -coverprofile=coverage.txt $package $run_options 2>&1)
       TEST_RETURN_CODE=$?
     fi
 
@@ -139,5 +139,7 @@ done
 # Escape newlines and special characters before writing to $GITHUB_OUTPUT
 escaped_coverage=$(cat coverage_results.txt | awk '{printf "%s\\n", $0}')
 echo "coverage=$escaped_coverage" >> $GITHUB_OUTPUT
+# Write the coverage artifact name to $GITHUB_OUTPUT for code coverage report on PRs
+echo "code_coverage_artifact=$(cat coverage.txt)" >> $GITHUB_OUTPUT
 
 exit ${FAIL}

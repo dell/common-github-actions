@@ -32,9 +32,20 @@ jobs:
   gocoverage:
     name: Unit tests and package coverage
     runs-on: ubuntu-latest
+    # Needed for "fgrosse/go-coverage-report"
+    permissions:
+      contents: read
+      actions: read  # to download code coverage results from "Test" job
+      pull-requests: write # write permission needed to comment on PR
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.23"
 
       - name: Run unit tests and check package coverage
         id: test_coverage
@@ -52,32 +63,13 @@ jobs:
         run: |
           echo -e "Coverage results: ${{ steps.test_coverage.outputs.coverage }}"
 
-  # Used as an indicator of the quality of changes introduced for a package
-  # by showing if package coverage has increased or decreased
-  coveragereport:
-    name: Create coverage report
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: read  # to download code coverage results from "Test" job
-      pull-requests: write # write permission needed to comment on PR
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: "1.23"
-
-      - name: Test
-        run: go test -cover -coverprofile=coverage.txt ./...
-
+      # Used as an indicator of the quality of changes introduced for a package
+      # by showing if package coverage has increased or decreased
       - name: Archive code coverage results
         uses: actions/upload-artifact@v4
         with:
           name: code-coverage
-          path: coverage.txt
+          path: ${{ steps.test_coverage.outputs.code_coverage_artifact }}
 
       - name: Code coverage report
         uses: fgrosse/go-coverage-report@v1.2.0
