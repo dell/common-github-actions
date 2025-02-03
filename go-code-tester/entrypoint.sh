@@ -138,10 +138,11 @@ fi
 
 # Report failed packages
 if [ ${#failed_packages[@]} -ne 0 ]; then
-  echo "The following packages failed tests and were not checked for coverage:"
+  echo -e "\nThe following packages failed tests and were not checked for coverage:"
   for pkg in "${failed_packages[@]}"; do
     echo "$pkg"
   done
+  echo -e "\n"
 fi
 
 # Check if coverage meets the minimum threshold
