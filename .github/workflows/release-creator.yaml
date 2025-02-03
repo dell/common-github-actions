@@ -1,0 +1,101 @@
+# Copyright (c) 2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+
+# This workflow is a reusable one for creating tag and release.
+name: Tag and Release Creator
+
+# Invocable as a reusable workflow
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: 'Semantic version to release. Ex: major, minor, or patch'
+        required: true
+        type: string
+jobs:
+  tag-and-release:
+    name: Create tag and release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch the full history including tags
+
+      - name: Get latest release
+        run: |
+          latest_version=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "MY_VAR=${latest_version}" >> $GITHUB_ENV            
+          echo "latest_version=${latest_version}"
+
+      - name: Increment version
+        env:
+          MY_VAR: ${{ env.MY_VAR }}
+        run: |
+          current_version=$MY_VAR
+          current_version=(${current_version#v}) # remove 'v' prefix from $current_version"
+          
+          IFS='.' read -r -a version_parts <<< "$current_version"              
+          
+          if "${{ inputs.version == 'major' }}"; then
+              # major version bump up
+              version_parts[0]=$(expr ${version_parts[0]} + 1)
+              new_version="${version_parts[0]}.0.0"
+          fi
+          
+          if "${{ inputs.version == 'minor' }}"; then
+              # minor version bump up
+              version_parts[1]=$(expr ${version_parts[1]} + 1)
+              new_version="${version_parts[0]}.${version_parts[1]}.0"
+          fi
+          
+          if "${{ inputs.version == 'patch' }}"; then
+              # patch version bump up
+              version_parts[2]=$(expr ${version_parts[2]} + 1)
+              new_version="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
+          fi
+          echo "New version to be released:v$new_version"
+          echo "REL_VERSION=v${new_version}" >> $GITHUB_ENV
+
+      # To import GPG key and configure git for signed commits (Annotated tags)
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.CSM_GPG_PRIVATE_KEY }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+          git_tag_gpgsign: true
+          git_config_global: true
+
+      - name: Create new tag
+        env:
+          REL_VERSION: ${{ env.REL_VERSION }}
+        run: |
+          echo "new version to be released:$REL_VERSION"
+          git tag -s -a $REL_VERSION -m "Release $REL_VERSION"
+          git push origin $REL_VERSION              
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.REL_VERSION }}
+          name: Release ${{ env.REL_VERSION }}
+          draft: true
+          prerelease: false
+          generate_release_notes: true
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REL_VERSION: ${{ env.REL_VERSION }}
+
+      - name: Create release branch
+        env:
+          REL_VERSION: ${{ env.REL_VERSION }}
+        run: |
+          git checkout -b release/$REL_VERSION
+          git push origin release/$REL_VERSION
