@@ -25,8 +25,7 @@ declare -A coverage_results
 if [ -z "$SKIP_LIST" ]; then
   echo "No packages in skip-list"
 else
-  # Put skip list in grep-friendly and human-friendly formats
-  SKIP_LIST_FOR_GREP=${SKIP_LIST//[,]/ -e }
+  # Put skip list in human-friendly formats
   SKIP_LIST_FOR_ECHO=${SKIP_LIST//[,]/, }
   echo "Skipping the following packages: $SKIP_LIST_FOR_ECHO"
 fi
