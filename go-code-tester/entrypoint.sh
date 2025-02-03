@@ -98,15 +98,15 @@ for submodule in $submodules; do
     # Run go test with coverage for the package
     if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
       # Run with the race flag
-      output=$(go test $skip_options -v -short -race -count=1 -cover $package $run_options 2>&1)
+      output=$(go test $skip_options -v -short -race -count=1 -cover $package $run_options)
       TEST_RETURN_CODE=$?
     else
       # Run without the race flag
-      output=$(go test $skip_options -v -short -count=1 -cover $package $run_options 2>&1)
+      output=$(go test $skip_options -v -short -count=1 -cover $package $run_options)
       TEST_RETURN_CODE=$?
     fi
 
-    echo "$output"
+    # echo "$output"
 
     if [ "${TEST_RETURN_CODE}" != "0" ]; then
       echo "test failed for package $package with return code $TEST_RETURN_CODE, not proceeding with coverage check"
