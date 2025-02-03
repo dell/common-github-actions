@@ -106,7 +106,7 @@ for submodule in $submodules; do
       TEST_RETURN_CODE=$?
     fi
 
-    # echo "$output"
+    echo "$output"
 
     if [ "${TEST_RETURN_CODE}" != "0" ]; then
       echo "test failed for package $package with return code $TEST_RETURN_CODE, not proceeding with coverage check"
