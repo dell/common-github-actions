@@ -98,11 +98,11 @@ for submodule in $submodules; do
     # Run go test with coverage for the package
     if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
       # Run with the race flag
-      output=$(go test $skip_options -v -short -race -count=1 -cover $package $run_options)
+      output=$(go test $skip_options -v -short -race -count=1 -cover $package $run_options 2>&1)
       TEST_RETURN_CODE=$?
     else
       # Run without the race flag
-      output=$(go test $skip_options -v -short -count=1 -cover $package $run_options)
+      output=$(go test $skip_options -v -short -count=1 -cover $package $run_options 2>&1)
       TEST_RETURN_CODE=$?
     fi
 
@@ -110,6 +110,7 @@ for submodule in $submodules; do
 
     if [ "${TEST_RETURN_CODE}" != "0" ]; then
       echo "test failed for package $package with return code $TEST_RETURN_CODE, not proceeding with coverage check"
+      failed_packages+=("$package")
       FAIL=1
     fi
 
@@ -131,6 +132,14 @@ done
 if [ -n "$SKIP_LIST" ]; then
   for pkg in ${SKIP_LIST//,/ }; do
     unset coverage_results["$pkg"]
+  done
+fi
+
+# Report failed packages
+if [ ${#failed_packages[@]} -ne 0 ]; then
+  echo "The following packages failed tests and were not checked for coverage:"
+  for pkg in "${failed_packages[@]}"; do
+    echo "$pkg"
   done
 fi
 
