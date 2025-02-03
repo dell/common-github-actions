@@ -62,6 +62,7 @@ jobs:
       - name: Coverage results
         run: |
           echo -e "Coverage results: ${{ steps.test_coverage.outputs.coverage }}"
+          echo -e "Report: ${{ steps.test_coverage.outputs.code_coverage_artifact }}"
 
       # Used as an indicator of the quality of changes introduced for a package
       # by showing if package coverage has increased or decreased
