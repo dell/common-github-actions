@@ -27,7 +27,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.23'
+        go-version: "1.23"
 
     - name: Clean Go module cache
       run: |
@@ -99,7 +99,7 @@ jobs:
 
     # Needed for signing commits using Github App tokens
     # See: https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#commit-signing
-    - uses: actions/create-github-app-token@v1.11.1
+    - uses: actions/create-github-app-token@v1.11.2
       id: generate-token
       with:
         app-id: ${{ vars.CSM_RELEASE_APP_ID }}
