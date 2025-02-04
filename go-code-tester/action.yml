@@ -36,11 +36,6 @@ inputs:
     description: 'Name of directory to be excluded from go test'
     required: false
     default: ""
-outputs:
-  coverage:
-    description: 'A summary of the code coverage results meeting the threshold'
-  code_coverage_artifact:
-    description: 'The code coverage report for pull requests'
 runs:
   using: 'docker'
   image: 'Dockerfile'
