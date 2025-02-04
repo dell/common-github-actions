@@ -35,7 +35,7 @@ jobs:
     # Needed for "fgrosse/go-coverage-report"
     permissions:
       contents: read
-      actions: read  # to download code coverage results from "Test" job
+      actions: read  # to download code coverage results from "Run unit tests and check package coverage" job
       pull-requests: write # write permission needed to comment on PR
 
     steps:
