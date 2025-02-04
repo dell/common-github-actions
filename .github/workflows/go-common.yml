@@ -74,8 +74,8 @@ jobs:
 
       - name: Code coverage report
         if: ${{ !cancelled() }}
-        # code coverage profiles are uploaded as GitHub artifacts which automatically expire after 90 days
-        # if no coverage profile exists, the step will fail
+        # code coverage profiles are uploaded as GitHub artifacts, which automatically expire after 90 days
+        # if no coverage profile exists on main branch yet, then the step will fail
         continue-on-error: true
         uses: fgrosse/go-coverage-report@v1.2.0
         with:

@@ -133,18 +133,6 @@ for submodule in $submodules; do
 
     coverage_results["$package"]=$coverage
 
-    # Print the current working directory and list files
-    echo "Current directory: $(pwd)"
-    echo "Files in directory:"
-    ls -l
-
-    if [ ! -s cover.out ]; then
-      echo "WARNING: coverage.txt is empty or not created for package $package"
-    else
-      echo "Contents of coverage.txt:"
-      cat cover.out
-    fi
-
     # Append coverage results to combined file for coverage report
     cat cover.out >> coverage.txt
   done
