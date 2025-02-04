@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: "1.23"
 
@@ -62,19 +62,18 @@ jobs:
       - name: Coverage results
         run: |
           echo -e "Coverage results: ${{ steps.test_coverage.outputs.coverage }}"
-          echo -e "Report: ${{ steps.test_coverage.outputs.code_coverage_artifact }}"
 
       # Used as an indicator of the quality of changes introduced for a package
       # by showing if package coverage has increased or decreased
       - name: Archive code coverage results
-        if: always()
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: code-coverage
-          path: ${{ steps.test_coverage.outputs.code_coverage_artifact }}
+          path: coverage.txt
 
       - name: Code coverage report
-        if: always()
+        if: ${{ !cancelled() }}
         uses: fgrosse/go-coverage-report@v1.2.0
         with:
           coverage-artifact-name: "code-coverage"

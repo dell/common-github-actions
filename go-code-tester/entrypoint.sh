@@ -169,7 +169,7 @@ done
 # Escape newlines and special characters before writing to $GITHUB_OUTPUT
 escaped_coverage=$(cat coverage_results.txt | awk '{printf "%s\\n", $0}')
 echo "coverage=$escaped_coverage" >> $GITHUB_OUTPUT
-# Write the coverage artifact name to $GITHUB_OUTPUT for code coverage report on PRs
+# Write the coverage artifact name to $GITHUB_OUTPUT for code coverage report on pull requests
 echo "code_coverage_artifact=$(cat coverage.txt)" >> $GITHUB_OUTPUT
 
 exit ${FAIL}
