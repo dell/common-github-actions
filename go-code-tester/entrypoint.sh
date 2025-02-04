@@ -133,8 +133,13 @@ for submodule in $submodules; do
 
     coverage_results["$package"]=$coverage
 
+    # Print the current working directory and list files
+    echo "Current directory: $(pwd)"
+    echo "Files in directory:"
+    ls -l
+
     if [ ! -s cover.out ]; then
-    echo "WARNING: coverage.txt is empty or not created for package $package"
+      echo "WARNING: coverage.txt is empty or not created for package $package"
     else
       echo "Contents of coverage.txt:"
       cat cover.out
@@ -180,7 +185,6 @@ done
 escaped_coverage=$(cat coverage_results.txt | awk '{printf "%s\\n", $0}')
 echo "coverage=$escaped_coverage" >> $GITHUB_OUTPUT
 # Write the coverage artifact name to $GITHUB_OUTPUT for code coverage report on pull requests
-cat coverage.txt
 echo "code_coverage_artifact=$(cat coverage.txt)" >> $GITHUB_OUTPUT
 
 exit ${FAIL}
