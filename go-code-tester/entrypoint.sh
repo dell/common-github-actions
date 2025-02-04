@@ -124,6 +124,14 @@ for submodule in $submodules; do
   cd - > /dev/null
 done
 
+# Check if coverage.txt is empty
+if [ ! -s coverage.txt ]; then
+  echo "WARNING: coverage.txt is empty for package $package"
+else
+  echo "Contents of coverage.txt:"
+  cat coverage.txt
+fi
+
 # Check if coverage meets the minimum threshold
 echo "Coverage results:"
 for pkg in "${!coverage_results[@]}"; do
@@ -139,7 +147,7 @@ done
 # Escape newlines and special characters before writing to $GITHUB_OUTPUT
 escaped_coverage=$(cat coverage_results.txt | awk '{printf "%s\\n", $0}')
 echo "coverage=$escaped_coverage" >> $GITHUB_OUTPUT
-# Write the coverage artifact name to $GITHUB_OUTPUT for code coverage report on PRs
+# Write the coverage artifact name to $GITHUB_OUTPUT for code coverage report on pull requests
 echo "code_coverage_artifact=$(cat coverage.txt)" >> $GITHUB_OUTPUT
 
 exit ${FAIL}
