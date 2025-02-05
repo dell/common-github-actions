@@ -89,14 +89,22 @@ on:
   workflow_call:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Version to release (major, minor, patch)'
+      option:
+        description: 'Select version to release'
         required: true
-        default: 'none'
+        type: choice
+        default: 'minor'
+        options:
+          - major
+          - minor
+          - patch
 jobs:
   csm-release:
     uses: dell/common-github-actions/.github/workflows/csm-release-libs.yaml@main
     name: Release Go Client Libraries
+    with:
+      version: ${{ github.event.inputs.option }}
+    secrets: inherit
 ```
 
 ### go-version-workflow
@@ -148,26 +156,31 @@ The manual workflow is recommended to be used for out of band releases such as p
 For manual trigger from driver and module repositories, here is the example for the csi-powerscale repo:
 
 ```yaml
-name: Release CSIPowerScale
-on:
+name: Release CSI-Powerscale
+# Invocable as a reusable workflow
+# Can be manually triggered
+on:  # yamllint disable-line rule:truthy
   workflow_call:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Version to release (major, minor, patch) Ex: 1.0.0'
+      option:
+        description: 'Select version to release'
         required: true
-      image:
-        description: 'Image name to release Ex: csi-isilon'
-        required: true
-
+        type: choice
+        default: 'minor'
+        options:
+          - major
+          - minor
+          - patch
 jobs:
-  release:
-    uses: dell/common-github-actions/.github/workflows/csm-release-driver-module.yaml@main
+  csm-release:
+    uses: dell/common-github-actions/.github/workflows/csm-release-driver-module.yaml@main    
     name: Release CSM Drivers and Modules
     with:
-      version: ${{ github.event.inputs.version }}
-      image: ${{ github.event.inputs.image }}
+      version: ${{ github.event.inputs.option }}
+      images: csi-powerscale
     secrets: inherit
+
 ```
 
 For Auto release of the driver and module repositories, here is the example for the csi-powerscale repo:
@@ -233,10 +246,28 @@ jobs:
   library-update:
     uses: dell/common-github-actions/.github/workflows/update-libraries-to-commits.yml@main
     name: Dell Libraries Update
+    secrets: inherit
+```
+
+## update-libraries
+This workflow updates Dell libraries to the **latest released** version in repositories that utilize Golang as the primary development language. The workflow can be manually triggered only.
+The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following:
+```
+name: Dell Libraries Latest Update
+on:  # yamllint disable-line rule:truthy
+  workflow_dispatch:
+  repository_dispatch:
+    types: [latest-released-libraries]
+
+jobs:
+  library-update:
+    uses: dell/common-github-actions/.github/workflows/update-libraries.yml@main
+    name: Dell Libraries Update
+    secrets: inherit
 ```
 
 ## csm-operator version update to latest
-This workflow updates csm-operator repository with latest version of the operator for the given release. 
+This workflow updates csm-operator repository with latest version of the operator for the given release.
 It also updates the CSM program version wherever it is used in csm-operator repository.
 
 This workflow accepts total three parameters as input to the workflow (csm version, latest operator version, existing operator version).
@@ -275,7 +306,7 @@ jobs:
 This workflow updates csm-operator repository with latest versions of the sidecars.
 
 This workflow accepts total eight parameters as input to the workflow -
-(attacher,provisioner,snapshotter,resizer,registrar,external_heath_monitor,metadata_retriever,sdcmonitor). 
+(attacher,provisioner,snapshotter,resizer,registrar,external_heath_monitor,metadata_retriever,sdcmonitor).
 Below is the example usage in csm-operator repository.
 
 It expects a script to be present in the csm-operator repository ".github/scripts/sidecar-version-update.sh".
