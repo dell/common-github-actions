@@ -121,13 +121,11 @@ for submodule in $submodules; do
     coverage_results["$package"]=$coverage
 
     # Append coverage results to combined file for coverage report
-    cat cover.out >> coverage.txt
+    cat cover.out >> coverage.txt > /dev/null
   done
 
   cd - > /dev/null
 done
-
-cat coverage.txt
 
 # Check if coverage meets the minimum threshold
 echo "Coverage results:"
@@ -144,7 +142,13 @@ done
 # Escape newlines and special characters before writing to $GITHUB_OUTPUT
 escaped_coverage=$(cat coverage_results.txt | awk '{printf "%s\\n", $0}')
 echo "coverage=$escaped_coverage" >> $GITHUB_OUTPUT
+
 # Write the coverage artifact name to $GITHUB_OUTPUT for code coverage report on pull requests
-echo "code_coverage_artifact=$(cat coverage.txt)" >> $GITHUB_OUTPUT
+# echo "code_coverage_artifact=$(cat coverage.txt)" >> $GITHUB_OUTPUT
+{
+  echo "code_coverage_artifact<<EOF"
+  cat coverage.txt
+  echo "EOF"
+} >> $GITHUB_OUTPUT
 
 exit ${FAIL}
