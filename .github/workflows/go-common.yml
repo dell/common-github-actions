@@ -73,7 +73,8 @@ jobs:
           path: coverage.txt
 
       - name: Code coverage report
-        if: ${{ !cancelled() }}
+        # we don't want this check to run on merging to main because it will reset coverage.txt to an empty artifact
+        if: ${{ !cancelled() }} && github.event.name == 'pull_request'
         # code coverage profiles are uploaded as GitHub artifacts, which automatically expire after 90 days
         # if no coverage profile exists on main branch yet, then the step will fail
         continue-on-error: true
