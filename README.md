@@ -291,7 +291,7 @@ jobs:
     uses: dell/common-github-actions/.github/workflows/image-version-workflow.yaml@main
     with:
       version: "${{ github.event.inputs.version || 'minor' }}"
-      secrets: inherit
+    secrets: inherit
 
 ```
 =======
@@ -385,6 +385,7 @@ jobs:
       metadata-retriever: ${{ inputs.metadata-retriever }}
       resizer: ${{ inputs.resizer }}
       sdcmonitor: ${{ inputs.sdcmonitor }}
+    secrets: inherit
 
 ## Support
 
