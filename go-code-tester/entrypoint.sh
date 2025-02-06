@@ -133,7 +133,6 @@ for submodule in $submodules; do
 
     coverage_results["$package"]=$coverage
 
-    cat cover.out
     # Append coverage results to combined file for coverage report
     cat cover.out >> coverage.txt
   done
