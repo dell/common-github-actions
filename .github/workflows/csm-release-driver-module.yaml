@@ -45,8 +45,10 @@ jobs:
               echo "BIN_NAME=cert-csi-linux-amd64" >> $GITHUB_ENV
           fi
           if "${{ contains(inputs.images, 'dell-csi-replicator') || contains(inputs.images, 'dell-replication-controller') }}"; then
-              cd repctl && make build
+              cd repctl
+              make build
               mv repctl repctl-linux-amd64
+              mv repctl-linux-amd64 ../
               echo "BIN_NAME=repctl-linux-amd64" >> $GITHUB_ENV
           fi
 
