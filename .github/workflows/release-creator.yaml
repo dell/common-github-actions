@@ -78,9 +78,10 @@ jobs:
         run: |
           echo "new version to be released:$REL_VERSION"
           git tag -s -a $REL_VERSION -m "Release $REL_VERSION"
-          git push origin $REL_VERSION              
-          - name: Download binary
-          uses: actions/download-artifact@v4.1.8
+          git push origin $REL_VERSION
+
+      - name: Download binary
+        uses: actions/download-artifact@v4.1.8
   
       # This is required to check if the binary exists and update its name to the release.
       - run: |
@@ -101,9 +102,11 @@ jobs:
           prerelease: false
           generate_release_notes: true
           make_latest: true
+          files: ${{ env.FILE_NAME }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REL_VERSION: ${{ env.REL_VERSION }}
+          FILE_NAME: ${{ env.FILE_NAME }}
 
       - name: Create release branch
         env:
