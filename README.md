@@ -291,9 +291,100 @@ jobs:
     uses: dell/common-github-actions/.github/workflows/image-version-workflow.yaml@main
     with:
       version: "${{ github.event.inputs.version || 'minor' }}"
-    secrets: inherit
+      secrets: inherit
 
 ```
+=======
+## csm-operator version update to latest
+This workflow updates csm-operator repository with latest version of the operator for the given release.
+It also updates the CSM program version wherever it is used in csm-operator repository.
+
+This workflow accepts total three parameters as input to the workflow (csm version, latest operator version, existing operator version).
+
+It expects a script to be present in the csm-operator repository ".github/scripts/operator-version-update.sh".
+
+Workflow needs to be triggered manually from csm-operator repository. Below is the example usage in csm-operator repository.
+```
+name: Update CSM Operator version
+# reusable workflow
+on:  # yamllint disable-line rule:truthy
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      csm-version:
+        description: 'CSM program version, ex: v1.12.0, v1.13.0, ...'
+        required: true
+      latest-version:
+        description: 'Latest operator version, ex: v1.7.0, v1.8.0, ...'
+        required: true
+      existing-version:
+        description: 'Existing operator version, ex: v1.6.0, 1.7.0, ...'
+        required: true
+jobs:
+  version-update:
+    uses: dell/common-github-actions/.github/workflows/operator-version-update.yaml@main
+    name: Operator version update
+    with:
+      latest-version: ${{ inputs.latest-version }}
+      existing-version: ${{ inputs.existing-version }}
+      csm-version: ${{ inputs.csm-version }}
+    secrets: inherit
+```
+
+## Update all sidecar versions to latest available, in csm-operator
+This workflow updates csm-operator repository with latest versions of the sidecars.
+
+This workflow accepts total eight parameters as input to the workflow -
+(attacher,provisioner,snapshotter,resizer,registrar,external_heath_monitor,metadata_retriever,sdcmonitor).
+Below is the example usage in csm-operator repository.
+
+It expects a script to be present in the csm-operator repository ".github/scripts/sidecar-version-update.sh".
+
+Workflow needs to be triggered manually from csm-operator repository. Below is the example usage in csm-operator repository.
+```
+name: Update sidecar version
+# reusable workflow
+on:  # yamllint disable-line rule:truthy
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      attacher:
+        description: 'csi-attacher version, ex: v4.8.0'
+        required: true
+      provisioner:
+        description: 'csi-provisioner version, ex: v5.1.0'
+        required: true
+      snapshotter:
+        description: 'csi-snapshotter version, ex: v8.2.0'
+        required: true
+      resizer:
+        description: 'csi-resizer version, ex: v1.13.1'
+        required: true
+      registrar:
+        description: 'csi-node-driver-registrar version, ex: v2.13.0'
+        required: true
+      health-monitor:
+        description: 'csi-external-health-monitor-controller version, ex: v0.14.0'
+        required: true
+      metadata-retriever:
+        description: 'csi-metadata-retriever version, ex: v1.8.0'
+        required: true
+      sdcmonitor:
+        description: 'sdc version, ex: 4.5.1'
+        required: true
+jobs:
+  version-update:
+    uses: dell/common-github-actions/.github/workflows/sidecar-version-update.yaml@main
+    name: Sidecar version update
+    with:
+      attacher: ${{ inputs.attacher }}
+      snapshotter: ${{ inputs.snapshotter }}
+      provisioner: ${{ inputs.provisioner }}
+      registrar: ${{ inputs.registrar }}
+      health-monitor: ${{ inputs.health-monitor }}
+      metadata-retriever: ${{ inputs.metadata-retriever }}
+      resizer: ${{ inputs.resizer }}
+      sdcmonitor: ${{ inputs.sdcmonitor }}
 
 ## Support
 
