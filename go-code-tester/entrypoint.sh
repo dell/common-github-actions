@@ -174,7 +174,7 @@ escaped_coverage=$(cat coverage_results.txt | awk '{printf "%s\\n", $0}')
 echo "coverage=$escaped_coverage" >> $GITHUB_OUTPUT
 
 # Write the coverage artifact name to $GITHUB_OUTPUT for code coverage report on pull requests
-# echo "code_coverage_artifact=$(cat coverage.txt)" >> $GITHUB_OUTPUT
+# Handle multiline format for $GITHUB_OUTPUT
 {
   echo "code_coverage_artifact<<EOF"
   cat coverage.txt
