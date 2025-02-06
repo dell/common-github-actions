@@ -135,7 +135,7 @@ for submodule in $submodules; do
 
     cat cover.out
     # Append coverage results to combined file for coverage report
-    cat cover.out >> coverage.txt > /dev/null
+    cat cover.out >> coverage.txt
   done
 
   cd - > /dev/null
