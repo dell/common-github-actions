@@ -79,6 +79,18 @@ jobs:
           echo "new version to be released:$REL_VERSION"
           git tag -s -a $REL_VERSION -m "Release $REL_VERSION"
           git push origin $REL_VERSION              
+          - name: Download binary
+          uses: actions/download-artifact@v4.1.8
+  
+      # This is required to check if the binary exists and update its name to the release.
+      - run: |
+          ls -l
+          FILE="./cert-csi-linux-amd64/cert-csi-linux-amd64"
+          if [ -f "./repctl-linux-amd64" ]; then
+              FILE="./repctl-linux-amd64/repctl-linux-amd64"
+          fi
+          echo "File name: $FILE"
+          echo "FILE_NAME=$FILE" >> $GITHUB_ENV
 
       - name: Create Release
         uses: softprops/action-gh-release@v2

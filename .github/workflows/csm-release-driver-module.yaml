@@ -41,10 +41,23 @@ jobs:
           echo "Building binaries to attach to the release if any..."
           if "${{ inputs.images == 'cert-csi' }}"; then
               make build
+              mv cert-csi cert-csi-linux-amd64
+              echo "BIN_NAME=cert-csi-linux-amd64" >> $GITHUB_ENV
           fi
           if "${{ contains(inputs.images, 'dell-csi-replicator') || contains(inputs.images, 'dell-replication-controller') }}"; then
-              cd repctl && make build                        
+              cd repctl && make build
+              mv repctl repctl-linux-amd64
+              echo "BIN_NAME=repctl-linux-amd64" >> $GITHUB_ENV
           fi
+
+      - name: Upload Binaries
+        if: ${{ env.BIN_NAME != '' }}
+        uses: actions/upload-artifact@v4.6.0
+        env:
+          BIN_NAME: ${{ env.BIN_NAME }}
+        with:
+          name: ${{ env.BIN_NAME }}
+          path: ${{ env.BIN_NAME }}
 
   release-and-tag:
     name: Tag and Release
