@@ -41,10 +41,25 @@ jobs:
           echo "Building binaries to attach to the release if any..."
           if "${{ inputs.images == 'cert-csi' }}"; then
               make build
+              mv cert-csi cert-csi-linux-amd64
+              echo "BIN_NAME=cert-csi-linux-amd64" >> $GITHUB_ENV
           fi
           if "${{ contains(inputs.images, 'dell-csi-replicator') || contains(inputs.images, 'dell-replication-controller') }}"; then
-              cd repctl && make build                        
+              cd repctl
+              make build
+              mv repctl repctl-linux-amd64
+              mv repctl-linux-amd64 ../
+              echo "BIN_NAME=repctl-linux-amd64" >> $GITHUB_ENV
           fi
+
+      - name: Upload Binaries
+        if: ${{ env.BIN_NAME != '' }}
+        uses: actions/upload-artifact@v4.6.0
+        env:
+          BIN_NAME: ${{ env.BIN_NAME }}
+        with:
+          name: ${{ env.BIN_NAME }}
+          path: ${{ env.BIN_NAME }}
 
   release-and-tag:
     name: Tag and Release
@@ -63,6 +78,7 @@ jobs:
         run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Push images to Dockerhub
+        shell: bash
         run: |
           # Push each comma seperated images by splitting the string with ','
           images_list=$(echo '${{ inputs.images }}' | tr -d '[]"' | tr ',' ' ')
@@ -98,12 +114,16 @@ jobs:
           done
 
       - name: Push images to Quay.io
+        shell: bash
         run: |
           # Push each comma seperated images by splitting the string with ','
           images_list=$(echo '${{ inputs.images }}' | tr -d '[]"' | tr ',' ' ')
+          
+          REPOSITORY="dell/container-storage-modules"
+
           for image in $images_list; do
           
-            latest_version=$(curl -s https://quay.io/api/v1/repository/dell/container-storage-modules/$image/tag/?limit=100 | jq -r '.tags[].name' | sort -V | tail -n 1)
+            latest_version=$(curl -s https://quay.io/api/v1/repository/$REPOSITORY/$image/tag/?limit=100 | jq -r '.tags[].name' | sort -V | tail -n 1)
             echo "Current latest version of $image:$latest_version"
 
             IFS='.' read -r -a version_parts <<< "$latest_version"
@@ -123,23 +143,23 @@ jobs:
               version_parts[2]=$(expr ${version_parts[2]} + 1)
               new_version="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
             fi
-           repository='dell/container-storage-modules'
+          
            # Get manifest digest
-           SHA=$(curl -s --location --request GET 'https://quay.io/api/v1/repository/$repository/$image/tag?specificTag=nightly' --header 'Content-Type: application/json' --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' | jq -r '.tags[0].manifest_digest')
+            SHA=$(curl -s --location --request GET https://quay.io/api/v1/repository/$REPOSITORY/$image/tag?specificTag=nightly --header 'Content-Type: application/json' --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' | jq -r '.tags[0].manifest_digest')            
+            echo "Pushing image: $image:$new_version"
 
-           echo "Pushing image: $image:$new_version"
-
-           # Create version and latest tags
-           curl -s --location --request PUT 'https://quay.io/api/v1/repository/$repository/$image/tag/$new_version' \
-           --header 'Content-Type: application/json' \
-           --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' \
-           --data-raw '{
-             "manifest_digest": "$SHA"
-           }'
-           curl -s --location --request PUT 'https://quay.io/api/v1/repository/$repository/$image/tag/latest' \
-           --header 'Content-Type: application/json' \
-           --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' \
-           --data-raw '{
-             "manifest_digest": "$SHA"
-           }'
+            # Create version and latest tags
+            curl --location --request PUT https://quay.io/api/v1/repository/$REPOSITORY/$image/tag/$new_version \
+            --header 'Content-Type: application/json' \
+            --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' \
+            --data-raw '{
+              "manifest_digest": "'"$SHA"'"
+            }'
+        
+            curl --location --request PUT https://quay.io/api/v1/repository/$REPOSITORY/$image/tag/latest \
+            --header 'Content-Type: application/json' \
+            --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' \
+            --data-raw '{
+              "manifest_digest": "'"$SHA"'"
+            }'
           done
