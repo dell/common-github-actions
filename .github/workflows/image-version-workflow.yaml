@@ -30,17 +30,17 @@ jobs:
         id: set-dockerfile-path
         run: |
           if [[ "${{ github.repository }}" == "dell/csi-powermax" ]]; then
-            echo "DOCKERFILE_PATH=csireverseproxy/Dockerfile, Dockerfile" >> $GITHUB_ENV
+            echo "DOCKERFILE_PATHS=csireverseproxy/Dockerfile, Dockerfile" >> $GITHUB_ENV
           elif [[ "${{ github.repository }}" == "dell/csm-replication" ]]; then
-            echo "DOCKERFILE_PATH=Dockerfiles/Dockerfile" >> $GITHUB_ENV
+            echo "DOCKERFILE_PATHS=Dockerfiles/Dockerfile" >> $GITHUB_ENV
           elif [[ "${{ github.repository }}" == "dell/csi-unity" ]]; then
-            echo "DOCKERFILE_PATH=Dockerfile.podman" >> $GITHUB_ENV
+            echo "DOCKERFILE_PATHS=Dockerfile.podman" >> $GITHUB_ENV
           else
-            echo "DOCKERFILE_PATH=Dockerfile" >> $GITHUB_ENV
+            echo "DOCKERFILE_PATHS=Dockerfile" >> $GITHUB_ENV
           fi
 
       - name: Debug Dockerfile path
-        run: echo "DOCKERFILE_PATH=${{ env.DOCKERFILE_PATH }}"
+        run: echo "DOCKERFILE_PATHS=${{ env.DOCKERFILE_PATHS }}"
 
       - name: Set environment variables
         id: set-env-vars
@@ -48,7 +48,7 @@ jobs:
           release_pattern: 'release="([0-9]+)\.([0-9]+)\.([0-9]+)"'
           version_pattern: 'version="([0-9]+)\.([0-9]+)\.([0-9]+)"'
         run: |
-          IFS=',' read -r -a dockerfiles <<< "${{ env.DOCKERFILE_PATH }}"
+          IFS=',' read -r -a dockerfiles <<< "${{ env.DOCKERFILE_PATHS }}"
           for dockerfile in ${dockerfiles[@]}; do
             echo $dockerfile
             release_value=$(grep -oP 'release="\K([0-9]+)\.([0-9]+)\.([0-9]+)' $dockerfile)
