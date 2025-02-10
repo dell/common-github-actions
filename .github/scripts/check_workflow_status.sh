@@ -1,3 +1,13 @@
+# Copyright (c) 2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+
+# Script to check the status of the latest workflow run for a specified event type
+
 #!/bin/bash
 
 GITHUB_TOKEN=$1
