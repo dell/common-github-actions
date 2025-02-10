@@ -20,8 +20,8 @@ jobs:
 
     strategy:
       matrix:
-        repo:
         # Note: dell-csi-extensions isn't included here because it's handled in its own release action
+        repo:
           [
             "dell/cert-csi",
             "dell/cosi",
