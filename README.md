@@ -386,7 +386,6 @@ jobs:
       resizer: ${{ inputs.resizer }}
       sdcmonitor: ${{ inputs.sdcmonitor }}
     secrets: inherit
-
 ```
 
 ## Support
