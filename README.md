@@ -266,6 +266,35 @@ jobs:
     secrets: inherit
 ```
 
+### image-update-workflow
+
+This workflow automates the image and release version update in Dockerfiles. The workflow accepts one parameter - Version to release (major, minor, patch).
+The manual workflow is recommended to be used for out of band releases such as patch releases or when the increment is a major version change.
+
+For manual trigger from driver and module repositories, here is the example for the csi-powerscale repo:
+
+```yaml
+name: Image Version Update
+
+on:  # yamllint disable-line rule:truthy
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (major, minor, patch) Ex: minor"
+        required: true
+  repository_dispatch:
+    types: [image-update-workflow]
+
+jobs:
+  # image version update
+  image-version-update:
+    uses: dell/common-github-actions/.github/workflows/image-version-workflow.yaml@main
+    with:
+      version: "${{ github.event.inputs.version || 'minor' }}"
+    secrets: inherit
+
+```
+=======
 ## csm-operator version update to latest
 This workflow updates csm-operator repository with latest version of the operator for the given release.
 It also updates the CSM program version wherever it is used in csm-operator repository.
@@ -357,7 +386,6 @@ jobs:
       resizer: ${{ inputs.resizer }}
       sdcmonitor: ${{ inputs.sdcmonitor }}
     secrets: inherit
-
 ```
 
 ## Support
