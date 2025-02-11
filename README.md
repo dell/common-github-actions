@@ -387,6 +387,8 @@ jobs:
       sdcmonitor: ${{ inputs.sdcmonitor }}
     secrets: inherit
 
+```
+
 ## Support
 
 Don’t hesitate to ask! Contact the team and community on [our support](./docs/SUPPORT.md).
