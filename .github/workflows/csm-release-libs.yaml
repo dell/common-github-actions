@@ -14,12 +14,12 @@ on:
   workflow_call:
     inputs:
       version:
-        description: 'Semantic version to release. Ex: major, minor, or patch'
+        description: "Semantic version to release. Ex: major, minor, or patch"
         required: true
         type: string
 jobs:
   build-and-scan:
-    name: Build and Scan
+    name: Build, Scan and Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
