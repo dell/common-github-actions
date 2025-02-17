@@ -55,7 +55,6 @@ jobs:
           version: latest
           skip-cache: true
           args: --config=golangci.yaml
-          verify: false
 
   # Check yaml for syntax validity, line length, trailing spaces, indentation, etc.
   yaml_lint_scan:
