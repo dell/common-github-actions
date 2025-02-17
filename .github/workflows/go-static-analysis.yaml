@@ -23,7 +23,7 @@ env:
   WF_ORG: dell
   WF_REPO: common-github-actions
   WF_CONFIGS: .github/configs
-  WF_CONFIGS_BRANCH: main
+  WF_CONFIGS_BRANCH: fix-golangci-lint
 
 # Various jobs
 jobs:
