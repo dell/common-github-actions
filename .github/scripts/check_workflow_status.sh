@@ -57,12 +57,13 @@ if [ "$WORKFLOW_ID" != "$LATEST_WORKFLOW_ID" ]; then
 fi
 
 WORKFLOW_API_URL="https://api.github.com/repos/${REPO}/actions/runs/${WORKFLOW_ID}"
+WORKFLOW_URL="https://github.com/${REPO}/actions/runs/${WORKFLOW_ID}"
 RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$WORKFLOW_API_URL")
 STATUS=$(echo "${RESPONSE}" | jq -r '.status')
 CONCLUSION=$(echo "${RESPONSE}" | jq -r '.conclusion')
 
 echo "WORKFLOW_ID: ${WORKFLOW_ID}"
-echo "URL: ${WORKFLOW_API_URL}"
+echo "URL: ${WORKFLOW_URL}"
 
 # Poll up to 5 times to check for an in_progress status of the most recently submitted.
 # Once it finds an in_progress or queued workflow, it will keep polling until the workflow is completed successfully or failed.

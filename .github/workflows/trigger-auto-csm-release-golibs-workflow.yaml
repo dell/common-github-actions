@@ -7,7 +7,7 @@
 #  http://www.apache.org/licenses/LICENSE-2.0
 
 # Trigger workflow for auto-release of CSM projects
-name: Trigger Release of CSM Go Libs
+name: Trigger Release of Dell Libraries
 
 on:
   workflow_dispatch:
@@ -29,7 +29,7 @@ jobs:
             "dell/gopowermax",
             "dell/gounity",
             "dell/goscaleio",
-            "dell/goobjectscale",
+            "dell/dell-csi-extensions",
           ]
     steps:
       - name: Trigger Release of ${{ matrix.repo }}
