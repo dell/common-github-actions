@@ -104,7 +104,7 @@ for submodule in $submodules; do
       TEST_RETURN_CODE=$?
 
       # for debugging purposes
-      echo "$go_test_cmd"
+      echo "********** $go_test_cmd **********"
     else
       # Run without the race flag
       go_test_cmd="go test $skip_options -v -short -count=1 -cover $package $run_options"
@@ -112,7 +112,7 @@ for submodule in $submodules; do
       TEST_RETURN_CODE=$?
 
       # for debugging purposes
-      echo "$go_test_cmd"
+      echo "********** $go_test_cmd **********"
     fi
 
     echo "$output"
