@@ -90,6 +90,8 @@ jobs:
           directories: .
           options: -ri
 
-  dependabot_automerge:
-    name: Automerge Dependabot PRs
-    uses: dell/common-github-actions/.github/workflows/dependabot-automerge.yml@main
+  # Commenting this out for now. This requires that we allow auto-merge on all PRs, which is not advised.
+  # See discussion: https://github.com/orgs/community/discussions/150835
+  # dependabot_automerge:
+  #   name: Automerge Dependabot PRs
+  #   uses: dell/common-github-actions/.github/workflows/dependabot-automerge.yml@main
