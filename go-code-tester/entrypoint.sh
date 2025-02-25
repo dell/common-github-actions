@@ -133,7 +133,7 @@ for submodule in $submodules; do
 
     coverage_results["$package"]=$coverage
 
-    # Append coverage results to combined file for coverage report
+    # Append coverage results to combined file for "Generate coverage report" step
     cat cover.out >> coverage.txt
   done
 
@@ -175,10 +175,11 @@ echo "coverage=$escaped_coverage" >> $GITHUB_OUTPUT
 
 # Write the coverage artifact name to $GITHUB_OUTPUT for code coverage report on pull requests
 # Handle multiline format for $GITHUB_OUTPUT
-{
-  echo "code_coverage_artifact<<EOF"
-  cat coverage.txt
-  echo "EOF"
-} >> $GITHUB_OUTPUT
+# {
+#   echo "code_coverage_artifact<<EOF"
+#   cat coverage.txt
+#   echo "EOF"
+# } >> $GITHUB_OUTPUT
+echo "code_coverage_artifact=coverage.txt" >> $GITHUB_OUTPUT
 
 exit ${FAIL}
