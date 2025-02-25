@@ -99,7 +99,7 @@ for submodule in $submodules; do
     # Run go test with coverage for the package
     if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
       # Run with the race flag
-      go_test_cmd="go test $skip_options -v -short -race -count=1 -cover $package $run_options"
+      go_test_cmd="go test $skip_options -v -short -race -count=1 -cover -coverprofile cover.out $package $run_options"
       output=$($go_test_cmd 2>&1)
       TEST_RETURN_CODE=$?
 
@@ -107,7 +107,7 @@ for submodule in $submodules; do
       echo "********** $go_test_cmd **********"
     else
       # Run without the race flag
-      go_test_cmd="go test $skip_options -v -short -count=1 -cover $package $run_options"
+      go_test_cmd="go test $skip_options -v -short -count=1 -cover -coverprofile cover.out $package $run_options"
       output=$($go_test_cmd 2>&1)
       TEST_RETURN_CODE=$?
 
