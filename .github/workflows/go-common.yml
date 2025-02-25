@@ -63,7 +63,7 @@ jobs:
         run: |
           echo -e "Coverage results: ${{ steps.test_coverage.outputs.coverage }}"
 
-      - name: Upload coverage report
+      - name: Upload coverprofile
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
@@ -81,7 +81,7 @@ jobs:
         uses: fgrosse/go-coverage-report@v1.2.0
         with:
           coverage-artifact-name: "code-coverage"
-          coverage-file-name: "coverage.txt"
+          coverage-file-name: "new_coverage.txt"
 
   # Check sources for security vulnerabilities
   security:
