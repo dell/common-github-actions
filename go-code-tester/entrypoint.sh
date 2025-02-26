@@ -99,7 +99,7 @@ for submodule in $submodules; do
     # Run go test with coverage for the package
     if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
       # Run with the race flag
-      go_test_cmd="go test $skip_options -v -short -race -count=1 -cover $package $run_options"
+      go_test_cmd="go test $skip_options -v -short -race -count=1 -cover -coverprofile cover.out $package $run_options"
       output=$($go_test_cmd 2>&1)
       TEST_RETURN_CODE=$?
 
@@ -107,7 +107,7 @@ for submodule in $submodules; do
       echo "********** $go_test_cmd **********"
     else
       # Run without the race flag
-      go_test_cmd="go test $skip_options -v -short -count=1 -cover $package $run_options"
+      go_test_cmd="go test $skip_options -v -short -count=1 -cover -coverprofile cover.out $package $run_options"
       output=$($go_test_cmd 2>&1)
       TEST_RETURN_CODE=$?
 
@@ -132,6 +132,9 @@ for submodule in $submodules; do
     fi
 
     coverage_results["$package"]=$coverage
+
+    # Append coverage results to combined file for "Generate coverage report" step
+    cat cover.out >> coverage.txt
   done
 
   cd - > /dev/null
@@ -169,5 +172,13 @@ done
 # Escape newlines and special characters before writing to $GITHUB_OUTPUT
 escaped_coverage=$(cat coverage_results.txt | awk '{printf "%s\\n", $0}')
 echo "coverage=$escaped_coverage" >> $GITHUB_OUTPUT
+
+# Below is for the "Upload coverprofile" and "Generate coverage report" steps
+# --------------------------------------------------------------------------
+
+# Process coverage.txt file to keep the first 'mode: atomic' and remove subsequent ones
+awk 'NR==1 || $0 !~ /^mode: atomic$/' coverage.txt > new_coverage.txt
+# Write to $GITHUB_OUTPUT
+echo "code_coverage_artifact=new_coverage.txt" >> $GITHUB_OUTPUT
 
 exit ${FAIL}

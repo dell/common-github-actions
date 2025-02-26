@@ -32,9 +32,20 @@ jobs:
   gocoverage:
     name: Unit tests and package coverage
     runs-on: ubuntu-latest
+    # Needed for "fgrosse/go-coverage-report"
+    permissions:
+      contents: read
+      actions: read  # to download code coverage results from "Run unit tests and check package coverage" job
+      pull-requests: write # write permission needed to comment on PR
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
 
       - name: Run unit tests and check package coverage
         id: test_coverage
@@ -51,6 +62,26 @@ jobs:
       - name: Coverage results
         run: |
           echo -e "Coverage results: ${{ steps.test_coverage.outputs.coverage }}"
+
+      - name: Upload coverprofile
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage
+          path: ${{ steps.test_coverage.outputs.code_coverage_artifact }}
+
+      # Used as an indicator of the quality of changes introduced for a package
+      # by showing if package coverage has increased, decreased, or stayed the same
+      - name: Generate coverage report
+        # we don't want this check to run on merging to main because it will reset coverage.txt to an empty artifact
+        if: ${{ !cancelled() }} && github.event.name == 'pull_request'
+        # code coverage profiles are uploaded as GitHub artifacts, which automatically expire after 90 days
+        # if no coverage profile exists on main branch yet, then the step will fail
+        continue-on-error: true
+        uses: fgrosse/go-coverage-report@v1.2.0
+        with:
+          coverage-artifact-name: "code-coverage"
+          coverage-file-name: "new_coverage.txt"
 
   # Check sources for security vulnerabilities
   security:

@@ -174,7 +174,7 @@ on:  # yamllint disable-line rule:truthy
           - patch
 jobs:
   csm-release:
-    uses: dell/common-github-actions/.github/workflows/csm-release-driver-module.yaml@main    
+    uses: dell/common-github-actions/.github/workflows/csm-release-driver-module.yaml@main
     name: Release CSM Drivers and Modules
     with:
       version: ${{ github.event.inputs.option }}
@@ -241,6 +241,8 @@ The workflow does not accept any parameters and can be used from any repository 
 name: Dell Libraries Commit Update
 on:  # yamllint disable-line rule:truthy
   workflow_dispatch:
+  repository_dispatch:
+    types: [latest-commits-libraries]
 
 jobs:
   library-update:

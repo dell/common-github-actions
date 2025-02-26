@@ -1,0 +1,58 @@
+# Copyright (c) 2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+
+# Trigger workflow to update Dell packages to their latest commits
+name: Trigger Update Dell Packages to Latest Commits
+
+on:
+  schedule:
+    - cron: '0 12 * * 0' # Runs every Sunday at midnight
+  # Can be manually triggered
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    name: Trigger Dell Packages Update
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        # Note: dell-csi-extensions isn't included here
+        # due to its nested submodules, this automation won't work for it
+        repo:
+          [
+            "dell/cert-csi",
+            "dell/cosi",
+            "dell/csi-metadata-retriever",
+            "dell/csi-powerflex",
+            "dell/csi-powermax",
+            "dell/csi-powerscale",
+            "dell/csi-powerstore",
+            "dell/csi-unity",
+            "dell/csm-metrics-powermax",
+            "dell/csm-metrics-powerscale",
+            "dell/csm-metrics-powerstore",
+            "dell/csm-metrics-unity",
+            "dell/csm-operator",
+            "dell/csm-replication",
+            "dell/gobrick",
+            "dell/karavi-authorization",
+            "dell/karavi-metrics-powerflex",
+            "dell/karavi-resiliency",
+            "dell/karavi-topology",
+          ]
+
+    steps:
+      - name: Trigger Dell Packages Update
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          # For token information, see: https://github.com/peter-evans/repository-dispatch/tree/main?tab=readme-ov-file#token
+          token: ${{ secrets.CSMBOT_PAT }}
+          repository: ${{ matrix.repo }}
+          event-type: latest-commits-libraries
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'

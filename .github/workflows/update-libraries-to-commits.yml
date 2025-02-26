@@ -10,11 +10,7 @@
 name: Update Dell Packages to Latest Commits
 
 on:
-  schedule:
-    - cron: '0 12 * * 1' # Runs every Monday at midnight
   workflow_call:
-  # Can be manually triggered
-  workflow_dispatch:
 
 jobs:
   update-dependencies:
