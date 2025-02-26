@@ -175,13 +175,6 @@ echo "coverage=$escaped_coverage" >> $GITHUB_OUTPUT
 
 # Below is for the "Upload coverprofile" and "Generate coverage report" steps
 # --------------------------------------------------------------------------
-# Write the coverage artifact name to $GITHUB_OUTPUT for code coverage report on pull requests
-# Handle multiline format for $GITHUB_OUTPUT
-# {
-#   echo "code_coverage_artifact<<EOF"
-#   cat coverage.txt
-#   echo "EOF"
-# } >> $GITHUB_OUTPUT
 
 # Process coverage.txt file to keep the first 'mode: atomic' and remove subsequent ones
 awk 'NR==1 || $0 !~ /^mode: atomic$/' coverage.txt > new_coverage.txt
