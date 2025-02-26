@@ -6,7 +6,7 @@
 #
 #  http://www.apache.org/licenses/LICENSE-2.0
 
-# Trigger workflow to update Dell packages to their latest released version
+# Trigger workflow to update Dell packages to their latest commits
 name: Trigger Update Dell Packages to Latest Commits
 
 on:
