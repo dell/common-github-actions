@@ -11,8 +11,6 @@ name: Update Dell Packages to Latest Released
 
 on:
   workflow_call:
-  # Can be manually triggered
-  workflow_dispatch:
 
 jobs:
   update-dependencies:
