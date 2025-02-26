@@ -22,7 +22,8 @@ jobs:
 
     strategy:
       matrix:
-        # Note: dell-csi-extensions isn't included here because it's handled in its own release action
+        # Note: dell-csi-extensions isn't included here
+        # due to its nested submodules, this automation won't work for it
         repo:
           [
             "dell/cert-csi",
