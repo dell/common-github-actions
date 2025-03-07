@@ -91,13 +91,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "1.24"
-
       - name: gosec
-        uses: dell/common-github-actions/gosec-runner@main
+        uses: dell/common-github-actions/gosec-runner@add-setup-go
         with:
           excludes: ${{ env.GOSEC_EXCLUDES }}
           exclude-dir: ${{ env.GOSEC_EXCLUDE_DIR }}
