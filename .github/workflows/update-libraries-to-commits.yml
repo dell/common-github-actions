@@ -10,11 +10,7 @@
 name: Update Dell Packages to Latest Commits
 
 on:
-  schedule:
-    - cron: '0 0 * * 1' # Runs every Monday at midnight
   workflow_call:
-  # Can be manually triggered
-  workflow_dispatch:
 
 jobs:
   update-dependencies:
@@ -27,7 +23,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: "1.23"
+        go-version: "1.24"
 
     - name: Clean Go module cache
       run: |
@@ -76,7 +72,7 @@ jobs:
             continue
           fi
 
-          MODULE_PATH=$(go list -m -f '{{.Path}}' $REPO 2>/dev/null)
+          MODULE_PATH=$(go list -m -f '{{.Path}}' all | grep "^$REPO" 2>/dev/null)
           if [[ $? -ne 0 ]]; then
             echo "Skipping $REPO: not a known dependency"
             continue

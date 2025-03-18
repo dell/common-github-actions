@@ -6,10 +6,12 @@
 #
 #  http://www.apache.org/licenses/LICENSE-2.0
 
-# Trigger workflow to update Dell packages to their latest released version
-name: Trigger Update Dell Packages to Latest Released
+# Trigger workflow to update Dell packages to their latest commits
+name: Trigger Update Dell Packages to Latest Commits
 
 on:
+  schedule:
+    - cron: '0 12 * * 0' # Runs every Sunday at midnight
   # Can be manually triggered
   workflow_dispatch:
 
@@ -20,7 +22,8 @@ jobs:
 
     strategy:
       matrix:
-        # Note: dell-csi-extensions isn't included here because it's handled in its own release action
+        # Note: dell-csi-extensions isn't included here
+        # due to its nested submodules, this automation won't work for it
         repo:
           [
             "dell/cert-csi",
@@ -51,5 +54,5 @@ jobs:
           # For token information, see: https://github.com/peter-evans/repository-dispatch/tree/main?tab=readme-ov-file#token
           token: ${{ secrets.CSMBOT_PAT }}
           repository: ${{ matrix.repo }}
-          event-type: latest-released-libraries
+          event-type: latest-commits-libraries
           client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
