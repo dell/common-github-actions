@@ -26,7 +26,7 @@ fi
 LATEST_VERSION=$(curl -s https://api.github.com/repos/securego/gosec/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 
 curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin $LATEST_VERSION
-echo "run gosec command: $(go env GOPATH)/bin/gosec $EXCLUDE_FLAG $EXCLUDE_DIR_FLAG $DIRECTORIES"
+echo "run gosec command: $(go env GOPATH)/bin/gosec -exclude-generated $EXCLUDE_FLAG $EXCLUDE_DIR_FLAG $DIRECTORIES"
 $(go env GOPATH)/bin/gosec -exclude-generated $EXCLUDE_FLAG $EXCLUDE_DIR_FLAG $DIRECTORIES
 
 TEST_RETURN_CODE=$?
