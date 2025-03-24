@@ -22,9 +22,12 @@ then
   EXCLUDE_DIR_FLAG="-exclude-dir=$EXCLUDE_DIR"
 fi
 
-curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.21.4
-echo "run gosec command: $(go env GOPATH)/bin/gosec $EXCLUDE_FLAG $EXCLUDE_DIR_FLAG $DIRECTORIES"
-$(go env GOPATH)/bin/gosec $EXCLUDE_FLAG $EXCLUDE_DIR_FLAG $DIRECTORIES
+# Fetch the latest version of gosec
+LATEST_VERSION=$(curl -s https://api.github.com/repos/securego/gosec/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+
+curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin $LATEST_VERSION
+echo "run gosec command: $(go env GOPATH)/bin/gosec -exclude-generated $EXCLUDE_FLAG $EXCLUDE_DIR_FLAG $DIRECTORIES"
+$(go env GOPATH)/bin/gosec -exclude-generated $EXCLUDE_FLAG $EXCLUDE_DIR_FLAG $DIRECTORIES
 
 TEST_RETURN_CODE=$?
 if [ "${TEST_RETURN_CODE}" != "0" ]; then

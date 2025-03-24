@@ -1,0 +1,129 @@
+# Copyright (c) 2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+
+name: Update image versions
+
+# Invocable as a reusable workflow
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version to release (major, minor, patch)'
+        required: true
+        type: string
+jobs:
+  update-image-version:
+    name: image-version-update
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch the full history including the tags
+
+      - name: Set Dockerfile path based on repository
+        id: set-dockerfile-path
+        run: |
+          if [[ "${{ github.repository }}" == "dell/csi-powermax" ]]; then
+            echo "DOCKERFILE_PATHS=csireverseproxy/Dockerfile, Dockerfile" >> $GITHUB_ENV
+          elif [[ "${{ github.repository }}" == "dell/csm-replication" ]]; then
+            echo "DOCKERFILE_PATHS=Dockerfiles/Dockerfile" >> $GITHUB_ENV
+          elif [[ "${{ github.repository }}" == "dell/csi-unity" ]]; then
+            echo "DOCKERFILE_PATHS=Dockerfile.podman" >> $GITHUB_ENV
+          else
+            echo "DOCKERFILE_PATHS=Dockerfile" >> $GITHUB_ENV
+          fi
+
+      - name: Debug Dockerfile path
+        run: echo "DOCKERFILE_PATHS=${{ env.DOCKERFILE_PATHS }}"
+
+      - name: Set environment variables
+        id: set-env-vars
+        env:
+          release_pattern: 'release="([0-9]+)\.([0-9]+)\.([0-9]+)"'
+          version_pattern: 'version="([0-9]+)\.([0-9]+)\.([0-9]+)"'
+        run: |
+          IFS=',' read -r -a dockerfiles <<< "${{ env.DOCKERFILE_PATHS }}"
+          for dockerfile in ${dockerfiles[@]}; do
+            echo $dockerfile
+            release_value=$(grep -oP 'release="\K([0-9]+)\.([0-9]+)\.([0-9]+)' $dockerfile)
+            version_value=$(grep -oP 'version="\K([0-9]+)\.([0-9]+)\.([0-9]+)' $dockerfile)
+            echo "release_value=$release_value" >> $GITHUB_ENV
+            echo "version_value=$version_value" >> $GITHUB_ENV
+            echo $version_value
+            echo $release_value
+
+            # Strip 'v' prefix if exists
+            current_version=${version_value#v}
+            current_release=${release_value#v}
+
+            echo "current_version=$current_version"
+            echo "current_release=$current_release"
+
+            IFS='.' read -r -a version_parts <<< "$current_version"
+            IFS='.' read -r -a release_parts <<< "$current_release"
+
+            if [ "${{ inputs.version }}" = "major" ]; then
+                # Major version bump up
+                version_parts[0]=$(expr ${version_parts[0]} + 1)
+                new_version="${version_parts[0]}.0.0"
+                release_parts[0]=$(expr ${release_parts[0]} + 1)
+                new_release="${release_parts[0]}.0.0"
+            elif [ "${{ inputs.version }}" = "minor" ]; then
+                # Minor version bump up
+                version_parts[1]=$(expr ${version_parts[1]} + 1)
+                new_version="${version_parts[0]}.${version_parts[1]}.0"
+                release_parts[1]=$(expr ${release_parts[1]} + 1)
+                new_release="${release_parts[0]}.${release_parts[1]}.0"
+            elif [ "${{ inputs.version }}" = "patch" ]; then
+                # Patch version bump up
+                version_parts[2]=$(expr ${version_parts[2]} + 1)
+                new_version="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
+                release_parts[2]=$(expr ${release_parts[2]} + 1)
+                new_release="${release_parts[0]}.${release_parts[1]}.${release_parts[2]}"
+            else
+                echo "Invalid version update type: ${{ inputs.version }}"
+                exit 1
+            fi
+
+            echo "New version to be released: v$new_version"
+            echo "NEW_VERSION=v${new_version}" >> $GITHUB_ENV
+            echo "New release will be: v$new_release"
+            echo "NEW_RELEASE=v${new_release}" >> $GITHUB_ENV
+
+            # Print to verify values
+            echo "NEW_VERSION=v${new_version}"
+            echo "NEW_RELEASE=v${new_release}"
+
+            # Replace the version and release in Dockerfile
+            sed -i "s/release=\"$release_value\"/release=\"$new_release\"/" $dockerfile
+            sed -i "s/version=\"$version_value\"/version=\"$new_version\"/" $dockerfile
+          done
+
+      # Needed for signing commits using Github App tokens
+      # See: https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#commit-signing
+      - uses: actions/create-github-app-token@v1.11.7
+        id: generate-token
+        with:
+          app-id: ${{ vars.CSM_RELEASE_APP_ID }}
+          private-key: ${{ secrets.CSM_RELEASE_APP_PRIVATE_KEY }}
+
+      # Must enable "allow GitHub Actions to create pull requests" setting
+      # Author defaults to the user who triggered the workflow run
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          branch: "updateImage-${{ env.NEW_VERSION }}"
+          commit-message: "Update image version and release version"
+          title: "Update image version to ${{ env.NEW_VERSION }} and release version to ${{ env.NEW_RELEASE }}"
+          body: |
+            Image version updated to ${{ env.NEW_VERSION }}
+            Auto-generated by [common-github-actions](https://github.com/dell/common-github-actions)
+          sign-commits: true
+          delete-branch: true

@@ -12,119 +12,154 @@ name: Release CSM Drivers and Modules
 # Invocable as a reusable workflow
 on:
   workflow_call:
-  workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release (major, minor, patch), ex: 1.0.0'
+        description: "Semantic version to release. Ex: major, minor, or patch"
+        type: string
         required: true
-      image:
-        description: 'Image name, ex: csm-powerstore'
+      images:
+        description: "List of image names. Example: csi-powerstore,csi-isilon"
+        type: string
         required: true
-
 jobs:
   build-and-scan:
-    name: Build, Scan and Release
+    name: Build and Scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
-
+        with:
+          fetch-depth: 0 # Fetch the full history including tags
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.23"
-
+          go-version: "1.24"
       - name: Install dependencies
         run: go mod tidy
+      - name: Build binaries        
+        run: |
+          echo "Building binaries to attach to the release if any..."
+          if "${{ inputs.images == 'cert-csi' }}"; then
+              make build
+              mv cert-csi cert-csi-linux-amd64
+              echo "BIN_NAME=cert-csi-linux-amd64" >> $GITHUB_ENV
+          fi
+          if "${{ contains(inputs.images, 'dell-csi-replicator') || contains(inputs.images, 'dell-replication-controller') }}"; then
+              cd repctl
+              make build
+              mv repctl repctl-linux-amd64
+              mv repctl-linux-amd64 ../
+              echo "BIN_NAME=repctl-linux-amd64" >> $GITHUB_ENV
+          fi
 
-      # TODO: build binaries
-      - name: Build
-        run: go build -v ./...
-
-      - name: Run malware scan
-        uses: dell/common-github-actions/malware-scanner@main
+      - name: Upload Binaries
+        if: ${{ env.BIN_NAME != '' }}
+        uses: actions/upload-artifact@v4.6.1
+        env:
+          BIN_NAME: ${{ env.BIN_NAME }}
         with:
-          directories: .
-          options: -ri
+          name: ${{ env.BIN_NAME }}
+          path: ${{ env.BIN_NAME }}
 
-      - name: Run gosec
-        uses: dell/common-github-actions/gosec-runner@main
-        with:
-          directories: "./..."
-
-      # TODO: run gofmt, go vet, and linting
+  release-and-tag:
+    name: Tag and Release
+    needs: build-and-scan
+    uses: dell/common-github-actions/.github/workflows/release-creator.yaml@main
+    with:
+      version: ${{ inputs.version }}
+    secrets: inherit
 
   push-images:
-    name: Pull, Tag and Push Images
-    needs: build-and-scan
+    name: Release images to Dockerhub and Quay
+    needs: release-and-tag
     runs-on: ubuntu-latest
     steps:
-      - name: Log in to Quay.io
-        run: echo "${{ secrets.QUAY_PASSWORD }}" | docker login quay.io -u "${{ secrets.QUAY_USERNAME }}" --password-stdin
-
       - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login docker.io -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-      - name: Pull nightly image from Quay.io
-        run: docker pull quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly
-
-      - name: Retag image for Quay.io
+      - name: Push images to Dockerhub
+        shell: bash
         run: |
-          docker tag quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
+          # Push each comma seperated images by splitting the string with ','
+          images_list=$(echo '${{ inputs.images }}' | tr -d '[]"' | tr ',' ' ')
+          for image in $images_list; do
 
-          docker tag quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:latest
+            latest_version=$(curl -s https://registry.hub.docker.com/v2/repositories/dellemc/$image/tags | jq -r '.results[].name' | sort -V | tail -n 1)
+            echo "Current latest version of $image:$latest_version"
 
-      - name: Retag image for Docker Hub
+            IFS='.' read -r -a version_parts <<< "$latest_version"
+          
+            if "${{ inputs.version == 'major' }}"; then
+              # major version bump up
+              version_parts[0]=$(expr ${version_parts[0]} + 1)
+              new_version="${version_parts[0]}.0.0"
+            fi
+            if "${{ inputs.version == 'minor' }}"; then
+              # minor version bump up
+              version_parts[1]=$(expr ${version_parts[1]} + 1)
+              new_version="${version_parts[0]}.${version_parts[1]}.0"
+            fi
+            if "${{ inputs.version == 'patch' }}"; then
+              # patch version bump up
+              version_parts[2]=$(expr ${version_parts[2]} + 1)
+              new_version="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
+            fi
+          
+           echo "Pushing image: $image:$new_version"                      
+           docker pull dellemc/$image:nightly
+           docker tag dellemc/$image:nightly dellemc/$image:$new_version
+           docker push dellemc/$image:$new_version
+           docker tag dellemc/$image:$new_version dellemc/$image:latest
+           docker push dellemc/$image:latest
+          done
+
+      - name: Push images to Quay.io
+        shell: bash
         run: |
-          docker tag quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly dellemc/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
+          # Push each comma seperated images by splitting the string with ','
+          images_list=$(echo '${{ inputs.images }}' | tr -d '[]"' | tr ',' ' ')
+          
+          REPOSITORY="dell/container-storage-modules"
 
-          docker tag quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:nightly dellemc/${{ github.event.inputs.image }}:latest
+          for image in $images_list; do
+          
+            latest_version=$(curl -s https://quay.io/api/v1/repository/$REPOSITORY/$image/tag/?limit=100 | jq -r '.tags[].name' | sort -V | tail -n 1)
+            echo "Current latest version of $image:$latest_version"
 
-      - name: Push ${{ github.event.inputs.version }} and latest tag to Quay.io
-        run: |
-          docker push quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
-          docker push quay.io/dell/container-storage-modules/${{ github.event.inputs.image }}:latest
+            IFS='.' read -r -a version_parts <<< "$latest_version"
+          
+            if "${{ inputs.version == 'major' }}"; then
+              # major version bump up
+              version_parts[0]=$(expr ${version_parts[0]} + 1)
+              new_version="${version_parts[0]}.0.0"
+            fi
+            if "${{ inputs.version == 'minor' }}"; then
+              # minor version bump up
+              version_parts[1]=$(expr ${version_parts[1]} + 1)
+              new_version="${version_parts[0]}.${version_parts[1]}.0"
+            fi
+            if "${{ inputs.version == 'patch' }}"; then
+              # patch version bump up
+              version_parts[2]=$(expr ${version_parts[2]} + 1)
+              new_version="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
+            fi
+          
+           # Get manifest digest
+            SHA=$(curl -s --location --request GET https://quay.io/api/v1/repository/$REPOSITORY/$image/tag?specificTag=nightly --header 'Content-Type: application/json' --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' | jq -r '.tags[0].manifest_digest')            
+            echo "Pushing image: $image:$new_version"
 
-      - name: Push ${{ github.event.inputs.version }} and latest tag to Docker Hub
-        run: |
-          docker push dellemc/${{ github.event.inputs.image }}:v${{ github.event.inputs.version }}
-          docker push dellemc/${{ github.event.inputs.image }}:latest
-
-  create-release:
-    name: Create Release
-    needs: push-images
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create new tag
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git tag v${{ github.event.inputs.version }}
-          git push origin v${{ github.event.inputs.version }}
-
-      # TODO: attach built binaries to the release
-      - name: Create Release
-        id: release_notes
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ github.event.inputs.version }}
-          name: Release v${{ github.event.inputs.version }}
-          draft: true
-          prerelease: false
-          generate_release_notes: true
-          make_latest: true
-          body: |
-            ## Documentation
-            [General Documentation](https://dell.github.io/csm-docs/docs/)
-
-            ### Change Log
-            See the [CHANGELOG](https://github.com/dell/csm/blob/release-v1.12.0/CHANGELOG/CHANGELOG-1.12.0.md) for more details.
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create release branch
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git checkout -b release/v${{ github.event.inputs.version }}
-          git push origin release/v${{ github.event.inputs.version }}
+            # Create version and latest tags
+            curl --location --request PUT https://quay.io/api/v1/repository/$REPOSITORY/$image/tag/$new_version \
+            --header 'Content-Type: application/json' \
+            --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' \
+            --data-raw '{
+              "manifest_digest": "'"$SHA"'"
+            }'
+        
+            curl --location --request PUT https://quay.io/api/v1/repository/$REPOSITORY/$image/tag/latest \
+            --header 'Content-Type: application/json' \
+            --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' \
+            --data-raw '{
+              "manifest_digest": "'"$SHA"'"
+            }'
+          done

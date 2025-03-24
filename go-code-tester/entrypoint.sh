@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2020-2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2020-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +19,18 @@ EXCLUDE_DIRECTORIES=$7
 skip_options=""
 run_options=""
 
+declare -A coverage_results
+declare -a failed_packages
+
+# Skip packages in the skip list
+if [ -z "$SKIP_LIST" ]; then
+  echo "No packages in skip-list"
+else
+  # Put skip list in human-friendly formats
+  SKIP_LIST_FOR_ECHO=${SKIP_LIST//[,]/, }
+  echo "Skipping the following packages: $SKIP_LIST_FOR_ECHO"
+fi
+
 if [[ -n $SKIP_TEST ]]; then
   echo "skipping the following tests (regex): $SKIP_TEST"
   skip_options="-skip $SKIP_TEST"
@@ -29,65 +41,144 @@ if [[ -n $RUN_TEST ]]; then
   run_options="-run $RUN_TEST"
 fi
 
+go env -w GOFLAGS=-buildvcs=false
 go clean -testcache
 
-cd ${TEST_FOLDER}
-if [[ -n $EXCLUDE_DIRECTORIES ]]; then
-  echo "excluding the following directories: $EXCLUDE_DIRECTORIES"
-  if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
-    GOEXPERIMENT=nocoverageredesign go test $skip_options -v $(go list ./... | grep -vE $EXCLUDE_DIRECTORIES) -short -race -count=1 -cover $run_options ./... > ~/run.log
-  else
-    # Run without the race flag
-    GOEXPERIMENT=nocoverageredesign go test $skip_options -v $(go list ./... | grep -vE $EXCLUDE_DIRECTORIES) -short -count=1 -cover $run_options ./... > ~/run.log
-  fi
-else
-  GOEXPERIMENT=nocoverageredesign go test $skip_options -v -short -count=1 -cover $run_options ./... > ~/run.log
-fi
-
-TEST_RETURN_CODE=$?
-cat ~/run.log
-if [ "${TEST_RETURN_CODE}" != "0" ]; then
-  echo "test failed with return code $TEST_RETURN_CODE, not proceeding with coverage check"
-  exit 1
-fi
-
-if [ -z "$SKIP_LIST" ]
-then
-  echo "No packages in skip-list"
-else
-  # Put skip list in grep-friendly and human-friendly formats
-  SKIP_LIST_FOR_GREP=${SKIP_LIST//[,]/ -e }
-  SKIP_LIST_FOR_ECHO=${SKIP_LIST//[,]/, }
-  echo "skipping the following packages: $SKIP_LIST_FOR_ECHO"
+if [[ -n $TEST_FOLDER ]]; then
+  cd ${TEST_FOLDER}
 fi
 
 FAIL=0
 check_coverage() {
   pkg=$1
   cov=$2
-  if [[ ${THRESHOLD} -gt ${cov%.*} ]]; then
-     echo "FAIL: coverage for package $pkg is ${cov}%, lower than ${THRESHOLD}%"
-     FAIL=1
-  else
-     echo "PASS: coverage for package $pkg is ${cov}%, not lower than ${THRESHOLD}%"
-  fi
 
-  return 0
+  # Check if coverage is [no statements]
+  if [[ "$cov" == "[n" ]]; then
+    echo "WARNING: coverage for package $pkg is not available: [no statements]"
+    return 0
+  # Check if coverage is a valid number
+  elif ! [[ $cov =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
+    echo "WARNING: coverage for package $pkg is not a valid threshold: $cov"
+    return 0
+  # Check if coverage is empty
+  elif [[ -z "$cov" ]]; then
+    echo "WARNING: coverage for package $pkg is not available"
+    return 0
+  elif [[ ${THRESHOLD} -gt ${cov%.*} ]]; then
+    echo "FAIL: coverage for package $pkg is ${cov}%, lower than ${THRESHOLD}%"
+    return 1
+  else
+    echo "PASS: coverage for package $pkg is ${cov}%, not lower than ${THRESHOLD}%"
+    return 0
+  fi
 }
 
-if [ -z "$SKIP_LIST" ]; then
-  # If there is no skip-list, just search for cases where the word coverage is preceded by whitespace. We want the space because
-  # this distinguishes between the final coverage report and the intermediate coverage printouts that happen earlier in the output
-  while read pkg cov;
-  do
-    check_coverage $pkg $cov
-  done <<< $(cat ~/run.log | grep ^ok | awk '{print $2, substr($5, 1, length($5)-1)}')
-else
-  # this is the same as the above, except it includes a filter that gets rid of all the packages that appear in the skip-list
-  while read pkg cov;
-  do
-    check_coverage $pkg $cov
-  done <<< $(cat ~/run.log | grep ^ok | grep -vw -e $SKIP_LIST_FOR_GREP | awk '{print $2, substr($5, 1, length($5)-1)}')
+# Find all directories containing go.mod files
+submodules=$(find . -name 'go.mod' -exec dirname {} \;)
+
+# Submodules may not exist if testing in a specific TEST_FOLDER
+if [[ -z "$submodules" ]]; then
+  echo "No submodules found. Proceeding at $(pwd)"
+  submodules="."
 fi
+
+for submodule in $submodules; do
+  echo "Running coverage at $submodule"
+  cd "$submodule"
+
+  # Get the list of packages
+  if [[ -n $EXCLUDE_DIRECTORIES ]]; then
+    echo "excluding the following directories: $EXCLUDE_DIRECTORIES"
+    packages=$(go list ./... | grep -vE $EXCLUDE_DIRECTORIES)
+  else
+    packages=$(go list ./...)
+  fi
+
+  for package in $packages; do
+    # Run go test with coverage for the package
+    if [[ -z $RACE_DETECTOR ]] || [[ $RACE_DETECTOR == "true" ]]; then
+      # Run with the race flag
+      go_test_cmd="go test $skip_options -v -short -race -count=1 -cover -coverprofile cover.out $package $run_options"
+      output=$($go_test_cmd 2>&1)
+      TEST_RETURN_CODE=$?
+
+      # for debugging purposes
+      echo "********** $go_test_cmd **********"
+    else
+      # Run without the race flag
+      go_test_cmd="go test $skip_options -v -short -count=1 -cover -coverprofile cover.out $package $run_options"
+      output=$($go_test_cmd 2>&1)
+      TEST_RETURN_CODE=$?
+
+      # for debugging purposes
+      echo "********** $go_test_cmd **********"
+    fi
+
+    echo "$output"
+
+    if [ "${TEST_RETURN_CODE}" != "0" ]; then
+      echo "test failed for package $package with return code $TEST_RETURN_CODE, not proceeding with coverage check"
+      failed_packages+=("$package")
+      FAIL=1
+    fi
+
+    # Extract coverage percentage
+    coverage=$(echo "$output" | grep -oP 'coverage: \d+\.\d+%' | grep -oP '\d+\.\d+')
+
+    # Handle packages with no test files or 0% coverage
+    if [[ -z $coverage ]]; then
+        coverage=0
+    fi
+
+    coverage_results["$package"]=$coverage
+
+    # Append coverage results to combined file for "Generate coverage report" step
+    cat cover.out >> coverage.txt
+  done
+
+  cd - > /dev/null
+done
+
+# Remove skipped packages from coverage_results, but the unit tests will still run
+if [ -n "$SKIP_LIST" ]; then
+  for pkg in ${SKIP_LIST//,/ }; do
+    unset coverage_results["$pkg"]
+  done
+fi
+
+# Report failed packages
+if [ ${#failed_packages[@]} -ne 0 ]; then
+  echo ""
+  echo "The following packages failed unit tests and were not checked for coverage:"
+  for pkg in "${failed_packages[@]}"; do
+    echo "$pkg"
+  done
+  echo ""
+fi
+
+# Check if coverage meets the minimum threshold
+echo "Coverage results:"
+for pkg in "${!coverage_results[@]}"; do
+  coverage_output=$(check_coverage $pkg ${coverage_results[$pkg]})
+  RETURN_CODE=$?
+  echo "$coverage_output"
+  if [[ $RETURN_CODE -ne 0 ]]; then
+    FAIL=1
+  fi
+  echo "$coverage_output" >> coverage_results.txt
+done
+
+# Escape newlines and special characters before writing to $GITHUB_OUTPUT
+escaped_coverage=$(cat coverage_results.txt | awk '{printf "%s\\n", $0}')
+echo "coverage=$escaped_coverage" >> $GITHUB_OUTPUT
+
+# Below is for the "Upload coverprofile" and "Generate coverage report" steps
+# --------------------------------------------------------------------------
+
+# Process coverage.txt file to keep the first 'mode: atomic' and remove subsequent ones
+awk 'NR==1 || $0 !~ /^mode: atomic$/' coverage.txt > new_coverage.txt
+# Write to $GITHUB_OUTPUT
+echo "code_coverage_artifact=new_coverage.txt" >> $GITHUB_OUTPUT
 
 exit ${FAIL}

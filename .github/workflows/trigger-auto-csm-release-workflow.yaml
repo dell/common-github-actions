@@ -1,0 +1,51 @@
+# Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+
+# Trigger workflow for auto release of CSM projects
+name: Trigger Release of CSM Drivers and Modules
+
+on:
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    name: Trigger Release of CSM Drivers and Modules
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        repo:
+          [
+            "dell/csi-metadata-retriever",
+            "dell/csi-powerflex",
+            "dell/csi-powermax",
+            "dell/csi-powerscale",
+            "dell/csi-powerstore",
+            "dell/csi-unity",
+            "dell/csm-metrics-powermax",
+            "dell/csm-metrics-powerscale",
+            "dell/csm-metrics-powerstore",
+            "dell/csm-metrics-unity",
+            "dell/csm-operator",
+            "dell/csm-replication",
+            "dell/karavi-authorization",
+            "dell/karavi-resiliency",
+            "dell/karavi-observability",
+            "dell/karavi-metrics-powerflex",
+            "dell/karavi-topology",
+          ]
+
+    steps:
+      - name: Trigger Release of CSM Drivers and Modules
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          # For token information, see: https://github.com/peter-evans/repository-dispatch/tree/main?tab=readme-ov-file#token
+          token: ${{ secrets.CSMBOT_PAT }}
+          repository: ${{ matrix.repo }}
+          event-type: auto-release-workflow
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
