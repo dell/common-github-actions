@@ -98,30 +98,30 @@ jobs:
         sign-commits: true
         delete-branch: true
 
-      - name: Wait for PR to be merged
-        run: |
-          branch="update-dependencies-to-latest-released"
-          echo "Checking if there is an open PR for the branch '$branch'..."
+    - name: Wait for PR to be merged
+      run: |
+        branch="update-dependencies-to-latest-released"
+        echo "Checking if there is an open PR for the branch '$branch'..."
 
-          # Retrieve the list of open PRs for the specified branch.
-          pr_list=$(gh pr list --head "$branch" --json number)
+        # Retrieve the list of open PRs for the specified branch.
+        pr_list=$(gh pr list --head "$branch" --json number)
 
-          # Count the number of open PRs using jq
-          pr_count=$(echo "$pr_list" | jq '. | length')
+        # Count the number of open PRs using jq
+        pr_count=$(echo "$pr_list" | jq '. | length')
 
-          if [ "$pr_count" -eq 0 ]; then
-            echo "No open PR found for the branch '$branch'."
-          else
-              echo "Waiting for the PR to be merged. Please merge the PR manually."
-              while true; do
-                  pr_status=$(gh pr view "$branch" --json state --jq '.state')
-                  if [ "$pr_status" = "MERGED" ]; then
-                      echo "PR has been merged."
-                      break
-                  fi
-                  echo "PR not merged yet. Sleeping for 1 minute..."
-                  sleep 60
-              done
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        if [ "$pr_count" -eq 0 ]; then
+          echo "No open PR found for the branch '$branch'."
+        else
+            echo "Waiting for the PR to be merged. Please merge the PR manually."
+            while true; do
+                pr_status=$(gh pr view "$branch" --json state --jq '.state')
+                if [ "$pr_status" = "MERGED" ]; then
+                    echo "PR has been merged."
+                    break
+                fi
+                echo "PR not merged yet. Sleeping for 1 minute..."
+                sleep 60
+            done
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
