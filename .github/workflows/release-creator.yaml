@@ -26,6 +26,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Fetch the full history including tags
+          ref: ${{ github.ref }} # Checkout the branch from which the workflow is triggered
 
       - name: Get latest release
         run: |
