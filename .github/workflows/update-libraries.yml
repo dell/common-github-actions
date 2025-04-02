@@ -126,6 +126,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
+    # Needed for pulling the latest commits from main branch once the PR gets merged from the previous step
     - name: Pull latest changes from main
       run: |
         git pull origin main
