@@ -2,22 +2,24 @@ name: Check License Header
 
 on:
   workflow_call:
-
 jobs:
   check-license-header:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        with:
-          repository: "dell/common-github-actions.git"
-          ref: "feature/license-validation"
-          path: "./common-github-actions"
+      - name: Get config
+        run: |
+          curl -L -o .licenserc.yaml https://raw.githubusercontent.com/dell/common-github-actions/refs/heads/feature/license-validation/.github/configs/.licenserc.yaml
+        # with:
+        #   repository: "dell/common-github-actions.git"
+        #   ref: "feature/license-validation"
+        #   path: "./common-github-actions"
 
       - name: Check License Header
         uses: apache/skywalking-eyes/header@main
         with:
-          config: ./common-github-actions/.github/configs/.licenserc.yaml
+          config: .licenserc.yaml
           mode: check
 
   fix-license-headers:
@@ -25,15 +27,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        with:
-          repository: "dell/common-github-actions.git"
-          ref: "feature/license-validation"
-          path: "./common-github-actions"
+        # with:
+        #   repository: "dell/common-github-actions.git"
+        #   ref: "feature/license-validation"
+        #   path: "./common-github-actions"
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Get config
+        run: |
+          curl -L -o .licenserc.yaml https://raw.githubusercontent.com/dell/common-github-actions/refs/heads/feature/license-validation/.github/configs/.licenserc.yaml
 
       - name: Fix License Header
         uses: apache/skywalking-eyes/header@main
         with:
-          config: ./common-github-actions/.github/configs/.licenserc.yaml
+          config: .licenserc.yaml
           mode: fix
 
       - name: Commit changes
