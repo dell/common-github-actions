@@ -26,6 +26,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Fetch the full history including tags
+          ref: ${{ github.ref }} # Checkout the branch from which the workflow is triggered
 
       - name: Get latest release
         run: |
@@ -39,21 +40,21 @@ jobs:
         run: |
           current_version=$MY_VAR
           current_version=(${current_version#v}) # remove 'v' prefix from $current_version"
-          
+
           IFS='.' read -r -a version_parts <<< "$current_version"              
-          
+
           if "${{ inputs.version == 'major' }}"; then
               # major version bump up
               version_parts[0]=$(expr ${version_parts[0]} + 1)
               new_version="${version_parts[0]}.0.0"
           fi
-          
+
           if "${{ inputs.version == 'minor' }}"; then
               # minor version bump up
               version_parts[1]=$(expr ${version_parts[1]} + 1)
               new_version="${version_parts[0]}.${version_parts[1]}.0"
           fi
-          
+
           if "${{ inputs.version == 'patch' }}"; then
               # patch version bump up
               version_parts[2]=$(expr ${version_parts[2]} + 1)
@@ -82,15 +83,15 @@ jobs:
 
       - name: Download binary
         uses: actions/download-artifact@v4.2.1
-  
+
       # This is required to check if the binary exists and update its name to the release.
-      - run: |            
-            FILE="./cert-csi-linux-amd64/cert-csi-linux-amd64"
-            if [ -d "repctl-linux-amd64" ]; then
-                FILE="./repctl-linux-amd64/repctl-linux-amd64"
-            fi
-            echo "File name: $FILE"
-            echo "FILE_NAME=$FILE" >> $GITHUB_ENV
+      - run: |
+          FILE="./cert-csi-linux-amd64/cert-csi-linux-amd64"
+          if [ -d "repctl-linux-amd64" ]; then
+              FILE="./repctl-linux-amd64/repctl-linux-amd64"
+          fi
+          echo "File name: $FILE"
+          echo "FILE_NAME=$FILE" >> $GITHUB_ENV
         shell: bash
 
       - name: Create Release
@@ -112,5 +113,12 @@ jobs:
         env:
           REL_VERSION: ${{ env.REL_VERSION }}
         run: |
-          git checkout -b release/$REL_VERSION
-          git push origin release/$REL_VERSION
+          branch_name="release/$REL_VERSION"
+          git fetch origin
+          if git ls-remote --heads origin $branch_name | grep $branch_name; then
+            echo "Branch name $branch_name already exists. Skipping branch creation."
+            git checkout $branch_name
+          else
+            git checkout -b $branch_name
+            git push origin $branch_name
+          fi
