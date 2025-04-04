@@ -5,6 +5,14 @@ on:
     inputs:
       config-path: { required: true, type: string }
 jobs:
+  print-config:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Config
+        run: |
+          echo ${{ inputs.config-path }}
+          ls ${{ inputs.config-path }}
+          ls -l 
   check-license-header:
     runs-on: ubuntu-latest
     steps:
@@ -13,7 +21,7 @@ jobs:
       - name: Check License Header
         uses: apache/skywalking-eyes/header@main
         with:
-          config: ${{ inputs.config-path }}
+          config: ./configs/.licenserc.yaml
           mode: check
 
   fix-license-headers:
