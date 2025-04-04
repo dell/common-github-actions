@@ -21,7 +21,7 @@ header:
     - 'go.mod'
     - 'go.sum'
     - '.licenserc.yaml'
-    - 'common-github-actions/**'
+    - '.git'
   comment: on-failure
   dependency:
     files:
