@@ -2,8 +2,7 @@ name: Check License Header
 
 on:
   workflow_call:
-    inputs:
-      config-path: { required: true, type: string }
+
 jobs:
   check-license-header:
     runs-on: ubuntu-latest
@@ -11,13 +10,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          repository: 'dell/common-github-actions.git'
-          ref: 'feature/license-validation'
-          path: './common-github-actions'
-        
-      - name: Print Config
-        run: |
-          ls -l
+          repository: "dell/common-github-actions.git"
+          ref: "feature/license-validation"
+          path: "./common-github-actions"
+
       - name: Check License Header
         uses: apache/skywalking-eyes/header@main
         with:
@@ -29,11 +25,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          repository: "dell/common-github-actions.git"
+          ref: "feature/license-validation"
+          path: "./common-github-actions"
+
       - name: Fix License Header
         uses: apache/skywalking-eyes/header@main
         with:
-          config: ${{ inputs.config-path }}
+          config: ./common-github-actions/.github/configs/.licenserc.yaml
           mode: fix
+
       - name: Commit changes
         uses: EndBug/add-and-commit@v4
         with:
