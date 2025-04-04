@@ -10,6 +10,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          repository: 'github.com/dell/common-github-actions.git'
+          ref: 'main'
+          path: './common-github-actions'
         
       - name: Print Config
         run: |
@@ -19,7 +23,7 @@ jobs:
       - name: Check License Header
         uses: apache/skywalking-eyes/header@main
         with:
-          config: ./configs/.licenserc.yaml
+          config: ./common-github-actions/.github/configs/.licenserc.yaml
           mode: check
 
   fix-license-headers:
