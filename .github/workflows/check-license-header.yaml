@@ -10,11 +10,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        
       - name: Print Config
         run: |
           echo ${{ inputs.config-path }}
           ls ${{ inputs.config-path }}
-          ls
+          ls -l
       - name: Check License Header
         uses: apache/skywalking-eyes/header@main
         with:
