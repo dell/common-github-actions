@@ -12,13 +12,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: 'dell/common-github-actions.git'
-          ref: 'main'
+          ref: 'feature/license-validation'
           path: './common-github-actions'
         
       - name: Print Config
         run: |
-          echo ${{ inputs.config-path }}
-          ls ${{ inputs.config-path }}
           ls -l
       - name: Check License Header
         uses: apache/skywalking-eyes/header@main
