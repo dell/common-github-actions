@@ -11,7 +11,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          repository: 'github.com/dell/common-github-actions.git'
+          repository: 'dell/common-github-actions.git'
           ref: 'main'
           path: './common-github-actions'
         
