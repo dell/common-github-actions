@@ -11,10 +11,6 @@ jobs:
       - name: Get config
         run: |
           curl -L -o .licenserc.yaml https://raw.githubusercontent.com/dell/common-github-actions/refs/heads/feature/license-validation/.github/configs/.licenserc.yaml
-        # with:
-        #   repository: "dell/common-github-actions.git"
-        #   ref: "feature/license-validation"
-        #   path: "./common-github-actions"
 
       - name: Check License Header
         uses: apache/skywalking-eyes/header@main
@@ -27,10 +23,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        # with:
-        #   repository: "dell/common-github-actions.git"
-        #   ref: "feature/license-validation"
-        #   path: "./common-github-actions"
 
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -43,6 +35,9 @@ jobs:
         with:
           config: .licenserc.yaml
           mode: fix
+      - name: Cleanup
+        run: |
+          rm -rf .licenserc.yaml
 
       - name: Commit changes
         uses: EndBug/add-and-commit@v4
