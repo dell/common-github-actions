@@ -5,19 +5,16 @@ on:
     inputs:
       config-path: { required: true, type: string }
 jobs:
-  print-config:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Print Config
-        run: |
-          echo ${{ inputs.config-path }}
-          ls ${{ inputs.config-path }}
-          ls -l 
   check-license-header:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Print Config
+        run: |
+          echo ${{ inputs.config-path }}
+          ls ${{ inputs.config-path }}
+          ls
       - name: Check License Header
         uses: apache/skywalking-eyes/header@main
         with:
