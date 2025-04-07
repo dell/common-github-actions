@@ -116,9 +116,13 @@ for submodule in $submodules; do
     fi
 
     echo "$output"
+    if echo "$output" | grep -q "go mod tidy"; then
+      echo "Please run "go mod tidy" for $package"
+      exit 1
+    fi
 
     if [ "${TEST_RETURN_CODE}" != "0" ]; then
-      echo "test failed for package $package with return code $TEST_RETURN_CODE, not proceeding with coverage check"
+      echo "Test failed for package $package with return code $TEST_RETURN_CODE, not proceeding with coverage check"
       failed_packages+=("$package")
       FAIL=1
     fi
