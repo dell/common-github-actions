@@ -1,26 +1,43 @@
+---
+version: "2"
 run:
-  timeout: 20m
-  tests: true
   modules-download-mode: readonly
+  tests: true
+output:
+  formats:
+    text:
+      path: stdout
+      print-linter-name: true
+      print-issued-lines: true
+  sort-order:
+    - file
+linters:
+  default: none
+  enable:
+    - gosec
+    - govet
+    - revive
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
   new: false
-output:
-  formats:
-    - format: colored-line-number
-  print-linter-name: true
-  sort-results: true
-  print-issued-lines: true
-linters:
-  disable-all: true
-  fast: false
+formatters:
   enable:
-    # A stricter replacement for gofmt.
     - gofumpt
-    # Inspects source code for security problems.
-    - gosec
-    # Check for correctness of programs.
-    - govet
-    # Drop-in replacement of golint.
-    - revive
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
