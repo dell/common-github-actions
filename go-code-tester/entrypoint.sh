@@ -91,18 +91,14 @@ for submodule in $submodules; do
   if [[ -n $EXCLUDE_DIRECTORIES ]]; then
     echo "Excluding the following directories: $EXCLUDE_DIRECTORIES"
     packages=$(go list ./... | grep -vE $EXCLUDE_DIRECTORIES)
-    # In some cases, this might fail with a "go mod tidy" error
-    if [ $? -ne 0 ]; then
-      echo "Please review failure in $submodule"
-      exit 1
-    fi
   else
     packages=$(go list ./...)
-    # In some cases, this might fail with a "go mod tidy" error
-    if [ $? -ne 0 ]; then
-      echo "Please review failure in $submodule"
-      exit 1
-    fi
+  fi
+
+  # Check go list for errors, including "go mod tidy" errors
+  if [ $? -ne 0 ]; then
+    echo "Please review failure in $submodule"
+    exit 1
   fi
 
   for package in $packages; do
