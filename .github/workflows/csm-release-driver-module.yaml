@@ -36,7 +36,7 @@ jobs:
           go-version: "1.24"
       - name: Install dependencies
         run: go mod tidy
-      - name: Build binaries        
+      - name: Build binaries
         run: |
           echo "Building binaries to attach to the release if any..."
           if "${{ inputs.images == 'cert-csi' }}"; then
@@ -69,7 +69,9 @@ jobs:
       version: ${{ inputs.version }}
     secrets: inherit
 
+  # we will not going to push images to dockerhub and quay for the patch release as we do not have the image to be retagged, The developers has to build and push it manually to the repository
   push-images:
+    if: ${{ inputs.version == 'patch' || inputs.version == 'minor' || inputs.version == 'major' }}
     name: Release images to Dockerhub and Quay
     needs: release-and-tag
     runs-on: ubuntu-latest
@@ -88,7 +90,7 @@ jobs:
             echo "Current latest version of $image:$latest_version"
 
             IFS='.' read -r -a version_parts <<< "$latest_version"
-          
+
             if "${{ inputs.version == 'major' }}"; then
               # major version bump up
               version_parts[0]=$(expr ${version_parts[0]} + 1)
@@ -104,7 +106,7 @@ jobs:
               version_parts[2]=$(expr ${version_parts[2]} + 1)
               new_version="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
             fi
-          
+
            echo "Pushing image: $image:$new_version"                      
            docker pull dellemc/$image:nightly
            docker tag dellemc/$image:nightly dellemc/$image:$new_version
@@ -118,16 +120,16 @@ jobs:
         run: |
           # Push each comma seperated images by splitting the string with ','
           images_list=$(echo '${{ inputs.images }}' | tr -d '[]"' | tr ',' ' ')
-          
+
           REPOSITORY="dell/container-storage-modules"
 
           for image in $images_list; do
-          
+
             latest_version=$(curl -s https://quay.io/api/v1/repository/$REPOSITORY/$image/tag/?limit=100 | jq -r '.tags[].name' | sort -V | tail -n 1)
             echo "Current latest version of $image:$latest_version"
 
             IFS='.' read -r -a version_parts <<< "$latest_version"
-          
+
             if "${{ inputs.version == 'major' }}"; then
               # major version bump up
               version_parts[0]=$(expr ${version_parts[0]} + 1)
@@ -143,7 +145,7 @@ jobs:
               version_parts[2]=$(expr ${version_parts[2]} + 1)
               new_version="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
             fi
-          
+
            # Get manifest digest
             SHA=$(curl -s --location --request GET https://quay.io/api/v1/repository/$REPOSITORY/$image/tag?specificTag=nightly --header 'Content-Type: application/json' --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' | jq -r '.tags[0].manifest_digest')            
             echo "Pushing image: $image:$new_version"
@@ -155,7 +157,7 @@ jobs:
             --data-raw '{
               "manifest_digest": "'"$SHA"'"
             }'
-        
+
             curl --location --request PUT https://quay.io/api/v1/repository/$REPOSITORY/$image/tag/latest \
             --header 'Content-Type: application/json' \
             --header 'Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}' \
