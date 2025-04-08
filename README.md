@@ -27,6 +27,24 @@ This repository contains a set of reusable actions and workflows, designed to be
 - [Support](#support)
 - [Security](./docs/SECURITY.md)
 - [About](#about)
+- [GitHub Actions](#implemented-actions)
+  - [Code Santizer](#code-sanitizer)
+  - [Go Formatter and Vetter](#go-code-formatter-vetter)
+  - [Go Unit Tests](#go-code-tester)
+  - [Malware Scanner](#malware-scanner)
+- [GitHub Workflows](#implemented-workflows)
+  - [Go Static Analysis](#go-static-analysis)
+  - [Update Go Version](#go-version-workflow)
+  - [Go Common](#go-common)
+  - [Release CSM Driver and Modules](#csm-release-driver-module)
+  - [Update Dell Libraries to Latest Commits](#update-libraries-to-commits)
+  - [Update Dell Libraries](#update-libraries)
+  - [Dockerfile Modifications](#image-version-workflow)
+  - [Dell Libraries Specific Workflows](#dell-libraries-specific-workflows)
+    - [Release Dell Libraries](#csm-release-libs)
+  - [CSM Operator Specific Workflows](#csm-operator-specific-workflows)
+    - [Update Operator Version](#operator-version-update)
+    - [Update Sidecar Versions](#sidecar-version-update)
 
 ## Implemented Actions
 
@@ -34,9 +52,9 @@ This repository contains a set of reusable actions and workflows, designed to be
 
 [GitHub Action to scan the source for non-inclusive words and language.](https://github.com/dell/common-github-actions/blob/main/code-sanitizer/README.md)
 
-### go-code-formatter-linter-vetter
+### go-code-formatter-vetter
 
-[GitHub Action to run go formatter, linter, and vetter scans against the GO source files](https://github.com/dell/common-github-actions/blob/main/go-code-formatter-linter-vetter/README.md)
+[GitHub Action to run go formatter, linter, and vetter scans against the GO source files](https://github.com/dell/common-github-actions/blob/main/go-code-formatter-vetter/README.md)
 
 ### go-code-tester
 
@@ -75,38 +93,6 @@ jobs:
     name: Golang Validation
 ```
 
-### csm-release-libs
-
-This workflow automates the release process for all the Go Client Libraries:
-
-The workflow accepts version as an input and releases that particular version. Below is the example usage in gobrick repository. If no version is specified then it will automatically bump up the major version.
-
-```yaml
-name: Release Gobrick
-# Invocable as a reusable workflow
-# Can be manually triggered
-on:
-  workflow_call:
-  workflow_dispatch:
-    inputs:
-      option:
-        description: 'Select version to release'
-        required: true
-        type: choice
-        default: 'minor'
-        options:
-          - major
-          - minor
-          - patch
-jobs:
-  csm-release:
-    uses: dell/common-github-actions/.github/workflows/csm-release-libs.yaml@main
-    name: Release Go Client Libraries
-    with:
-      version: ${{ github.event.inputs.option }}
-    secrets: inherit
-```
-
 ### go-version-workflow
 
 This workflow updates to the latest go version in repositories that utilize Golang as the primary development language. The workflow is triggered by https://github.com/dell/common-github-actions/actions/workflows/trigger-go-workflow.yaml or can be triggered manually.
@@ -133,7 +119,7 @@ jobs:
 
 This workflow runs multiple checks against repositories that utilize Golang as the primary development language. Currently, this workflow will run unit tests, check package coverage, gosec, go formatter and vetter, malware scan, and auto-merge Dependabot PRs only.
 
-```
+```yaml
 name: Common Workflows
 on:  # yamllint disable-line rule:truthy
   push:
@@ -142,6 +128,9 @@ on:  # yamllint disable-line rule:truthy
     branches: ["**"]
 
 jobs:
+  go-static-analysis:
+    name: Golang Validation
+    uses: dell/common-github-actions/.github/workflows/go-static-analysis.yaml@main
 
   common:
     name: Quality Checks
@@ -172,6 +161,7 @@ on:  # yamllint disable-line rule:truthy
           - major
           - minor
           - patch
+
 jobs:
   csm-release:
     uses: dell/common-github-actions/.github/workflows/csm-release-driver-module.yaml@main
@@ -234,10 +224,11 @@ jobs:
     secrets: inherit
 ```
 
-## update-libraries-to-commits
+### update-libraries-to-commits
 This workflow updates Dell libraries to their **latest commits** in repositories that utilize Golang as the primary development language. The workflow is triggered automatically, but can be triggered manually as well.
 The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following:
-```
+
+```yaml
 name: Dell Libraries Commit Update
 on:  # yamllint disable-line rule:truthy
   workflow_dispatch:
@@ -251,10 +242,11 @@ jobs:
     secrets: inherit
 ```
 
-## update-libraries
+### update-libraries
 This workflow updates Dell libraries to the **latest released** version in repositories that utilize Golang as the primary development language. The workflow can be manually triggered only.
 The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following:
-```
+
+```yaml
 name: Dell Libraries Latest Update
 on:  # yamllint disable-line rule:truthy
   workflow_dispatch:
@@ -268,7 +260,7 @@ jobs:
     secrets: inherit
 ```
 
-### image-update-workflow
+### image-version-workflow
 
 This workflow automates the image and release version update in Dockerfiles. The workflow accepts one parameter - Version to release (major, minor, patch).
 The manual workflow is recommended to be used for out of band releases such as patch releases or when the increment is a major version change.
@@ -296,8 +288,37 @@ jobs:
     secrets: inherit
 
 ```
-=======
-## csm-operator version update to latest
+## Dell Libraries Specific Workflows
+### csm-release-libs
+
+This workflow automates the release process for all the Go Client Libraries:
+
+The workflow accepts version as an input and releases that particular version. Below is the example usage in gobrick repository. If no version is specified then it will automatically bump up the major version.
+
+```yaml
+name: Release Gobrick
+# Invocable as a reusable workflow
+# Can be manually triggered
+on:
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (major, minor, patch) Ex: 1.0.0'
+        required: true
+    repository_dispatch:
+      types: [release-go-libs]
+
+  csm-release:
+    uses: dell/common-github-actions/.github/workflows/csm-release-libs.yaml@main
+    name: Release Go Client Libraries
+    with:
+      version: ${{ github.event.inputs.option }}
+    secrets: inherit
+```
+
+## CSM Operator Specific Workflows
+### operator-version-update
 This workflow updates csm-operator repository with latest version of the operator for the given release.
 It also updates the CSM program version wherever it is used in csm-operator repository.
 
@@ -306,7 +327,8 @@ This workflow accepts total three parameters as input to the workflow (csm versi
 It expects a script to be present in the csm-operator repository ".github/scripts/operator-version-update.sh".
 
 Workflow needs to be triggered manually from csm-operator repository. Below is the example usage in csm-operator repository.
-```
+
+```yaml
 name: Update CSM Operator version
 # reusable workflow
 on:  # yamllint disable-line rule:truthy
@@ -333,7 +355,7 @@ jobs:
     secrets: inherit
 ```
 
-## Update all sidecar versions to latest available, in csm-operator
+## sidecar-version-update
 This workflow updates csm-operator repository with latest versions of the sidecars.
 
 This workflow accepts total eight parameters as input to the workflow -
@@ -343,7 +365,8 @@ Below is the example usage in csm-operator repository.
 It expects a script to be present in the csm-operator repository ".github/scripts/sidecar-version-update.sh".
 
 Workflow needs to be triggered manually from csm-operator repository. Below is the example usage in csm-operator repository.
-```
+
+```yaml
 name: Update sidecar version
 # reusable workflow
 on:  # yamllint disable-line rule:truthy
