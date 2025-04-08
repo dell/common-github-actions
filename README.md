@@ -153,7 +153,7 @@ on:  # yamllint disable-line rule:truthy
   workflow_dispatch:
     inputs:
       option:
-        description: 'Choose the type of semantic versioning increment to apply to the release: "major", "minor", or "patch". Example: Choosing "minor" will increment the minor version number and release new images. *** Choosing "patch" not will release any images, that should be done manually. ***'
+        description: 'Select version to release'
         required: true
         type: choice
         default: 'minor'
