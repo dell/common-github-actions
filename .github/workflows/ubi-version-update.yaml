@@ -17,10 +17,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+        - name: Checkout repository
+          uses: actions/checkout@v2
+  
         - name: Install skopeo
           run: |
-            sudo apt-get update
-            sudo apt-get install -y skopeo
-
-        - name: Verify skopeo installation
-          run: skopeo --version
+            if ! command -v skopeo &> /dev/null
+            then
+                sudo apt-get update
+                sudo apt-get install -y skopeo
+            fi
+  
+        - name: Get UBI Micro Image Digest
+          id: get-digest
+          run: |
+            digest=$(skopeo inspect docker://registry.access.redhat.com/ubi9/ubi-micro:latest | jq -r '.Digest')
+            echo "Digest: $digest"
+            echo "::set-output name=digest::$digest"
+  
+        - name: Print Digest
+          run: echo "The latest UBI micro image digest is ${{ steps.get-digest.outputs.digest }}"
