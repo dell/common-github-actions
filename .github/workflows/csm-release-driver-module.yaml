@@ -64,7 +64,7 @@ jobs:
   release-and-tag:
     name: Tag and Release
     needs: build-and-scan
-    uses: dell/common-github-actions/.github/workflows/release-creator.yaml@main
+    uses: dell/common-github-actions/.github/workflows/release-creator.yaml@bugfix/patch-release
     with:
       version: ${{ inputs.version }}
     secrets: inherit
