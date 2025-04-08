@@ -73,14 +73,14 @@ jobs:
           echo "REL_VERSION=v${new_version}" >> $GITHUB_ENV
 
       # To import GPG key and configure git for signed commits (Annotated tags)
-      - name: Import GPG key
-        uses: crazy-max/ghaction-import-gpg@v6
-        with:
-          gpg_private_key: ${{ secrets.CSM_GPG_PRIVATE_KEY }}
-          git_user_signingkey: true
-          git_commit_gpgsign: true
-          git_tag_gpgsign: true
-          git_config_global: true
+      # - name: Import GPG key
+      #   uses: crazy-max/ghaction-import-gpg@v6
+      #   with:
+      #     gpg_private_key: ${{ secrets.CSM_GPG_PRIVATE_KEY }}
+      #     git_user_signingkey: true
+      #     git_commit_gpgsign: true
+      #     git_tag_gpgsign: true
+      #     git_config_global: true
 
       - name: Create new tag
         env:
