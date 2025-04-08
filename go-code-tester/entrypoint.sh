@@ -89,10 +89,16 @@ for submodule in $submodules; do
 
   # Get the list of packages
   if [[ -n $EXCLUDE_DIRECTORIES ]]; then
-    echo "excluding the following directories: $EXCLUDE_DIRECTORIES"
+    echo "Excluding the following directories: $EXCLUDE_DIRECTORIES"
     packages=$(go list ./... | grep -vE $EXCLUDE_DIRECTORIES)
   else
     packages=$(go list ./...)
+  fi
+
+  # Check go list for errors, including "go mod tidy" errors
+  if [ $? -ne 0 ]; then
+    echo "Please review failure in $submodule"
+    exit 1
   fi
 
   for package in $packages; do
@@ -118,7 +124,7 @@ for submodule in $submodules; do
     echo "$output"
 
     if [ "${TEST_RETURN_CODE}" != "0" ]; then
-      echo "test failed for package $package with return code $TEST_RETURN_CODE, not proceeding with coverage check"
+      echo "Test failed for package $package with return code $TEST_RETURN_CODE, not proceeding with coverage check"
       failed_packages+=("$package")
       FAIL=1
     fi
