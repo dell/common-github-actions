@@ -75,7 +75,11 @@ check_coverage() {
 }
 
 # Find all directories containing go.mod files
-submodules=$(find . -name 'go.mod' -exec dirname {} \;)
+if [ -n "$EXCLUDE_DIRECTORIES" ]; then
+    submodules=$(find . -name 'go.mod' -not -path "$EXCLUDE_DIRECTORIES/*" -exec dirname {} \;)
+else
+    submodules=$(find . -name 'go.mod' -exec dirname {} \;)
+fi
 
 # Submodules may not exist if testing in a specific TEST_FOLDER
 if [[ -z "$submodules" ]]; then
@@ -98,7 +102,7 @@ for submodule in $submodules; do
   # Check go list for errors, including "go mod tidy" errors
   if [ $? -ne 0 ]; then
     echo "Please review failure in $submodule"
-    FAIL=1
+    exit 1
   fi
 
   for package in $packages; do
