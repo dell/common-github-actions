@@ -75,7 +75,12 @@ check_coverage() {
 }
 
 # Find all directories containing go.mod files
-submodules=$(find . -name 'go.mod' -exec dirname {} \;)
+if [ -n "$EXCLUDE_DIRECTORIES" ]; then
+    EXCLUDED_PATHS=$(echo "$EXCLUDE_DIRECTORIES" | sed 's/|/\/\*\" -not -path \"/g' | sed 's/^/-not -path \"/' | sed 's/$/\/\*\"/')
+    submodules=$(eval find . -name 'go.mod' "$EXCLUDED_PATHS" -exec dirname {} +)
+else
+    submodules=$(find . -name 'go.mod' -exec dirname {} +)
+fi
 
 # Submodules may not exist if testing in a specific TEST_FOLDER
 if [[ -z "$submodules" ]]; then
