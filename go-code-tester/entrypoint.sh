@@ -98,7 +98,7 @@ for submodule in $submodules; do
   # Check go list for errors, including "go mod tidy" errors
   if [ $? -ne 0 ]; then
     echo "Please review failure in $submodule"
-    exit 1
+    FAIL=1
   fi
 
   for package in $packages; do
