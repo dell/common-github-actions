@@ -413,6 +413,25 @@ jobs:
     secrets: inherit
 ```
 
+### ubi-image-update
+
+This workflow updates UBI9 micro image SHAID to the latest. The workflow is triggered by a cron job that runs on every Monday at mid-day. It also can be triggered manually from https://github.com/dell/csm/actions/workflows/ubi-image-update.yaml.
+
+The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following
+
+```yaml
+name: UBI Image Update
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  go-version-update:
+    uses: dell/common-github-actions/.github/workflows/ubi-version-update.yaml@main
+    name: Go Version Update
+    secrets: inherit
+```
+
 ## Support
 
 Don’t hesitate to ask! Contact the team and community on [our support](./docs/SUPPORT.md).
