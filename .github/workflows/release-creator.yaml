@@ -14,7 +14,7 @@ on:
   workflow_call:
     inputs:
       version:
-        description: 'Semantic version to release. Ex: major, minor, or patch'
+        description: "Semantic version to release. Ex: major, minor, or patch"
         required: true
         type: string
 jobs:
@@ -28,13 +28,22 @@ jobs:
           fetch-depth: 0 # Fetch the full history including tags
           ref: ${{ github.ref }} # Checkout the branch from which the workflow is triggered
 
-      - name: Get latest release
+      # we will set the release version based on the user given input for older patch releases only ex: n-1, n-2
+      - name: Set release version
+        if: ${{ inputs.version != 'patch' || inputs.version != 'minor' || inputs.version != 'major' }}
         run: |
-          latest_version=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "REL_VERSION=v${{ inputs.version }}" >> $GITHUB_ENV
+
+      #  we will auto bump up the version if it is only patch, minor, or major else we will just use the user given input
+      - name: Get latest release
+        if: ${{ inputs.version == 'patch' || inputs.version == 'minor' || inputs.version == 'major' }}
+        run: |
+          latest_version=$(curl -s https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/latest | jq -r .tag_name)
           echo "MY_VAR=${latest_version}" >> $GITHUB_ENV            
           echo "latest_version=${latest_version}"
 
       - name: Increment version
+        if: ${{ inputs.version == 'patch' || inputs.version == 'minor' || inputs.version == 'major' }}
         env:
           MY_VAR: ${{ env.MY_VAR }}
         run: |

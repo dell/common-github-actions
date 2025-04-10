@@ -1,0 +1,54 @@
+# Copyright (c) 2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+
+# This workflow is used to check for license header in the source code.
+name: Check License Header
+
+on:
+  workflow_call:
+jobs:
+  check-license-header:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Get config
+        run: |
+          curl -L -o .licenserc.yaml https://raw.githubusercontent.com/dell/common-github-actions/refs/heads/feature/license-validation/.github/configs/.licenserc.yaml
+
+      - name: Check License Header
+        uses: apache/skywalking-eyes/header@main
+        with:
+          config: .licenserc.yaml
+          mode: check
+
+  fix-license-headers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get config
+        run: |
+          curl -L -o .licenserc.yaml https://raw.githubusercontent.com/dell/common-github-actions/refs/heads/feature/license-validation/.github/configs/.licenserc.yaml
+
+      - name: Fix License Header
+        uses: apache/skywalking-eyes/header@main
+        with:
+          config: .licenserc.yaml
+          mode: fix
+      - name: Cleanup
+        run: |
+          rm -rf .licenserc.yaml
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v4
+        with:
+          author_name: License Bot
+          author_email: license_bot@github.com
+          message: "Automatic application of license header"
