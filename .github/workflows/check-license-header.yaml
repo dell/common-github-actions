@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Get config
         run: |
           curl -L -o .licenserc.yaml https://raw.githubusercontent.com/dell/common-github-actions/refs/heads/feature/license-validation/.github/configs/.licenserc.yaml
@@ -31,10 +31,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Checkout repository
-        uses: actions/checkout@v2
       - name: Get config
         run: |
           curl -L -o .licenserc.yaml https://raw.githubusercontent.com/dell/common-github-actions/refs/heads/feature/license-validation/.github/configs/.licenserc.yaml
