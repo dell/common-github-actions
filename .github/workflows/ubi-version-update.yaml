@@ -82,7 +82,7 @@ jobs:
       if: env.sha_mismatch == 'true'
       id: generate-token
       with:
-        app-id: ${{ vars.CSM_RELEASE_APP_ID }}
+       # app-id: ${{ vars.CSM_RELEASE_APP_ID }}
         private-key: ${{ secrets.CSM_RELEASE_APP_PRIVATE_KEY }}
 
     - name: Create Pull Request
