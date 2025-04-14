@@ -54,12 +54,6 @@ jobs:
         release=$(skopeo inspect docker://registry.access.redhat.com/ubi9/ubi:latest | jq -r '.Labels.release')
         echo "release=$release" >> $GITHUB_ENV
 
-    - name: Checkout target repository
-      uses: actions/checkout@v4
-      with:
-        repository: dell/csm
-        path: csm
-
     - name: Compare and update SHA in csm-common.mk
       id: update-sha
       run: |
