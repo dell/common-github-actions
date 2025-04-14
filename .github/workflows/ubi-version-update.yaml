@@ -68,7 +68,7 @@ jobs:
 
         if [ "$current_sha" != "$latest_sha" ]; then
           echo "SHA mismatch, updating..."
-          sed -i "s|UBI_BASEIMAGE=.*|UBI_BASEIMAGE=registry.access.redhat.com/ubi9/ubi-micro@$latest_sha|" csm-repo/config/csm-common.mk
+          sed -i "s|UBI_BASEIMAGE=.*|UBI_BASEIMAGE=registry.access.redhat.com/ubi9/ubi-micro@$latest_sha|" csm/config/csm-common.mk
           echo "sha_mismatch=true" >> $GITHUB_ENV
         else
           echo "SHA is up-to-date"
@@ -78,12 +78,12 @@ jobs:
 
  # Needed for signing commits using Github App tokens
     # See: https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#commit-signing
-    # - uses: actions/create-github-app-token@v2.0.2
-    #   if: env.sha_mismatch == 'true'
-    #   id: generate-token
-    #   with:
-    #     app-id: ${{ vars.CSM_RELEASE_APP_ID }}
-    #     private-key: ${{ secrets.CSM_RELEASE_APP_PRIVATE_KEY }}
+    - uses: actions/create-github-app-token@v2.0.2
+      if: env.sha_mismatch == 'true'
+      id: generate-token
+      with:
+        app-id: ${{ vars.CSM_RELEASE_APP_ID }}
+        private-key: ${{ secrets.CSM_RELEASE_APP_PRIVATE_KEY }}
 
     - name: Create Pull Request
       if: env.sha_mismatch == 'true'
