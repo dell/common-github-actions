@@ -58,13 +58,12 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: dell/csm
-        token: ${{ secrets.COMMON_GITHUB_ACTIONS_PAT }}
-        path: csm-repo
+        path: csm
 
     - name: Compare and update SHA in csm-common.mk
       id: update-sha
       run: |
-        current_sha=$(grep 'UBI_BASEIMAGE=' csm-repo/config/csm-common.mk | cut -d'@' -f2)
+        current_sha=$(grep 'UBI_BASEIMAGE=' csm/config/csm-common.mk | cut -d'@' -f2)
         latest_sha=${{ env.latest_sha }}
 
         if [ "$current_sha" != "$latest_sha" ]; then
