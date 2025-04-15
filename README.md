@@ -136,6 +136,9 @@ jobs:
   common:
     name: Quality Checks
     uses: dell/common-github-actions/.github/workflows/go-common.yml@main
+  check-license-header:
+    name: Check License Header
+    uses: dell/common-github-actions/.github/workflows/check-license-header.yaml@main
 ```
 
 ### csm-release-driver-module
@@ -162,7 +165,11 @@ on:  # yamllint disable-line rule:truthy
           - major
           - minor
           - patch
-
+          - n-1/n-2 patch (Provide input in the below box)
+      version:
+        description: "Patch version to release. example: 2.1.x (Use this only if n-1/n-2 patch is selected)"
+        required: false
+        type: string
 jobs:
   csm-release:
     uses: dell/common-github-actions/.github/workflows/csm-release-driver-module.yaml@main
