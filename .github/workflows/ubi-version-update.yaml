@@ -57,12 +57,13 @@ jobs:
     - name: Compare and update SHA in csm-common.mk
       id: update-sha
       run: |
-        current_sha=$(grep 'UBI_BASEIMAGE=' csm/config/csm-common.mk | cut -d'@' -f2)
+        current_sha=$(grep 'UBI_BASEIMAGE=' config/csm-common.mk | cut -d'@' -f2)
+        echo "current_sha=$current_sha"
         latest_sha=${{ env.latest_sha }}
 
         if [ "$current_sha" != "$latest_sha" ]; then
           echo "SHA mismatch, updating..."
-          sed -i "s|UBI_BASEIMAGE=.*|UBI_BASEIMAGE=registry.access.redhat.com/ubi9/ubi-micro@$latest_sha|" csm/config/csm-common.mk
+          sed -i "s|UBI_BASEIMAGE=.*|UBI_BASEIMAGE=registry.access.redhat.com/ubi9/ubi-micro@$latest_sha|" config/csm-common.mk
           echo "sha_mismatch=true" >> $GITHUB_ENV
         else
           echo "SHA is up-to-date"
