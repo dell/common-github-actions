@@ -40,6 +40,7 @@ This repository contains a set of reusable actions and workflows, designed to be
   - [Update Dell Libraries to Latest Commits](#update-libraries-to-commits)
   - [Update Dell Libraries](#update-libraries)
   - [Dockerfile Modifications](#image-version-workflow)
+  - [UBI Image Update](#ubi-image-update)
   - [Dell Libraries Specific Workflows](#dell-libraries-specific-workflows)
     - [Release Dell Libraries](#csm-release-libs)
   - [CSM Operator Specific Workflows](#csm-operator-specific-workflows)
@@ -295,6 +296,25 @@ jobs:
     secrets: inherit
 
 ```
+### ubi-image-update
+
+This workflow updates UBI9 micro image SHAID to the latest. The workflow is triggered by a cron job that runs on every Monday at mid-day. It also can be triggered manually from https://github.com/dell/csm/actions/workflows/ubi-image-update.yaml.
+
+The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following
+
+```yaml
+name: UBI Image Update
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  ubi-version-update:
+    uses: dell/common-github-actions/.github/workflows/ubi-version-update.yaml@main
+    name: UBI Version Update
+    secrets: inherit
+```
+
 ## Dell Libraries Specific Workflows
 ### csm-release-libs
 
