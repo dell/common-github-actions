@@ -58,7 +58,7 @@ jobs:
       id: update-sha
       run: |
         current_sha=$(grep 'UBI_BASEIMAGE=' config/csm-common.mk | cut -d'@' -f2)
-        echo "current_sha=$current_sha" >> $GITHUB_ENV
+        echo "current_sha=$current_sha"
         latest_sha=${{ env.latest_sha }}
 
         if [ "$current_sha" != "$latest_sha" ]; then
