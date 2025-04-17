@@ -25,7 +25,6 @@ env:
 
   # gosec action
   GOSEC_EXCLUDES: ${{ vars.GOSEC_EXCLUDES || '' }}
-  GOSEC_EXCLUDE_DIR: ${{ vars.GOSEC_EXCLUDE_DIR || '' }}
 
 jobs:
   # Run unit tests
