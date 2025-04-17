@@ -10,7 +10,6 @@
 
 DIRECTORIES=$1
 EXCLUDES=$2
-EXCLUDE_DIR=$3
 
 if [ -n "$EXCLUDES" ]
 then
