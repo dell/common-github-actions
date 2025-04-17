@@ -27,7 +27,6 @@ jobs:
         with:
           directories: "./..."
           excludes: "G108,G402"
-          exclude-dir: "csireverseproxy"
 ```
 
 Arguments described below -- all are optional:
@@ -35,5 +34,3 @@ Arguments described below -- all are optional:
 `directories` specifies what directory/directories gosec will run in -- the default `./...` specifies the current folder and all subfolders.
 
 `excludes` is used to give a comma-delimited list of gosec excludes (using the `-excludes=` option in gosec). By default, there are no excludes.
-
-`exclude-dir` specifies a directory to skip in the gosec check (using the `-exclude-dir=` option in gosec).
