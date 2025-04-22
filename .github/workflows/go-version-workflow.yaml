@@ -62,12 +62,15 @@ jobs:
             echo "Failed to update go.mod"
             exit 1
           fi
+          echo "here 1"
 
-          find . -type f -name "${{ env.gomod }}" -execdir sh -c '[ -f "{}" ] && grep -q "toolchain" go.mod && go mod edit -toolchain ${{ env.latest_version }} && go mod tidy' \;
+          find . -type f -name "${{ env.gomod }}" -execdir sh -c '[ -f "{}" ] && grep --exclude-dir=.git -q "toolchain" go.mod && go mod edit -toolchain ${{ env.latest_version }} && go mod tidy' \;
           if [ $? -ne 0 ]; then
             echo "Failed to update toolchain"
             exit 1
           fi
+
+          echo "here 2"
 
           if [ -f config/csm-common.mk ]; then sed -i "s/^DEFAULT_GOVERSION.*/DEFAULT_GOVERSION=${{ env.major_version }}/g" config/csm-common.mk; fi
           if [ $? -ne 0 ]; then
@@ -75,17 +78,23 @@ jobs:
             exit 1
           fi
 
+          echo "here 3"
+
           find . -type f ! -name "${{ env.exclude_file }}" -exec ${{ env.grep_cmd2 }} {} \; | while read -r file; do grep -v "hugo-version" "$file" | sed -i "s/go-version:.*/go-version: \"${{ env.major_version }}\"/" "$file"; done
           if [ $? -ne 0 ]; then
             echo "Failed to update github actions"
             exit 1
           fi
 
+          echo "here 4"
+
           find . -type f ! -name "${{ env.exclude_file }}" -exec ${{ env.grep_cmd3 }} {} \; | while read -r file; do sed -i "s/golang:.*/golang:${{ env.major_version }}/" "$file"; done
           if [ $? -ne 0 ]; then
             echo "Failed to update dockerfiles"
             exit 1
           fi
+
+          echo "here 5"
 
       # Needed for signing commits using Github App tokens
       # See: https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#commit-signing
