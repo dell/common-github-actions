@@ -51,7 +51,7 @@ jobs:
       - name: Update go version
         env:
           gomod: go.mod
-          grep_cmd2: grep -l "go-version"
+          grep_cmd2: grep --exclude-dir=.git -l "go-version"
           grep_cmd3: grep -l "FROM golang"
           exclude_file: go-version-workflow.yaml
         run: |
@@ -64,7 +64,7 @@ jobs:
           fi
           echo "here 1"
 
-          find . -type f -name "${{ env.gomod }}" -execdir sh -c '[ -f "{}" ] && grep --exclude-dir=.git -q "toolchain" go.mod && go mod edit -toolchain ${{ env.latest_version }} && go mod tidy' \;
+          find . -type f -name "${{ env.gomod }}" -execdir sh -c '[ -f "{}" ] && grep -q "toolchain" go.mod && go mod edit -toolchain ${{ env.latest_version }} && go mod tidy' \;
           if [ $? -ne 0 ]; then
             echo "Failed to update toolchain"
             exit 1
