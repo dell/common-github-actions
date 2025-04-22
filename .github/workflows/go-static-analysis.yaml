@@ -84,3 +84,23 @@ jobs:
             echo "No Yamllint config file found, running with defaults"
             yamllint .
           fi
+
+  # Check Dockerfiles for errors
+  dockerfile_lint:
+    name: Dockerfile Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - name: Run Hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+
+  # Check shell scripts for syntax, bugs, etc.
+  shell_lint:
+    name: Shell Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - name: Run Shellcheck
+        uses: ludeeus/action-shellcheck@2.0.0
