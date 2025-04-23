@@ -51,7 +51,7 @@ jobs:
       - name: Update go version
         env:
           gomod: go.mod
-          grep_cmd2: grep -l "go-version"
+          grep_cmd2: grep -I -l "go-version"
           grep_cmd3: grep -l "FROM golang"
           exclude_file: go-version-workflow.yaml
         run: |
@@ -61,11 +61,19 @@ jobs:
 
           find . -type f -name "${{ env.gomod }}" -execdir sh -c '[ -f "{}" ] && grep -q "toolchain" go.mod && go mod edit -toolchain ${{ env.latest_version }} && go mod tidy' \;
 
-          if [ -f config/csm-common.mk ]; then sed -i "s/^DEFAULT_GOVERSION.*/DEFAULT_GOVERSION=${{ env.major_version }}/g" config/csm-common.mk; fi
+          if [ -f config/csm-common.mk ]; then
+            sed -i "s/^DEFAULT_GOVERSION.*/DEFAULT_GOVERSION=${{ env.major_version }}/g" config/csm-common.mk;
+          fi
 
-          find . -type f ! -name "${{ env.exclude_file }}" -exec ${{ env.grep_cmd2 }} {} \; | while read -r file; do grep -v "hugo-version" "$file" | sed -i "s/go-version:.*/go-version: \"${{ env.major_version }}\"/" "$file"; done
+          find . -type f ! -name "${{ env.exclude_file }}" -exec ${{ env.grep_cmd2 }} {} + | while read -r file;
+          do
+            grep -v "hugo-version" "$file" | sed -i "s/go-version:.*/go-version: \"${{ env.major_version }}\"/" "$file";
+          done
 
-          find . -type f ! -name "${{ env.exclude_file }}" -exec ${{ env.grep_cmd3 }} {} \; | while read -r file; do sed -i "s/golang:.*/golang:${{ env.major_version }}/" "$file"; done
+          find . -type f ! -name "${{ env.exclude_file }}" -exec ${{ env.grep_cmd3 }} {} \; | while read -r file;
+          do
+            sed -i "s/golang:.*/golang:${{ env.major_version }}/" "$file";
+          done
 
       # Needed for signing commits using Github App tokens
       # See: https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#commit-signing
