@@ -20,6 +20,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -94,6 +95,9 @@ func autofixLicenseHeader(filePath, licenseHeader string) error {
 }
 
 func main() {
+	isAutofixEnabled := flag.Bool("auto-fix", false, "Autofix enabled")
+	flag.Parse()
+
 	licenseFile := "LICENSE-HEADER.txt" // Change this to the path of your license file
 
 	licenseHeader, err := readLicenseHeader(licenseFile)
@@ -121,13 +125,15 @@ func main() {
 		}
 		if !hasLicense {
 			fmt.Printf("Missing or incorrect license header: %s\n", file)
-			//  TODO: Uncomment the following line to autofix the license header based on user input
-			// err := autofixLicenseHeader(file, licenseHeader)
-			// if err != nil {
-			// 	fmt.Printf("Error updating license header for file %s: %v\n", file, err)
-			// } else {
-			// 	fmt.Printf("License header updated for file: %s\n", file)
-			// }
+			//  if auto-fix is enabled then only we will fix the license headers else just report valid header and exit
+			if *isAutofixEnabled {
+				err := autofixLicenseHeader(file, licenseHeader)
+				if err != nil {
+					fmt.Printf("Error updating license header for file %s: %v\n", file, err)
+				} else {
+					fmt.Printf("License header updated for file: %s\n", file)
+				}
+			}
 		}
 	}
 	if !hasLicense {
