@@ -120,12 +120,13 @@ func main() {
 		}
 		if !hasLicense {
 			fmt.Printf("Missing or incorrect license header: %s\n", file)
-			err := autofixLicenseHeader(file, licenseHeader)
-			if err != nil {
-				fmt.Printf("Error updating license header for file %s: %v\n", file, err)
-			} else {
-				fmt.Printf("License header updated for file: %s\n", file)
-			}
+			//  TODO: Uncomment the following line to autofix the license header based on user input
+			// err := autofixLicenseHeader(file, licenseHeader)
+			// if err != nil {
+			// 	fmt.Printf("Error updating license header for file %s: %v\n", file, err)
+			// } else {
+			// 	fmt.Printf("License header updated for file: %s\n", file)
+			// }
 		}
 	}
 }
