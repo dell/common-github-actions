@@ -112,8 +112,9 @@ func main() {
 		fmt.Println("Checking license header for the following files:")
 		fmt.Println(file)
 	}
+	var hasLicense bool
 	for _, file := range files {
-		hasLicense, err := checkLicenseHeader(file, licenseHeader)
+		hasLicense, err = checkLicenseHeader(file, licenseHeader)
 		if err != nil {
 			fmt.Printf("Error checking file %s: %v\n", file, err)
 			continue
@@ -128,5 +129,8 @@ func main() {
 			// 	fmt.Printf("License header updated for file: %s\n", file)
 			// }
 		}
+	}
+	if !hasLicense {
+		os.Exit(1)
 	}
 }
