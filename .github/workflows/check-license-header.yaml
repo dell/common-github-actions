@@ -44,5 +44,6 @@ jobs:
           git add .
           ls -l
           git branch
-          git commit -S -m "Update license header"
+          # git commit -S -m "Update license header"
+          git commit -m "Update license header"
           git push
