@@ -23,7 +23,8 @@ jobs:
         run: |
           curl -L -o LICENSE-HEADER.txt https://raw.githubusercontent.com/dell/common-github-actions/refs/heads/feature/license-header/license-checker/LICENSE-HEADER.txt
           curl -L -o license-checker https://raw.githubusercontent.com/dell/common-github-actions/refs/heads/feature/license-header/license-checker/license-checker
-          bash ./license-checker
+          chmod +x license-checker
+          ./license-checker
 
       - name: Commit changes
         uses: EndBug/add-and-commit@v9
