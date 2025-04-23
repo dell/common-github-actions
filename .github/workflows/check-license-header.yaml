@@ -17,7 +17,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-  
+      
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+            gpg_private_key: ${{ secrets.CSM_GPG_PRIVATE_KEY }}
+            git_user_signingkey: true
+            git_commit_gpgsign: true
+            git_tag_gpgsign: true
+            git_config_global: true
+
       - name: Run
         shell: bash
         run: |
@@ -25,10 +34,12 @@ jobs:
           curl -L -o license-checker https://raw.githubusercontent.com/dell/common-github-actions/refs/heads/feature/license-header/license-checker/license-checker
           chmod +x license-checker
           ./license-checker
+          rm -rf LICENSE-HEADER.txt
+          rm -rf license-checker
 
-      - name: Commit changes
-        uses: EndBug/add-and-commit@v9
-        with:
-          author_name: License Bot
-          author_email: license_bot@github.com
-          message: "Automatic application of license header"
+      - name: Commit fixed files
+        run: |
+          ls -l
+          git branch
+          git commit -S -m "Update license header"
+          git push
