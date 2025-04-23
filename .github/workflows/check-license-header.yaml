@@ -17,20 +17,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.24.2'
-  
-      - name: Install dependencies
-        run: go mod tidy
-  
-      - name: Build
-        run: go build -v .
   
       - name: Run
-        run: go run main.go
+        run: |
+          curl -L -o LICENSE-HEADER.txt https://raw.githubusercontent.com/dell/common-github-actions/refs/heads/feature/license-validation/.github/configs/.licenserc.yaml
+          curl -L -o license-checker https://raw.githubusercontent.com/dell/common-github-actions/refs/heads/feature/license-validation/.github/configs/.licenserc.yaml
 
       - name: Commit changes
         uses: EndBug/add-and-commit@v9
