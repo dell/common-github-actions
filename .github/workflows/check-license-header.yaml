@@ -37,13 +37,14 @@ jobs:
           rm -rf LICENSE-HEADER.txt
           rm -rf license-checker
 
-      - name: Commit fixed files
-        run: |
-          git config --global user.email "you@example.com"
-          git config --global user.name "Your Name"
-          git add .
-          ls -l
-          git branch
-          # git commit -S -m "Update license header"
-          git commit -m "Update license header"
-          git push
+      # TODO : we will enable this once autofix is ready
+      # - name: Commit fixed files
+      #   run: |
+      #     git config --global user.email "you@example.com"
+      #     git config --global user.name "Your Name"
+      #     git add .
+      #     ls -l
+      #     git branch
+      #     # git commit -S -m "Update license header"
+      #     git commit -m "Update license header"
+      #     git push
