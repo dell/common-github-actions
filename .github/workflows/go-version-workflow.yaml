@@ -59,31 +59,21 @@ jobs:
 
           find . -type f -name "${{ env.gomod }}" -execdir sh -c '[ -f "{}" ] && go mod edit -go ${{ env.major_version }} && go mod tidy' \;
 
-          echo "here 1"
-
           find . -type f -name "${{ env.gomod }}" -execdir sh -c '[ -f "{}" ] && grep -q "toolchain" go.mod && go mod edit -toolchain ${{ env.latest_version }} && go mod tidy' \;
-
-          echo "here 2"
 
           if [ -f config/csm-common.mk ]; then
             sed -i "s/^DEFAULT_GOVERSION.*/DEFAULT_GOVERSION=${{ env.major_version }}/g" config/csm-common.mk;
           fi
-
-          echo "here 3"
 
           find . -type f ! -name "${{ env.exclude_file }}" -exec ${{ env.grep_cmd2 }} {} + | while read -r file;
           do
             grep -v "hugo-version" "$file" | sed -i "s/go-version:.*/go-version: \"${{ env.major_version }}\"/" "$file";
           done
 
-          echo "here 4"
-
           find . -type f ! -name "${{ env.exclude_file }}" -exec ${{ env.grep_cmd3 }} {} \; | while read -r file;
           do
             sed -i "s/golang:.*/golang:${{ env.major_version }}/" "$file";
           done
-
-          echo "here 5"
 
       # Needed for signing commits using Github App tokens
       # See: https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#commit-signing
