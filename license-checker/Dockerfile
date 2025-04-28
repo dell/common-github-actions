@@ -6,8 +6,7 @@ LABEL "com.github.actions.icon"="eye"
 LABEL "com.github.actions.color"="gray-dark"
 
 LABEL version="1.0.0"
-COPY . ./
-RUN ls -al
-RUN go mod tidy
+
+COPY go.mod go.sum main.go LICENSE-HEADER.txt ./
 RUN go build .
 ENTRYPOINT ["./license-checker"]
