@@ -147,8 +147,7 @@ jobs:
       - name: Check license headers
         uses: dell/common-github-actions/license-checker@feature/license-header
         with:
-          directories: .
-          options: -ri
+          autofix: false
 
       # TODO : we will enable this once autofix is ready
       # - name: Commit fixed files
