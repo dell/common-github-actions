@@ -6,8 +6,8 @@ LABEL "com.github.actions.icon"="eye"
 LABEL "com.github.actions.color"="gray-dark"
 
 LABEL version="1.0.0"
-
-COPY . .
+RUN ls -al
+COPY . ./
 RUN go mod tidy
 RUN go build .
 ENTRYPOINT ["./license-checker"]
