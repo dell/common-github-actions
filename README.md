@@ -443,20 +443,32 @@ jobs:
 ## operator-module-version-update
 This workflow updates csm-operator repository with latest versions of the modules.
 
-This workflow accepts total two parameters as input to the workflow -
+The workflow accepts two parameters as input:
 (CSM program version and update flag).
 1. update flag = "nightly"
-   This updates all modules configVersions and all the required version updates.
-   Also, updates the images to "nightly" for templates and detailed samples in the beginning of the release. 
+   - This has to be triggered in the beginning of the release. 
+   - This updates all modules configVersions and all the required version updates.
+   - Updates images to "nightly" for templates and detailed samples.
 
 2. update flag = "tag"
-   This flag simply updates "nightly" updated images in step-1 to actual release tag version towards the content lock.
+   - This has to be triggered towards the content lock.
+   - This flag simply updates "nightly" updated images in step-1 to actual release tag version.
 
 Below is the example usage in csm-operator repository.
 
 It expects a script to be present in the csm-operator repository ".github/scripts/module-version-update.sh".
 
+Make sure to update all the latest versions before you trigger this workflow  https://github.com/dell/csm/blob/main/config/csm-versions.yaml  
 Workflow needs to be triggered manually from csm-operator repository. Below is the example usage in csm-operator repository.
+
+Example: 
+1. Beginning of the release
+   - CSM program version = v1.14.0
+   - update flag = "nightly"
+
+2. At the content lock
+   - CSM program version = v1.14.0
+   - update flag = "tag"
 
 ```yaml
 name: Update module versions in CSM-Operator

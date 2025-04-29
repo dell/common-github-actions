@@ -8,7 +8,7 @@
 
 # Reusable workflow to perform operator version update
 # To perform csm-operator version update, needs three arguments as input to the workflow
-name: Module version update
+name: CSM Operator Module Version Update
 
 on:
   workflow_call:
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout csm repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: dell/csm
           path: csm
@@ -75,7 +75,7 @@ jobs:
           echo "OTEL_COLLECTOR=$otel_collector" >> $GITHUB_ENV
 
       - name: Checkout csm-operator repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: dell/csm-operator
 
@@ -116,9 +116,9 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ steps.generate-token.outputs.token }}
-          branch: "operator-module-ver-bumpup-${{ inputs.csm-version }}"
+          branch: "operator-module-version-update-${{ inputs.csm-version }}"
           commit-message: "Update operator modules version for csm-${{ inputs.csm-version }}"
-          title: "Update operator module version to csm-${{ inputs.csm-version }}"
+          title: "Update module versions for CSM ${{ inputs.csm-version }}"
           body: |
             Modules version updated to latest for following :-  
             - Observability
