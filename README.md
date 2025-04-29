@@ -445,6 +445,13 @@ This workflow updates csm-operator repository with latest versions of the module
 
 This workflow accepts total two parameters as input to the workflow -
 (CSM program version and update flag).
+1. update flag = "nightly"
+   This updates all modules configVersions and all the required version updates.
+   Also, updates the images to "nightly" for templates and detailed samples in the beginning of the release. 
+
+2. update flag = "tag"
+   This flag simply updates "nightly" updated images in step-1 to actual release tag version towards the content lock.
+
 Below is the example usage in csm-operator repository.
 
 It expects a script to be present in the csm-operator repository ".github/scripts/module-version-update.sh".
