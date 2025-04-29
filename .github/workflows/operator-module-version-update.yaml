@@ -35,44 +35,47 @@ jobs:
       - name: Read values from csm-versions.yaml
         id: read_values
         run: |
-          pwd
-          csm_version=$(grep -E '^csm-version' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
-          csm_operator=$(grep -E '^csm-operator' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
-          csi_powerscale=$(grep -E '^csi-powerscale' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
-          csi_powerstore=$(grep -E '^csi-powerstore' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
-          csi_powermax=$(grep -E '^csi-powermax' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
-          csi_vxflexos=$(grep -E '^csi-vxflexos' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
-          csi_unity=$(grep -E '^csi-unity' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
-          csm_replication=$(grep -E '^csm-replication' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
-          karavi_resiliency=$(grep -E '^karavi-resiliency' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
-          csm_authorization_v2=$(grep -E '^csm-authorization-v2' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
-          csireverseproxy=$(grep -E '^csireverseproxy' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
-          karavi_observability=$(grep -E '^karavi-observability' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
-          karavi_metrics_powerflex=$(grep -E '^karavi-metrics-powerflex' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
-          csm_metrics_powerstore=$(grep -E '^csm-metrics-powerstore' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
-          csm_metrics_powerscale=$(grep -E '^csm-metrics-powerscale' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
-          csm_metrics_powermax=$(grep -E '^csm-metrics-powermax' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
-          karavi_topology=$(grep -E '^karavi-topology' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
-          otel_collector=$(grep -E '^otel-collector' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+           extract_value() {
+             grep -E "^$1" csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' '
+           }
+
+           csm_version=$(extract_value 'csm-version')
+           csm_operator=$(extract_value 'csm-operator')
+           csi_powerscale=$(extract_value 'csi-powerscale')
+           csi_powerstore=$(extract_value 'csi_powerstore')
+           csi_powermax=$(extract_value 'csi_powermax')
+           csi_vxflexos=$(extract_value 'csi_vxflexos')
+           csi_unity=$(extract_value 'csi_unity')
+           csm_replication=$(extract_value 'csm_replication')
+           karavi_resiliency=$(extract_value 'karavi_resiliency')
+           csm_authorization_v2=$(extract_value 'csm_authorization_v2')
+           csireverseproxy=$(extract_value 'csireverseproxy')
+           karavi_observability=$(extract_value 'karavi_observability')
+           karavi_metrics_powerflex=$(extract_value 'karavi_metrics_powerflex')
+           csm_metrics_powerstore=$(extract_value 'csm_metrics_powerstore')
+           csm_metrics_powerscale=$(extract_value 'csm_metrics_powerscale')
+           csm_metrics_powermax=$(extract_value 'csm_metrics_powermax')
+           karavi_topology=$(extract_value 'karavi_topology')
+           otel_collector=$(extract_value 'otel_collector')
           
-          echo "CSM_VERSION=$csm_version" >> $GITHUB_ENV
-          echo "CSM_OPERATOR=$csm_operator" >> $GITHUB_ENV
-          echo "CSI_POWERSCALE=$csi_powerscale" >> $GITHUB_ENV
-          echo "CSI_POWERSTORE=$csi_powerstore" >> $GITHUB_ENV
-          echo "CSI_POWERMAX=$csi_powermax" >> $GITHUB_ENV
-          echo "CSI_VXFLEXOS=$csi_vxflexos" >> $GITHUB_ENV
-          echo "CSI_UNITY=$csi_unity" >> $GITHUB_ENV
-          echo "CSM_REPLICATION=$csm_replication" >> $GITHUB_ENV
-          echo "KARAVI_RESILIENCY=$karavi_resiliency" >> $GITHUB_ENV
-          echo "CSM_AUTHORIZATION_V2=$csm_authorization_v2" >> $GITHUB_ENV
-          echo "CSIREVERSEPROXY=$csireverseproxy" >> $GITHUB_ENV
-          echo "KARAVI_OBSERVABILITY=$karavi_observability" >> $GITHUB_ENV
-          echo "KARAVI_METRICS_POWERFLEX=$karavi_metrics_powerflex" >> $GITHUB_ENV
-          echo "CSM_METRICS_POWERSTORE=$csm_metrics_powerstore" >> $GITHUB_ENV
-          echo "CSM_METRICS_POWERSCALE=$csm_metrics_powerscale" >> $GITHUB_ENV
-          echo "CSM_METRICS_POWERMAX=$csm_metrics_powermax" >> $GITHUB_ENV
-          echo "KARAVI_TOPOLOGY=$karavi_topology" >> $GITHUB_ENV
-          echo "OTEL_COLLECTOR=$otel_collector" >> $GITHUB_ENV
+           echo "CSM_VERSION=$csm_version" >> $GITHUB_ENV
+           echo "CSM_OPERATOR=$csm_operator" >> $GITHUB_ENV
+           echo "CSI_POWERSCALE=$csi_powerscale" >> $GITHUB_ENV
+           echo "CSI_POWERSTORE=$csi_powerstore" >> $GITHUB_ENV
+           echo "CSI_POWERMAX=$csi_powermax" >> $GITHUB_ENV
+           echo "CSI_VXFLEXOS=$csi_vxflexos" >> $GITHUB_ENV
+           echo "CSI_UNITY=$csi_unity" >> $GITHUB_ENV
+           echo "CSM_REPLICATION=$csm_replication" >> $GITHUB_ENV
+           echo "KARAVI_RESILIENCY=$karavi_resiliency" >> $GITHUB_ENV
+           echo "CSM_AUTHORIZATION_V2=$csm_authorization_v2" >> $GITHUB_ENV
+           echo "CSIREVERSEPROXY=$csireverseproxy" >> $GITHUB_ENV
+           echo "KARAVI_OBSERVABILITY=$karavi_observability" >> $GITHUB_ENV
+           echo "KARAVI_METRICS_POWERFLEX=$karavi_metrics_powerflex" >> $GITHUB_ENV
+           echo "CSM_METRICS_POWERSTORE=$csm_metrics_powerstore" >> $GITHUB_ENV
+           echo "CSM_METRICS_POWERSCALE=$csm_metrics_powerscale" >> $GITHUB_ENV
+           echo "CSM_METRICS_POWERMAX=$csm_metrics_powermax" >> $GITHUB_ENV
+           echo "KARAVI_TOPOLOGY=$karavi_topology" >> $GITHUB_ENV
+           echo "OTEL_COLLECTOR=$otel_collector" >> $GITHUB_ENV
 
       - name: Checkout csm-operator repository
         uses: actions/checkout@v4
