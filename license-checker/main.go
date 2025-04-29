@@ -22,6 +22,7 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -73,11 +74,14 @@ func checkLicenseHeader(filePath, licenseHeader string) (bool, error) {
 
 func listGoFiles(root string) ([]string, error) {
 	var files []string
-	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+	err := filepath.WalkDir(root, func(path string, dirEntry fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
-		if !info.IsDir() && strings.HasSuffix(info.Name(), ".go") && !strings.Contains(info.Name(), "mock") && !strings.Contains(info.Name(), "generated") {
+		if !dirEntry.IsDir() &&
+			strings.HasSuffix(dirEntry.Name(), ".go") &&
+			!strings.Contains(dirEntry.Name(), "mock") &&
+			!strings.Contains(dirEntry.Name(), "generated") {
 			files = append(files, path)
 		}
 		return nil

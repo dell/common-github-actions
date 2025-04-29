@@ -11,7 +11,5 @@ WORKDIR /app
 
 COPY go.mod go.sum main.go LICENSE-HEADER.txt ./
 RUN go build .
-RUN pwd
-RUN ls -l
 
 ENTRYPOINT ["/app/license-checker"]
