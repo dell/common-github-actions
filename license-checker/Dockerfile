@@ -9,4 +9,4 @@ LABEL version="1.0.0"
 
 COPY go.mod go.sum main.go LICENSE-HEADER.txt ./
 RUN go build .
-CMD ["./license-checker"]
+ENTRYPOINT ["./license-checker"]
