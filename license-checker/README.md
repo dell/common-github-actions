@@ -31,3 +31,7 @@ jobs:
 Arguments described below -- all are optional:
 
 `autofix` specifies whether to enable auto-fix the missing headers in the source code or not. This is optional. The default value will be `False` if nothing is supplied
+
+Note: To run this action locally clone this repo and run main.go present inside license-checker
+  1. To run in check mode : `./license-checker`
+  2. To run in autofix mode : `./license-checker --auto-fix`
