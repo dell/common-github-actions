@@ -98,7 +98,7 @@ func main() {
 	isAutofixEnabled := flag.Bool("auto-fix", false, "Autofix enabled")
 	flag.Parse()
 
-	licenseFile := "LICENSE-HEADER.txt" // Change this to the path of your license file
+	licenseFile := "/app/LICENSE-HEADER.txt" // Change this to the path of your license file
 
 	licenseHeader, err := readLicenseHeader(licenseFile)
 	if err != nil {
