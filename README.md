@@ -46,6 +46,7 @@ This repository contains a set of reusable actions and workflows, designed to be
   - [CSM Operator Specific Workflows](#csm-operator-specific-workflows)
     - [Update Operator Version](#operator-version-update)
     - [Update Sidecar Versions](#sidecar-version-update)
+    - [Module version update](#operator-module-version-update)
 
 ## Implemented Actions
 
