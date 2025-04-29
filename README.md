@@ -440,6 +440,45 @@ jobs:
     secrets: inherit
 ```
 
+## operator-module-version-update
+This workflow updates csm-operator repository with latest versions of the modules.
+
+This workflow accepts total two parameters as input to the workflow -
+(CSM program version and update flag).
+Below is the example usage in csm-operator repository.
+
+It expects a script to be present in the csm-operator repository ".github/scripts/module-version-update.sh".
+
+Workflow needs to be triggered manually from csm-operator repository. Below is the example usage in csm-operator repository.
+
+```yaml
+name: Update module versions in CSM-Operator
+# reusable workflow
+on:  # yamllint disable-line rule:truthy
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      csm-version:
+        description: 'CSM program version, ex: v1.12.0, v1.13.0, ...'
+        required: true
+      update-option:
+        description: 'Select the update flag, ex. "nightly" or "tag"'
+        required: true
+        type: choice
+        options:
+          - nightly
+          - tag
+jobs:
+  version-update:
+    uses: dell/common-github-actions/.github/workflows/operator-module-version-update.yaml@main
+    name: Module version update
+    with:
+      csm-version: ${{ inputs.csm-version }}
+      update-option: ${{ inputs.update-option}}
+    secrets: inherit
+```
+
+
 ## Support
 
 Don’t hesitate to ask! Contact the team and community on [our support](./docs/SUPPORT.md).

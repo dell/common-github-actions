@@ -1,0 +1,117 @@
+# Copyright (c) 2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+
+# Reusable workflow to perform operator version update
+# To perform csm-operator version update, needs three arguments as input to the workflow
+name: Module version update
+
+on:
+  workflow_call:
+    inputs:
+      csm-version:
+        description: 'CSM program version, ex: v1.12.0, v1.13.0, ...'
+        required: true
+        type: string
+      update-option:
+        description: 'Select the update flag, ex. "nightly" or "tag"'
+        required: true
+        type: string
+
+jobs:
+  read-values:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout csm repository
+        uses: actions/checkout@v2
+        with:
+          repository: dell/csm
+          path: csm
+
+      - name: Read values from csm-versions.yaml
+        id: read_values
+        run: |
+          pwd
+          csm_version=$(grep -E '^csm-version' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+          csm_operator=$(grep -E '^csm-operator' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+          csi_powerscale=$(grep -E '^csi-powerscale' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+          csi_powerstore=$(grep -E '^csi-powerstore' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+          csi_powermax=$(grep -E '^csi-powermax' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+          csi_vxflexos=$(grep -E '^csi-vxflexos' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+          csi_unity=$(grep -E '^csi-unity' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+          csm_replication=$(grep -E '^csm-replication' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+          karavi_resiliency=$(grep -E '^karavi-resiliency' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+          csm_authorization_v2=$(grep -E '^csm-authorization-v2' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+          csireverseproxy=$(grep -E '^csireverseproxy' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+          karavi_observability=$(grep -E '^karavi-observability' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+          karavi_metrics_powerflex=$(grep -E '^karavi-metrics-powerflex' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+          csm_metrics_powerstore=$(grep -E '^csm-metrics-powerstore' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+          csm_metrics_powerscale=$(grep -E '^csm-metrics-powerscale' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+          csm_metrics_powermax=$(grep -E '^csm-metrics-powermax' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+          karavi_topology=$(grep -E '^karavi-topology' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+          otel_collector=$(grep -E '^otel-collector' csm/config/csm-versions.yaml | cut -d ':' -f 2 | tr -d ' ')
+          
+          echo "CSM_VERSION=$csm_version" >> $GITHUB_ENV
+          echo "CSM_OPERATOR=$csm_operator" >> $GITHUB_ENV
+          echo "CSI_POWERSCALE=$csi_powerscale" >> $GITHUB_ENV
+          echo "CSI_POWERSTORE=$csi_powerstore" >> $GITHUB_ENV
+          echo "CSI_POWERMAX=$csi_powermax" >> $GITHUB_ENV
+          echo "CSI_VXFLEXOS=$csi_vxflexos" >> $GITHUB_ENV
+          echo "CSI_UNITY=$csi_unity" >> $GITHUB_ENV
+          echo "CSM_REPLICATION=$csm_replication" >> $GITHUB_ENV
+          echo "KARAVI_RESILIENCY=$karavi_resiliency" >> $GITHUB_ENV
+          echo "CSM_AUTHORIZATION_V2=$csm_authorization_v2" >> $GITHUB_ENV
+          echo "CSIREVERSEPROXY=$csireverseproxy" >> $GITHUB_ENV
+          echo "KARAVI_OBSERVABILITY=$karavi_observability" >> $GITHUB_ENV
+          echo "KARAVI_METRICS_POWERFLEX=$karavi_metrics_powerflex" >> $GITHUB_ENV
+          echo "CSM_METRICS_POWERSTORE=$csm_metrics_powerstore" >> $GITHUB_ENV
+          echo "CSM_METRICS_POWERSCALE=$csm_metrics_powerscale" >> $GITHUB_ENV
+          echo "CSM_METRICS_POWERMAX=$csm_metrics_powermax" >> $GITHUB_ENV
+          echo "KARAVI_TOPOLOGY=$karavi_topology" >> $GITHUB_ENV
+          echo "OTEL_COLLECTOR=$otel_collector" >> $GITHUB_ENV
+
+      - name: Checkout csm-operator repository
+        uses: actions/checkout@v2
+        with:
+          repository: dell/csm-operator
+
+      - name: Updating Module version
+        run: |
+          echo "Input csm version --> ${{ inputs.csm-version }}"
+          echo "Update flag --> ${{ inputs.update-option }}"
+
+          bash $GITHUB_WORKSPACE/.github/scripts/module-version-update.sh ${{ inputs.csm-version }} ${{ inputs.update-option}}
+
+      # Needed for signing commits using Github App tokens
+      # See: https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#commit-signing
+      - name: Generate GitHub App Token
+        uses: actions/create-github-app-token@v2.0.2
+        id: generate-token
+        with:
+          app-id: ${{ vars.CSM_RELEASE_APP_ID }}
+          private-key: ${{ secrets.CSM_RELEASE_APP_PRIVATE_KEY }}
+
+      # Must enable "allow GitHub Actions to create pull requests" setting
+      # Author defaults to the user who triggered the workflow run
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          branch: "operator-module-ver-bumpup-${{ inputs.csm-version }}"
+          commit-message: "Update operator modules version for csm-${{ inputs.csm-version }}"
+          title: "Update operator module version to csm-${{ inputs.csm-version }}"
+          body: |
+            Modules version updated to latest for following :-  
+            - Observability
+            - Replication
+            - Resiliency
+            - Authorization V2
+            - csireverseproxy
+            
+            Auto-generated by [common-github-actions](https://github.com/dell/common-github-actions)
+          sign-commits: true
+          delete-branch: true
