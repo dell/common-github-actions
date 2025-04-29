@@ -79,12 +79,27 @@ jobs:
         with:
           repository: dell/csm-operator
 
+      - name: Install dos2unix
+        run: sudo apt-get update && sudo apt-get install -y dos2unix
+
       - name: Updating Module version
         run: |
           echo "Input csm version --> ${{ inputs.csm-version }}"
           echo "Update flag --> ${{ inputs.update-option }}"
+          csm_ver_provided=${{ inputs.csm-version }}
 
+          csm_repo_ver="$(echo -e "${CSM_VERSION}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+          csm_ver_provided="$(echo -e "${csm_ver_provided}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+
+          if [ $csm_repo_ver == $csm_ver_provided ]; then
+          echo "CSM version verified, proceeding with the update..."
+          dos2unix $GITHUB_WORKSPACE/.github/scripts/module-version-update.sh
+          chmod +x $GITHUB_WORKSPACE/.github/scripts/module-version-update.sh
           bash $GITHUB_WORKSPACE/.github/scripts/module-version-update.sh ${{ inputs.csm-version }} ${{ inputs.update-option}}
+          else
+          echo "CSM version mismatch detected. Please verify and update the version file in the CSM repository."
+          fi
+        shell: bash
 
       # Needed for signing commits using Github App tokens
       # See: https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#commit-signing
