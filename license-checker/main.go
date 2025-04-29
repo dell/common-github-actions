@@ -116,8 +116,8 @@ func main() {
 		fmt.Println("Error:", err)
 		return
 	}
+	fmt.Println("Checking license header for the following files:")
 	for _, file := range files {
-		fmt.Println("Checking license header for the following files:")
 		fmt.Println(file)
 	}
 	var hasLicense bool
