@@ -7,6 +7,9 @@ LABEL "com.github.actions.color"="gray-dark"
 
 LABEL version="1.0.0"
 
-COPY go.mod go.sum main.go LICENSE-HEADER.txt ./
+# COPY go.mod go.sum main.go LICENSE-HEADER.txt ./
+COPY . ./
+RUN ls -al
 RUN go build .
-ENTRYPOINT ["./license-checker"]
+RUN ls -al
+ENTRYPOINT ["entrypoint.sh"]
