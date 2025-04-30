@@ -68,7 +68,6 @@ jobs:
           go install github.com/mikefarah/yq/v4@latest
 
       - name: Updating Driver version
-        working-directory: ${{ github.workspace }}
         shell: bash
         run: |
           ls
