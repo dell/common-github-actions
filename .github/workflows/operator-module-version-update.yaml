@@ -7,7 +7,7 @@
 #  http://www.apache.org/licenses/LICENSE-2.0
 
 # Reusable workflow to perform operator version update
-# To perform csm-operator version update, needs three arguments as input to the workflow
+# To perform module version update for csm-operator version update, needs two arguments as input to the workflow
 name: CSM Operator Module Version Update
 
 on:
