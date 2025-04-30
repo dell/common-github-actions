@@ -36,19 +36,19 @@ jobs:
         id: release
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          token: ${{ secrets.CSMBOT_PAT }}
           repository: ${{ matrix.repo }}
           event-type: release-go-libs
           client-payload: |
-            { 
-              "ref": "${{ github.ref }}", 
+            {
+              "ref": "${{ github.ref }}",
               "sha": "${{ github.sha }}"
             }
       - name: Check status of triggered workflows for release of ${{ matrix.repo }}
         run: |
           curl -sfL https://raw.githubusercontent.com/dell/common-github-actions/main/.github/scripts/check_workflow_status.sh -o check_workflow_status.sh
           chmod +x check_workflow_status.sh
-          bash check_workflow_status.sh ${{ secrets.PERSONAL_ACCESS_TOKEN }} ${{ matrix.repo }} "repository_dispatch"
+          bash check_workflow_status.sh ${{ secrets.CSMBOT_PAT }} ${{ matrix.repo }} "repository_dispatch"
         shell: bash
 
   release_dependent_repo:
@@ -62,7 +62,7 @@ jobs:
       - name: Trigger Release of ${{ matrix.repo }}
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          token: ${{ secrets.CSMBOT_PAT }}
           repository: ${{ matrix.repo }}
           event-type: release-go-libs
           client-payload: |
@@ -74,5 +74,5 @@ jobs:
         run: |
           curl -sfL https://raw.githubusercontent.com/dell/common-github-actions/main/.github/scripts/check_workflow_status.sh -o check_workflow_status.sh
           chmod +x check_workflow_status.sh
-          bash check_workflow_status.sh ${{ secrets.PERSONAL_ACCESS_TOKEN }} ${{ matrix.repo }} "repository_dispatch"
+          bash check_workflow_status.sh ${{ secrets.CSMBOT_PAT }} ${{ matrix.repo }} "repository_dispatch"
         shell: bash

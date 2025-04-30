@@ -124,7 +124,7 @@ jobs:
             done
         fi
       env:
-        GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.CSMBOT_PAT }}
 
     # Needed for pulling the latest commits from main branch once the PR gets merged from the previous step
     # Required for Trigger Release of Dell Libraries (trigger-auto-csm-release-golibs-workflow.yaml)
