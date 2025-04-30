@@ -46,6 +46,7 @@ This repository contains a set of reusable actions and workflows, designed to be
   - [CSM Operator Specific Workflows](#csm-operator-specific-workflows)
     - [Update Operator Version](#operator-version-update)
     - [Update Sidecar Versions](#sidecar-version-update)
+    - [Module version update](#operator-module-version-update)
 
 ## Implemented Actions
 
@@ -439,6 +440,64 @@ jobs:
       sdcmonitor: ${{ inputs.sdcmonitor }}
     secrets: inherit
 ```
+
+## operator-module-version-update
+This workflow updates csm-operator repository with latest versions of the modules.
+
+The workflow accepts two parameters as input:
+(CSM program version and update flag).
+1. update flag = "nightly"
+   - This has to be triggered in the beginning of the release. 
+   - This updates all modules configVersions and all the required version updates.
+   - Updates images to "nightly" for templates and detailed samples.
+
+2. update flag = "tag"
+   - This has to be triggered towards the content lock.
+   - This flag simply updates "nightly" updated images in step-1 to actual release tag version.
+
+Below is the example usage in csm-operator repository.
+
+It expects a script to be present in the csm-operator repository ".github/scripts/module-version-update.sh".
+
+Make sure to update all the latest versions before you trigger this workflow  https://github.com/dell/csm/blob/main/config/csm-versions.yaml  
+Workflow needs to be triggered manually from csm-operator repository. Below is the example usage in csm-operator repository.
+
+Example: 
+1. Beginning of the release
+   - CSM program version = v1.14.0
+   - update flag = "nightly"
+
+2. At the content lock
+   - CSM program version = v1.14.0
+   - update flag = "tag"
+
+```yaml
+name: Update module versions in CSM-Operator
+# reusable workflow
+on:  # yamllint disable-line rule:truthy
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      csm-version:
+        description: 'CSM program version, ex: v1.12.0, v1.13.0, ...'
+        required: true
+      update-option:
+        description: 'Select the update flag, ex. "nightly" or "tag"'
+        required: true
+        type: choice
+        options:
+          - nightly
+          - tag
+jobs:
+  version-update:
+    uses: dell/common-github-actions/.github/workflows/operator-module-version-update.yaml@main
+    name: Module version update
+    with:
+      csm-version: ${{ inputs.csm-version }}
+      update-option: ${{ inputs.update-option}}
+    secrets: inherit
+```
+
 
 ## Support
 
