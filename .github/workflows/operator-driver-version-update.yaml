@@ -81,6 +81,8 @@ jobs:
           pwd
           echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
           echo "CSM version verified, proceeding with the update..."
+          dos2unix $GITHUB_WORKSPACE/.github/scripts/module-version-update.sh
+          chmod +x $GITHUB_WORKSPACE/.github/scripts/module-version-update.sh
           dos2unix $GITHUB_WORKSPACE/.github/scripts/driver-version-update.sh
           chmod +x $GITHUB_WORKSPACE/.github/scripts/driver-version-update.sh
           bash $GITHUB_WORKSPACE/.github/scripts/driver-version-update.sh --driver_update_type "major" --release_type ${{ inputs.update-option }} --powerscale_version $CSI_POWERSCALE --powermax_version $CSI_POWERMAX --powerflex_version $CSI_VXFLEXOS --powerstore_version $CSI_POWERSTORE --unity_version $CSI_UNITY
