@@ -81,8 +81,8 @@ jobs:
           if [ $csm_repo_ver == $csm_ver_provided ]; then
           echo "CSM version verified, proceeding with the update..."
           # dos2unix $GITHUB_WORKSPACE/.github/scripts/driver-version-update.sh
-          chmod +x /home/runner/work/csm-operator/.github/scripts/driver-version-update.s
-          bash /home/runner/work/csm-operator/.github/scripts/driver-version-update.s --driver_update_type "major" --release_type ${{ inputs.update-option }} --powerscale_version $CSI_POWERSCALE --powermax_version $CSI_POWERMAX --powerflex_version $CSI_VXFLEXOS --powerstore_version $CSI_POWERSTORE --unity_version $CSI_UNITY
+          chmod +x $GITHUB_WORKSPACE/.github/scripts/driver-version-update.sh
+          bash $GITHUB_WORKSPACE/.github/scripts/driver-version-update.sh --driver_update_type "major" --release_type ${{ inputs.update-option }} --powerscale_version $CSI_POWERSCALE --powermax_version $CSI_POWERMAX --powerflex_version $CSI_VXFLEXOS --powerstore_version $CSI_POWERSTORE --unity_version $CSI_UNITY
           else
           echo "CSM version mismatch detected. Please verify and update the version file in the CSM repository."
           fi
