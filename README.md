@@ -47,6 +47,7 @@ This repository contains a set of reusable actions and workflows, designed to be
     - [Update Operator Version](#operator-version-update)
     - [Update Sidecar Versions](#sidecar-version-update)
     - [Module version update](#operator-module-version-update)
+    - [Driver version update](#operator-driver-version-update)
 
 ## Implemented Actions
 
@@ -97,10 +98,10 @@ jobs:
 
 ### go-version-workflow
 
-This workflow updates to the latest go version in repositories that utilize Golang as the primary development language. The workflow is triggered by https://github.com/dell/common-github-actions/actions/workflows/trigger-go-workflow.yaml or can be triggered manually.
+This workflow updates to the latest go version in repositories that utilize Golang as the primary development language. The workflow is triggered by <https://github.com/dell/common-github-actions/actions/workflows/trigger-go-workflow.yaml> or can be triggered manually.
 
 The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following
-Note: Workflows that call reusable workflows in the same organization or enterprise can use the inherit keyword to implicitly pass the secrets. See: https://docs.github.com/en/actions/sharing-automations/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow.
+Note: Workflows that call reusable workflows in the same organization or enterprise can use the inherit keyword to implicitly pass the secrets. See: <https://docs.github.com/en/actions/sharing-automations/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow>.
 
 ```yaml
 name: Go Version Update
@@ -234,6 +235,7 @@ jobs:
 ```
 
 ### update-libraries-to-commits
+
 This workflow updates Dell libraries to their **latest commits** in repositories that utilize Golang as the primary development language. The workflow is triggered automatically, but can be triggered manually as well.
 The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following:
 
@@ -252,6 +254,7 @@ jobs:
 ```
 
 ### update-libraries
+
 This workflow updates Dell libraries to the **latest released** version in repositories that utilize Golang as the primary development language. The workflow can be manually triggered only.
 The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following:
 
@@ -297,9 +300,10 @@ jobs:
     secrets: inherit
 
 ```
+
 ### ubi-image-update
 
-This workflow updates UBI9 micro image SHAID to the latest. The workflow is triggered by a cron job that runs on every Monday at mid-day. It also can be triggered manually from https://github.com/dell/csm/actions/workflows/ubi-image-update.yaml.
+This workflow updates UBI9 micro image SHAID to the latest. The workflow is triggered by a cron job that runs on every Monday at mid-day. It also can be triggered manually from <https://github.com/dell/csm/actions/workflows/ubi-image-update.yaml>.
 
 The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following
 
@@ -317,6 +321,7 @@ jobs:
 ```
 
 ## Dell Libraries Specific Workflows
+
 ### csm-release-libs
 
 This workflow automates the release process for all the Go Client Libraries:
@@ -346,7 +351,9 @@ on:
 ```
 
 ## CSM Operator Specific Workflows
+
 ### operator-version-update
+
 This workflow updates csm-operator repository with latest version of the operator for the given release.
 It also updates the CSM program version wherever it is used in csm-operator repository.
 
@@ -384,6 +391,7 @@ jobs:
 ```
 
 ## sidecar-version-update
+
 This workflow updates csm-operator repository with latest versions of the sidecars.
 
 This workflow accepts total eight parameters as input to the workflow -
@@ -442,12 +450,14 @@ jobs:
 ```
 
 ## operator-module-version-update
+
 This workflow updates csm-operator repository with latest versions of the modules.
 
 The workflow accepts two parameters as input:
 (CSM program version and update flag).
+
 1. update flag = "nightly"
-   - This has to be triggered in the beginning of the release. 
+   - This has to be triggered in the beginning of the release.
    - This updates all modules configVersions and all the required version updates.
    - Updates images to "nightly" for templates and detailed samples.
 
@@ -459,10 +469,11 @@ Below is the example usage in csm-operator repository.
 
 It expects a script to be present in the csm-operator repository ".github/scripts/module-version-update.sh".
 
-Make sure to update all the latest versions before you trigger this workflow  https://github.com/dell/csm/blob/main/config/csm-versions.yaml  
+Make sure to update all the latest versions before you trigger this workflow  <https://github.com/dell/csm/blob/main/config/csm-versions.yaml>  
 Workflow needs to be triggered manually from csm-operator repository. Below is the example usage in csm-operator repository.
 
-Example: 
+Example:
+
 1. Beginning of the release
    - CSM program version = v1.14.0
    - update flag = "nightly"
@@ -498,6 +509,65 @@ jobs:
     secrets: inherit
 ```
 
+## Operator Driver Version Update
+
+This workflow updates csm-operator repository with latest versions of the drivers.
+
+The workflow accepts two parameters as input:
+(CSM program version and update flag).
+
+1. update flag = "nightly"
+   - This has to be triggered in the beginning of the release.
+   - This updates all driver configVersions and all the required version updates.
+   - Updates images to "nightly" for templates and detailed samples.
+
+2. update flag = "tag"
+   - This has to be triggered towards the content lock.
+   - This flag simply updates "nightly" updated images in step-1 to actual release tag version.
+
+Below is the example usage in csm-operator repository.
+
+It expects a script to be present in the csm-operator repository ".github/scripts/driver-version-update.sh".
+
+Make sure to update all the latest versions before you trigger this workflow <https://github.com/dell/csm/blob/main/config/csm-versions.yaml>  
+Workflow needs to be triggered manually from csm-operator repository. Below is the example usage in csm-operator repository.
+
+Example:
+
+1. Beginning of the release
+   - CSM program version = v1.14.0
+   - update flag = "nightly"
+
+2. At the content lock
+   - CSM program version = v1.14.0
+   - update flag = "tag"
+
+```yaml
+name: Update driver versions in CSM-Operator
+# reusable workflow
+on:  # yamllint disable-line rule:truthy
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      csm-version:
+        description: 'CSM program version, ex: v1.12.0, v1.13.0, ...'
+        required: true
+      update-option:
+        description: 'Select the update flag, ex. "nightly" or "tag"'
+        required: true
+        type: choice
+        options:
+          - nightly
+          - tag
+jobs:
+  version-update:
+    uses: dell/common-github-actions/.github/workflows/operator-driver-version-update.yaml@main
+    name: CSM Operator Driver Version Update
+    with:
+      csm-version: ${{ inputs.csm-version }}
+      update-option: ${{ inputs.update-option}}
+    secrets: inherit
+```
 
 ## Support
 
