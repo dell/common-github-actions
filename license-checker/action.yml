@@ -1,0 +1,13 @@
+name: "License Header Checker"
+description: "Checks for license header"
+
+inputs:
+  autofix:
+    required: false
+    description: "Enable autofix"
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
+  args:
+    - ${{ inputs.autofix }}

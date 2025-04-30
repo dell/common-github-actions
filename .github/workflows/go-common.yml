@@ -11,6 +11,10 @@ name: Common Workflows
 
 on:
   workflow_call:
+    inputs:
+      autofix:
+        required: false
+        type: string
 
 # Set defaults
 env:
@@ -124,3 +128,14 @@ jobs:
   # dependabot_automerge:
   #   name: Automerge Dependabot PRs
   #   uses: dell/common-github-actions/.github/workflows/dependabot-automerge.yml@main
+  
+  check-license-header:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check license headers
+        uses: dell/common-github-actions/license-checker@main
+        with:
+          autofix: false
