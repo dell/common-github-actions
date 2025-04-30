@@ -71,6 +71,7 @@ jobs:
         working-directory: ${{ github.workspace }}
         shell: bash
         run: |
+          pwd
           echo "Input csm version --> ${{ inputs.csm-version }}"
           echo "Update flag --> ${{ inputs.update-option }}"
           csm_ver_provided=${{ inputs.csm-version }}
