@@ -8,7 +8,7 @@
 
 # Reusable workflow to perform operator version update
 # To perform csm-operator driver version update, needs two arguments as input to the workflow
-name: Driver version update
+name: CSM Operator Driver Version Update
 
 on:
   workflow_call:

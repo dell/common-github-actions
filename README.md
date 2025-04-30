@@ -562,7 +562,7 @@ on:  # yamllint disable-line rule:truthy
 jobs:
   version-update:
     uses: dell/common-github-actions/.github/workflows/operator-driver-version-update.yaml@main
-    name: Driver version update
+    name: CSM Operator Driver Version Update
     with:
       csm-version: ${{ inputs.csm-version }}
       update-option: ${{ inputs.update-option}}
