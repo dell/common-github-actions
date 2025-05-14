@@ -38,7 +38,5 @@ rules:
   truthy:
     level: warning
 
-
 ignore: |
   test/podmontest/deploy/templates/vm-template.yaml
-
