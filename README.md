@@ -475,11 +475,11 @@ Workflow needs to be triggered manually from csm-operator repository. Below is t
 Example:
 
 1. Beginning of the release
-   - CSM program version = v1.14.0
+   - CSM program version = v1.15.0
    - update flag = "nightly"
 
 2. At the content lock
-   - CSM program version = v1.14.0
+   - CSM program version = v1.15.0
    - update flag = "tag"
 
 ```yaml
@@ -490,7 +490,7 @@ on:  # yamllint disable-line rule:truthy
   workflow_dispatch:
     inputs:
       csm-version:
-        description: 'CSM program version, ex: v1.12.0, v1.13.0, ...'
+        description: 'CSM program version, ex: v1.14.0, v1.15.0, ...'
         required: true
       update-option:
         description: 'Select the update flag, ex. "nightly" or "tag"'
@@ -535,11 +535,11 @@ Workflow needs to be triggered manually from csm-operator repository. Below is t
 Example:
 
 1. Beginning of the release
-   - CSM program version = v1.14.0
+   - CSM program version = v1.15.0
    - update flag = "nightly"
 
 2. At the content lock
-   - CSM program version = v1.14.0
+   - CSM program version = v1.15.0
    - update flag = "tag"
 
 ```yaml
