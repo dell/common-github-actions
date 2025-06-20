@@ -1,0 +1,18 @@
+name: 'Update Config'
+description: 'Update config file with the latest versions'
+inputs:
+  repo:
+    description: 'Repository to check for latest version'
+    required: true
+  config_repo:
+    description: 'Repository where the config file resides'
+    required: true
+  config_file_path:
+    description: 'Path to the config file in the config repository'
+    required: true
+  github_token:
+    description: 'GitHub token'
+    required: true
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

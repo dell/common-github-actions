@@ -1,0 +1,47 @@
+name: Update Versions
+
+# TODO: enable this once the script is ready
+# on:
+#   schedule:
+#     - cron: '0 0 * * 1'  # Runs every Monday at midnight
+
+jobs:
+  update-versions:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests PyGithub
+
+    - name: Run update script
+      run: python main.py
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git checkout -b update-sidecar
+        git add .
+        git commit -m 'Update sidecar'
+        git push --set-upstream origin update-sidecar
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        branch: update-sidecar
+        title: 'Update versions of external-resizer and external-attacher'
+        body: 'This PR updates the versions of external-resizer and external-attacher to their latest releases.'
+        labels: 'automated update'
