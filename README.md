@@ -354,14 +354,36 @@ on:
 
 ### operator-version-update
 
-This workflow updates csm-operator repository with latest version of the operator for the given release.
-It also updates the CSM program version wherever it is used in csm-operator repository.
+This workflow updates csm-operator repository with latest versions of the operator version.
 
-This workflow accepts total three parameters as input to the workflow (csm version, latest operator version, existing operator version).
+The workflow accepts two parameters as input:
+(CSM program version and update flag).
+
+1. update flag = "nightly"
+    - This has to be triggered in the beginning of the release.
+    - This updates operator to the latest version and also updates the CSMVersion to latest.
+    - Also points operator images to "nightly".
+
+2. update flag = "tag"
+    - This has to be triggered towards the content lock.
+    - This flag simply updates "nightly" updated image in step-1 to actual release tag version of the operator.
+
+Below is the example usage in csm-operator repository.
 
 It expects a script to be present in the csm-operator repository ".github/scripts/operator-version-update.sh".
 
+Make sure to update all the latest versions before you trigger this workflow  <https://github.com/dell/csm/blob/main/config/csm-versions.yaml>  
 Workflow needs to be triggered manually from csm-operator repository. Below is the example usage in csm-operator repository.
+
+Example:
+
+1. Beginning of the release
+    - CSM program version = v1.15.0
+    - update flag = "nightly"
+
+2. At the content lock
+    - CSM program version = v1.15.0
+    - update flag = "tag"
 
 ```yaml
 name: Update CSM Operator version
@@ -371,22 +393,22 @@ on:  # yamllint disable-line rule:truthy
   workflow_dispatch:
     inputs:
       csm-version:
-        description: 'CSM program version, ex: v1.12.0, v1.13.0, ...'
+        description: 'CSM program version, ex: v1.14.0, v1.15.0, ...'
         required: true
-      latest-version:
-        description: 'Latest operator version, ex: v1.7.0, v1.8.0, ...'
+      update-option:
+        description: 'Select the update flag, ex. "nightly" or "tag"'
         required: true
-      existing-version:
-        description: 'Existing operator version, ex: v1.6.0, 1.7.0, ...'
-        required: true
+        type: choice
+        options:
+          - nightly
+          - tag
 jobs:
   version-update:
     uses: dell/common-github-actions/.github/workflows/operator-version-update.yaml@main
     name: Operator version update
     with:
-      latest-version: ${{ inputs.latest-version }}
-      existing-version: ${{ inputs.existing-version }}
       csm-version: ${{ inputs.csm-version }}
+      update-option: ${{ inputs.update-option}}
     secrets: inherit
 ```
 
