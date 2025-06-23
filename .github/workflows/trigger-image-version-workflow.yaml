@@ -34,7 +34,6 @@ jobs:
             dell/karavi-metrics-powerflex
             dell/karavi-resiliency
             dell/karavi-topology
-            dell/karavi-authorization
           ]
 
     steps:
