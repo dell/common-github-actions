@@ -38,7 +38,6 @@ jobs:
             "dell/csm-operator",
             "dell/csm-replication",
             "dell/gobrick",
-            "dell/karavi-authorization",
             "dell/karavi-metrics-powerflex",
             "dell/karavi-resiliency",
             "dell/karavi-topology",
