@@ -14,7 +14,7 @@ on:
   workflow_call:
     inputs:
       csm-version:
-        description: 'CSM program version, ex: v1.12.0, v1.13.0, ...'
+        description: 'CSM program version, ex: v1.14.0, v1.15.0, ...'
         required: true
         type: string
       update-option:
@@ -42,21 +42,21 @@ jobs:
            csm_version=$(extract_value 'csm-version')
            csm_operator=$(extract_value 'csm-operator')
            csi_powerscale=$(extract_value 'csi-powerscale')
-           csi_powerstore=$(extract_value 'csi_powerstore')
-           csi_powermax=$(extract_value 'csi_powermax')
-           csi_vxflexos=$(extract_value 'csi_vxflexos')
-           csi_unity=$(extract_value 'csi_unity')
-           csm_replication=$(extract_value 'csm_replication')
-           karavi_resiliency=$(extract_value 'karavi_resiliency')
-           csm_authorization_v2=$(extract_value 'csm_authorization_v2')
+           csi_powerstore=$(extract_value 'csi-powerstore')
+           csi_powermax=$(extract_value 'csi-powermax')
+           csi_vxflexos=$(extract_value 'csi-vxflexos')
+           csi_unity=$(extract_value 'csi-unity')
+           csm_replication=$(extract_value 'csm-replication')
+           karavi_resiliency=$(extract_value 'karavi-resiliency')
+           csm_authorization_v2=$(extract_value 'csm-authorization-v2')
            csireverseproxy=$(extract_value 'csireverseproxy')
-           karavi_observability=$(extract_value 'karavi_observability')
-           karavi_metrics_powerflex=$(extract_value 'karavi_metrics_powerflex')
-           csm_metrics_powerstore=$(extract_value 'csm_metrics_powerstore')
-           csm_metrics_powerscale=$(extract_value 'csm_metrics_powerscale')
-           csm_metrics_powermax=$(extract_value 'csm_metrics_powermax')
-           karavi_topology=$(extract_value 'karavi_topology')
-           otel_collector=$(extract_value 'otel_collector')
+           karavi_observability=$(extract_value 'karavi-observability')
+           karavi_metrics_powerflex=$(extract_value 'karavi-metrics-powerflex')
+           csm_metrics_powerstore=$(extract_value 'csm-metrics-powerstore')
+           csm_metrics_powerscale=$(extract_value 'csm-metrics-powerscale')
+           csm_metrics_powermax=$(extract_value 'csm-metrics-powermax')
+           karavi_topology=$(extract_value 'karavi-topology')
+           otel_collector=$(extract_value 'otel-collector')
           
            echo "CSM_VERSION=$csm_version" >> $GITHUB_ENV
            echo "CSM_OPERATOR=$csm_operator" >> $GITHUB_ENV
