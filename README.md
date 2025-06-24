@@ -48,6 +48,7 @@ This repository contains a set of reusable actions and workflows, designed to be
     - [Update Sidecar Versions](#sidecar-version-update)
     - [Module version update](#operator-module-version-update)
     - [Driver version update](#operator-driver-version-update)
+  - [Update CSI Sidecars](#csi-sidecars-update)
 
 ## Implemented Actions
 
@@ -588,6 +589,26 @@ jobs:
     with:
       csm-version: ${{ inputs.csm-version }}
       update-option: ${{ inputs.update-option}}
+    secrets: inherit
+```
+
+### csi-sidecars-update
+
+This workflow updates the CSI Sidecars to the **latest** tag based on what is kept within the **dell/csm** versions. Each repository wishing to update its CSI Sidecars can introduce a new step specific to its manner of updating by using the built-in `if: ${{ github.repository == <reposityName> }`.
+The workflow does not accept any parameters and can be used from any repository by creating a workflow that resembles the following:
+
+```yaml
+name: Update CSI Sidecars
+
+on:
+  workflow_dispatch:  # Allows manual trigger
+    schedule:
+    - cron: '0 0 * * 3'  # Runs every Wednesday at Midnight
+
+jobs:
+  csi-sidecars-update:
+    uses: dellc/common-github-actions/.github/workflows/csi-sidecars-update.yaml@main
+    name: CSI Sidecars Update
     secrets: inherit
 ```
 
