@@ -90,10 +90,14 @@ jobs:
           }
 
           update_installation_wizard_sidecars() {
-            csm_version=$csm
+            # Get the latest CSM version
+            echo "Latest CSM Version is $csm"
+
+            # Sanitize the CSM version
+            csm_version=$(echo $csm | tr -d 'v' | tr -d '\r')
 
             # The installation wizard templates should have the latest version of the CSM.
-            wizard_files=$(find content/docs/getting-started/installation/installationwizard/src/templates/ -name "*$version*")
+            wizard_files=$(find content/docs/getting-started/installation/installationwizard/src/templates/ -name "*$csm_version*")
 
             if [ -z "$wizard_files" ]; then
               echo "No Installation Wizard content for latest CSM found. Skipping."
