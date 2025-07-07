@@ -10,19 +10,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-FROM golang:1.24
-
-LABEL "com.github.actions.name"="license-checker"
-LABEL "com.github.actions.description"="Checks for license header"
-LABEL "com.github.actions.icon"="eye"
-LABEL "com.github.actions.color"="gray-dark"
-
-LABEL version="1.0.0"
-
-WORKDIR /app
-
-COPY go.mod go.sum main.go LICENSE-HEADER-DOCKER.txt LICENSE-HEADER-GO.txt LICENSE-HEADER-SHELL.txt LICENSE-HEADER-YAML.txt ./
-RUN go build .
-
-ENTRYPOINT ["/app/license-checker"]

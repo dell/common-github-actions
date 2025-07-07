@@ -29,6 +29,44 @@ import (
 	"strings"
 )
 
+const (
+	goLicenseFile     = "/app/LICENSE-HEADER-GO.txt" // Change this to the path of your license file
+	dockerLicenseFile = "/app/LICENSE-HEADER-DOCKER.txt"
+	shellLicenseFile  = "/app/LICENSE-HEADER-SHELL.txt"
+	yamlLicenseFile   = "/app/LICENSE-HEADER-YAML.txt"
+	rootDir           = "." // Change this to the directory you want to search
+	shellExtensions   = ".sh"
+	yamlExtensions    = ".yaml"
+	dockerExtensions  = "Dockerfile"
+	goExtensions      = ".go"
+)
+
+func main() {
+	isAutofixEnabled := flag.Bool("auto-fix", false, "Autofix enabled")
+	flag.Parse()
+
+	hasLicense, err := checkGoLicenseHeader(isAutofixEnabled)
+	if err != nil {
+		fmt.Println("Error checking go license header:", err)
+	}
+	hasLicense, err = checkShellLicenseHeader(isAutofixEnabled)
+	if err != nil {
+		fmt.Println("Error checking shell license header:", err)
+	}
+	hasLicense, err = checkYamlLicenseHeader(isAutofixEnabled)
+	if err != nil {
+		fmt.Println("Error checking YAML license header:", err)
+	}
+	hasLicense, err = checkDockerFileLicenseHeader(isAutofixEnabled)
+	if err != nil {
+		fmt.Println("Error checking Dockerfile license header:", err)
+	}
+	// if any of the license headers are missing or incorrect then exit with error
+	if !hasLicense {
+		os.Exit(1)
+	}
+}
+
 func readLicenseHeader(filePath string) (string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -41,7 +79,7 @@ func readLicenseHeader(filePath string) (string, error) {
 	for scanner.Scan() {
 		headerLines = append(headerLines, scanner.Text())
 	}
-	if err := scanner.Err(); err != nil {
+	if err = scanner.Err(); err != nil {
 		return "", err
 	}
 	return strings.Join(headerLines, "\n"), nil
@@ -72,22 +110,6 @@ func checkLicenseHeader(filePath, licenseHeader string) (bool, error) {
 	return true, scanner.Err()
 }
 
-func listGoFiles(root string) ([]string, error) {
-	var files []string
-	err := filepath.WalkDir(root, func(path string, dirEntry fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if !dirEntry.IsDir() &&
-			strings.HasSuffix(dirEntry.Name(), ".go") &&
-			!strings.Contains(dirEntry.Name(), "mock") &&
-			!strings.Contains(dirEntry.Name(), "generated") {
-			files = append(files, path)
-		}
-		return nil
-	})
-	return files, err
-}
 func autofixLicenseHeader(filePath, licenseHeader string) error {
 	input, err := os.ReadFile(filePath)
 	if err != nil {
@@ -98,25 +120,17 @@ func autofixLicenseHeader(filePath, licenseHeader string) error {
 	return os.WriteFile(filePath, []byte(output), 0644)
 }
 
-func main() {
-	isAutofixEnabled := flag.Bool("auto-fix", false, "Autofix enabled")
-	flag.Parse()
-
-	licenseFile := "/app/LICENSE-HEADER.txt" // Change this to the path of your license file
-
-	licenseHeader, err := readLicenseHeader(licenseFile)
+func checkGoLicenseHeader(isAutofixEnabled *bool) (bool, error) {
+	licenseHeader, err := readLicenseHeader(goLicenseFile)
 	if err != nil {
 		fmt.Println("Error reading license file:", err)
-		return
+		return false, err
 	}
-
-	root := "." // Change this to the directory you want to search
-	files, err := listGoFiles(root)
+	files, err := listFilesByExtension(goExtensions)
 	if err != nil {
-		fmt.Println("Error:", err)
-		return
+		return false, err
 	}
-	fmt.Println("Checking license header for the following files:")
+	fmt.Println("Checking license header for the following go files:")
 	for _, file := range files {
 		fmt.Println(file)
 	}
@@ -131,7 +145,7 @@ func main() {
 			fmt.Printf("Missing or incorrect license header: %s\n", file)
 			//  if auto-fix is enabled then only we will fix the license headers else just report valid header and exit
 			if *isAutofixEnabled {
-				err := autofixLicenseHeader(file, licenseHeader)
+				err = autofixLicenseHeader(file, licenseHeader)
 				if err != nil {
 					fmt.Printf("Error updating license header for file %s: %v\n", file, err)
 				} else {
@@ -140,7 +154,141 @@ func main() {
 			}
 		}
 	}
-	if !hasLicense {
-		os.Exit(1)
+	return hasLicense, nil
+}
+
+func checkShellLicenseHeader(isAutofixEnabled *bool) (bool, error) {
+	licenseHeader, err := readLicenseHeader(shellLicenseFile)
+	if err != nil {
+		fmt.Println("Error reading license file:", err)
+		return false, err
 	}
+	files, err := listFilesByExtension(shellExtensions)
+	if err != nil {
+		return false, err
+	}
+	fmt.Println("Checking license header for the following shell script files:")
+	for _, file := range files {
+		fmt.Println(file)
+	}
+	var hasLicense bool
+	for _, file := range files {
+		hasLicense, err = checkLicenseHeader(file, licenseHeader)
+		if err != nil {
+			fmt.Printf("Error checking file %s: %v\n", file, err)
+			continue
+		}
+		if !hasLicense {
+			fmt.Printf("Missing or incorrect license header: %s\n", file)
+			//  if auto-fix is enabled then only we will fix the license headers else just report valid header and exit
+			if *isAutofixEnabled {
+				err = autofixLicenseHeader(file, licenseHeader)
+				if err != nil {
+					fmt.Printf("Error updating license header for file %s: %v\n", file, err)
+				} else {
+					fmt.Printf("License header updated for file: %s\n", file)
+				}
+			}
+		}
+	}
+	return hasLicense, nil
+}
+
+func checkDockerFileLicenseHeader(isAutofixEnabled *bool) (bool, error) {
+	licenseHeader, err := readLicenseHeader(dockerLicenseFile)
+	if err != nil {
+		fmt.Println("Error reading license file:", err)
+		return false, err
+	}
+	files, err := listFilesByExtension(dockerExtensions)
+	if err != nil {
+		return false, err
+	}
+	fmt.Println("Checking license header for the following Docker files:")
+	for _, file := range files {
+		fmt.Println(file)
+	}
+	var hasLicense bool
+	for _, file := range files {
+		hasLicense, err = checkLicenseHeader(file, licenseHeader)
+		if err != nil {
+			fmt.Printf("Error checking file %s: %v\n", file, err)
+			continue
+		}
+		if !hasLicense {
+			fmt.Printf("Missing or incorrect license header: %s\n", file)
+			//  if auto-fix is enabled then only we will fix the license headers else just report valid header and exit
+			if *isAutofixEnabled {
+				err = autofixLicenseHeader(file, licenseHeader)
+				if err != nil {
+					fmt.Printf("Error updating license header for file %s: %v\n", file, err)
+				} else {
+					fmt.Printf("License header updated for file: %s\n", file)
+				}
+			}
+		}
+	}
+	return hasLicense, nil
+}
+
+func checkYamlLicenseHeader(isAutofixEnabled *bool) (bool, error) {
+	licenseHeader, err := readLicenseHeader(yamlLicenseFile)
+	if err != nil {
+		fmt.Println("Error reading license file:", err)
+		return false, err
+	}
+	files, err := listFilesByExtension(yamlExtensions)
+	if err != nil {
+		return false, err
+	}
+	fmt.Println("Checking license header for the following YAML files:")
+	for _, file := range files {
+		fmt.Println(file)
+	}
+	var hasLicense bool
+	for _, file := range files {
+		hasLicense, err = checkLicenseHeader(file, licenseHeader)
+		if err != nil {
+			fmt.Printf("Error checking file %s: %v\n", file, err)
+			continue
+		}
+		if !hasLicense {
+			fmt.Printf("Missing or incorrect license header: %s\n", file)
+			//  if auto-fix is enabled then only we will fix the license headers else just report valid header and exit
+			if *isAutofixEnabled {
+				err = autofixLicenseHeader(file, licenseHeader)
+				if err != nil {
+					fmt.Printf("Error updating license header for file %s: %v\n", file, err)
+				} else {
+					fmt.Printf("License header updated for file: %s\n", file)
+				}
+			}
+		}
+	}
+	return hasLicense, nil
+}
+
+func listFilesByExtension(extension string) ([]string, error) {
+	var files []string
+	err := filepath.WalkDir(rootDir, func(path string, dirEntry fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		// we will check for generated and mock files for go extension only else search for other file types
+		if extension == goExtensions {
+			if !dirEntry.IsDir() &&
+				strings.HasSuffix(dirEntry.Name(), extension) &&
+				!strings.Contains(dirEntry.Name(), "mock") &&
+				!strings.Contains(dirEntry.Name(), "generated") {
+				files = append(files, path)
+			}
+		} else {
+			if !dirEntry.IsDir() &&
+				strings.HasSuffix(dirEntry.Name(), extension) {
+				files = append(files, path)
+			}
+		}
+		return nil
+	})
+	return files, err
 }
