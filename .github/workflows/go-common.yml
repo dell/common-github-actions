@@ -94,7 +94,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: gosec
+      - name: Run Gosec
         uses: dell/common-github-actions/gosec-runner@main
         with:
           excludes: ${{ env.GOSEC_EXCLUDES }}

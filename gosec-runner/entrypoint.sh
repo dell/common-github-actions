@@ -39,11 +39,6 @@ get_exclude_directories() {
     EXCLUDE_DIR_FLAG="$exclude_arg"
 }
 
-# Fetch the latest version of gosec
-LATEST_VERSION=$(curl -s https://api.github.com/repos/securego/gosec/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-
-curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin $LATEST_VERSION
-
 submodules=$(find . -name 'go.mod' -exec dirname {} +)
 for submodule in $submodules; do
   echo "Running gosec on $submodule"
