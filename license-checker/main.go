@@ -30,15 +30,14 @@ import (
 )
 
 const (
-	goLicenseFile     = "/app/LICENSE-HEADER-GO.txt" // Change this to the path of your license file
-	dockerLicenseFile = "/app/LICENSE-HEADER-DOCKER.txt"
-	shellLicenseFile  = "/app/LICENSE-HEADER-SHELL.txt"
-	yamlLicenseFile   = "/app/LICENSE-HEADER-YAML.txt"
-	rootDir           = "." // Change this to the directory you want to search
-	shellExtensions   = ".sh"
-	yamlExtensions    = ".yaml"
-	dockerExtensions  = "Dockerfile"
-	goExtensions      = ".go"
+	goLicenseFile            = "/app/LICENSE-HEADER-GO.txt" // Change this to the path of your license file
+	genericLicenseHeaderFile = "/app/LICENSE-HEADER-ALL.txt"
+	shellLicenseHeaderFile   = "/app/LICENSE-HEADER-SHELL.txt"
+	rootDir                  = "." // Change this to the directory you want to search
+	shellExtensions          = ".sh"
+	yamlExtensions           = ".yaml"
+	dockerExtensions         = "Dockerfile"
+	goExtensions             = ".go"
 )
 
 func main() {
@@ -158,7 +157,7 @@ func checkGoLicenseHeader(isAutofixEnabled *bool) (bool, error) {
 }
 
 func checkShellLicenseHeader(isAutofixEnabled *bool) (bool, error) {
-	licenseHeader, err := readLicenseHeader(shellLicenseFile)
+	licenseHeader, err := readLicenseHeader(shellLicenseHeaderFile)
 	if err != nil {
 		fmt.Println("Error reading license file:", err)
 		return false, err
@@ -195,7 +194,7 @@ func checkShellLicenseHeader(isAutofixEnabled *bool) (bool, error) {
 }
 
 func checkDockerFileLicenseHeader(isAutofixEnabled *bool) (bool, error) {
-	licenseHeader, err := readLicenseHeader(dockerLicenseFile)
+	licenseHeader, err := readLicenseHeader(genericLicenseHeaderFile)
 	if err != nil {
 		fmt.Println("Error reading license file:", err)
 		return false, err
@@ -232,7 +231,7 @@ func checkDockerFileLicenseHeader(isAutofixEnabled *bool) (bool, error) {
 }
 
 func checkYamlLicenseHeader(isAutofixEnabled *bool) (bool, error) {
-	licenseHeader, err := readLicenseHeader(yamlLicenseFile)
+	licenseHeader, err := readLicenseHeader(genericLicenseHeaderFile)
 	if err != nil {
 		fmt.Println("Error reading license file:", err)
 		return false, err
