@@ -22,7 +22,7 @@ LABEL version="1.0.0"
 
 WORKDIR /app
 
-COPY go.mod go.sum main.go LICENSE-HEADER-DOCKER.txt LICENSE-HEADER-GO.txt LICENSE-HEADER-SHELL.txt LICENSE-HEADER-YAML.txt ./
+COPY go.mod go.sum main.go LICENSE-HEADER-GO.txt LICENSE-HEADER-SHELL.txt LICENSE-HEADER-ALL.txt ./
 RUN go build .
 
 ENTRYPOINT ["/app/license-checker"]
