@@ -7,6 +7,8 @@ LABEL "com.github.actions.color"="gray-dark"
 
 LABEL version="1.0.0"
 
+RUN go install github.com/securego/gosec/v2/cmd/gosec@latest
+
 ENV GOFLAGS="-buildvcs=false"
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
