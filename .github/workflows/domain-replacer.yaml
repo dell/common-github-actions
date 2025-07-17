@@ -1,0 +1,70 @@
+# Copyright (c) 2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+
+# Reusable workflow to update external GitHub domain references in files
+name: domain-replacer
+
+# yamllint sees the below line as a true or false value instead of an 'on' trigger
+on:  # yamllint disable-line rule:truthy
+  workflow_call:
+
+jobs:
+
+  replacedomain:
+    name: Scan for external GitHub domain
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run domain replacement
+        uses: hoppea2/common-github-actions/.github/workflows/domain-replacer@main
+
+      - name: Show Git Diff
+        run: git diff --stat || true
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          # Check if the branch exists remotely
+          if git ls-remote --exit-code --heads origin domain-replacement; then
+            echo "Branch 'domain-replacement' exists. Checking it out."
+            git fetch origin domain-replacement
+            git checkout domain-replacement
+          else
+            echo "Branch 'domain-replacement' does not exist. Creating it."
+            git checkout -b domain-replacement
+          fi
+
+          git add . ':!./.github/workflows/' ':!./.github/workflows/domain-replacer/'
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Replace external GitHub domain with internal Enterprise domain"
+          git pull --rebase origin domain-replacement || true
+          git push --force-with-lease origin domain-replacement
+
+      - name: Install GitHub CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gh
+
+      - name: Create Pull Request with gh CLI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --title "Replace external GitHub domain" \
+            --body "This PR replaces all references to github.com/dell/ with eos2git.cec.lab.emc.com/CSM/" \
+            --base main \
+            --head domain-replacement \
+            --repo ${{ github.repository }}
