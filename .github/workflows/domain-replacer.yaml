@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run domain replacement
-        uses: ./domain-replacer
+        uses: hoppea2/common-github-actions/domain-replacer@main
 
       - name: Show Git Diff
         run: git diff --stat || true
