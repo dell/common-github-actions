@@ -6,26 +6,26 @@
 #
 #  http://www.apache.org/licenses/LICENSE-2.0
 
-# Reusable workflow to perform update of CSI sidecars.
-name: CSI Sidecars Update
+# Reusable workflow to perform update of CSM Versions.
+name: CSM Versions Update
 
 # Invocable as a reusable workflow
 on:
   workflow_call:
 
 jobs:
-  csi-sidecars-update:
+  csm-versions-update:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Get Latest CSI Sidecar Versions from dell/csm
+      - name: Get CSM Versions from dell/csm
         id: vars
         run: |
           curl -s https://raw.githubusercontent.com/dell/csm/refs/heads/main/config/csm-versions.yaml > versions-content.txt
 
-          # Parse out and save each csi sidecar version
+          # Parse out and save each needed CSM version
           readarray -t lines < versions-content.txt
           for line in "${lines[@]}"; do
             name=$(echo $line | cut -d: -f1 | tr -d ' ')
@@ -45,11 +45,13 @@ jobs:
               echo "health_monitor=$version" >> "$GITHUB_OUTPUT"
             elif [[ $name == "csm-version" ]]; then
               echo "csm=$version" >> "$GITHUB_OUTPUT"
+            elif [[ $name == "otel-collector" ]]; then
+              echo "otel_collector=$version" >> "$GITHUB_OUTPUT"  
             fi
 
           done
 
-      - name: CSM docs sidecar update
+      - name: CSM docs versions update
         if: ${{ github.repository == 'dell/csm-docs' }}
         env:
           attacher: ${{ steps.vars.outputs.attacher }}
@@ -58,41 +60,50 @@ jobs:
           resizer: ${{ steps.vars.outputs.resizer }}
           registrar: ${{ steps.vars.outputs.registrar }}
           health_monitor: ${{ steps.vars.outputs.health_monitor }}
+          otel_collector: ${{ steps.vars.outputs.otel_collector }}
           csm: ${{ steps.vars.outputs.csm }}
         run: |
-          echo "We are updating csm docs..."
+          declare -A latest_images
+          latest_images[csi-attacher]=$attacher
+          latest_images[csi-provisioner]=$provisioner
+          latest_images[csi-snapshotter]=$snapshotter
+          latest_images[csi-resizer]=$resizer
+          latest_images[csi-node-driver-registrar]=$registrar
+          latest_images[csi-external-health-monitor-controller]=$health_monitor
+          latest_images[opentelemetry-collector]=$otel_collector
 
-          declare -A sidecars
-          sidecars[csi-attacher]=$attacher
-          sidecars[csi-provisioner]=$provisioner
-          sidecars[csi-snapshotter]=$snapshotter
-          sidecars[csi-resizer]=$resizer
-          sidecars[csi-node-driver-registrar]=$registrar
-          sidecars[csi-external-health-monitor-controller]=$health_monitor
+          # Global variables
+          updated_shortcodes=""
+          updated_installation_wizard=""
 
-          update_shortcodes_sidecars() {
-            for key in "${!sidecars[@]}"; do
+          update_shortcodes() {
+            for key in "${!latest_images[@]}"; do
               path="layouts/shortcodes/version-docs.html"
               name=$(echo $key | tr '-' '_')
-              version=${sidecars[$key]}
-              
-              echo "Updating $key to $version"
+              version=${latest_images[$key]}
 
-              # Get the shortcode location for sidecar
-              sidecar_shortcode=$(grep -r "\"$name.*\" -}}" $path)
+              # If no shortcode was found, we don't need to update it
+              if ! grep -q "\"$name.*\" -}}" $path; then
+                echo "No shortcode found for $key. Skipping."
+                continue
+              fi
 
-              # Remove the version from the shortcode
-              partial_shortcode=$(echo "$sidecar_shortcode" | sed -E 's/v[0-9]+\.[0-9]+\.[0-9]+//g')
+              old_shortcode=$(grep -r "\"$name.*\" -}}" $path)
 
-              # Replace the version in the shortcode
-              sed -i "s/${sidecar_shortcode}/${partial_shortcode}$version/g" $path
+              # If shortcode already contains the version, we don't need to update it
+              if [[ "$old_shortcode" == *"$version"* ]]; then
+                continue
+              fi
+
+              new_shortcode=$(echo $old_shortcode | sed "s/}}.*/}}$version/")
+
+              updated_shortcodes+="\t$key to $version\n"
+              sed -i "s|${old_shortcode}|${new_shortcode}|g" $path
             done
           }
 
-          update_installation_wizard_sidecars() {
-            # Get the latest CSM version
-            echo "Latest CSM Version is $csm"
-
+          update_installation_wizard() {
+            echo "Starting installation wizard update..."
             # Sanitize the CSM version
             csm_version=$(echo $csm | tr -d 'v' | tr -d '\r')
 
@@ -105,25 +116,55 @@ jobs:
             fi
 
             for file in $wizard_files; do
-              echo "Replaceing Sidecars in $file"
-              for key in "${!sidecars[@]}"; do
+              updated_images=""
+              for key in "${!latest_images[@]}"; do
                 # Retrieve the current version from the file of the sidecar.
                 old_version=$(grep -r -m 1 "$key:" $file | xargs)
                 if [ -z "$old_version" ]; then
                   continue
                 fi
 
-                # Replace the old version with the new version.
-                new_version=$(echo $old_version | sed "s/:v[^\"]*/:${sidecars[$key]}/")
+                # All instance of the image in a file either go "image:/value:" so we remove that to get the pure image.
+                old_version=$(echo $old_version | cut -d':' -f2- | tr -d ' ')
+                new_version=$(echo $old_version | sed "s/:.*/:${latest_images[$key]}/")
+
+                # If the version is the same, then we skip
+                if [ "$old_version" == "$new_version" ]; then
+                  continue
+                fi
+
+                updated_images+="\t$new_version\n"
 
                 # Update the version in the file.
                 sed -i "s|${old_version}|${new_version}|g" $file
               done
+
+              if [ -z "$updated_images" ]; then
+                  continue
+              fi
+
+              updated_installation_wizard+="Updated $file with the following images:\n$updated_images\n"
             done
           }
 
-          update_shortcodes_sidecars
-          update_installation_wizard_sidecars
+          handle_results() {
+            if [ -z "$updated_shortcodes" ] && [ -z "$updated_installation_wizard" ]; then
+              echo "No changes were made. Skipping."
+              return
+            fi
+
+            if [ -n "$updated_shortcodes" ]; then
+              echo -e "Updated Shortcodes:\n$updated_shortcodes"
+            fi
+
+            if [ -n "$updated_installation_wizard" ]; then
+              echo -e "$updated_installation_wizard"
+            fi
+          }
+
+          update_shortcodes
+          update_installation_wizard
+          handle_results
 
       - name: Remove versions content file
         run: rm versions-content.txt
@@ -143,11 +184,11 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ steps.generate-token.outputs.token }}
-          branch: "update-csi-sidecars"
-          commit-message: "Update CSI sidecar versions to latest"
-          title: "Update CSI sidecar versions to latest"
+          branch: "update-csm-versions-to-latest"
+          commit-message: "Update CSM versions to latest"
+          title: "Update CSM versions to latest"
           body: |
-            Automated update of CSI sidecar versions.
+            Automated update all CSI Sidecars and Third Party Libraries to their latest version.
 
             Auto-generated by [common-github-actions](https://github.com/dell/common-github-actions)
           sign-commits: true
