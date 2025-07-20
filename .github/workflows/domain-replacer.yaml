@@ -43,6 +43,9 @@ jobs:
             git checkout -b domain-replacement
           fi
 
+          # Remove workflow file from the branch to avoid permission issues
+          git rm --cached .github/workflows/domain-replacer.yaml || true
+
           # Unstage any workflow or action files
           git reset .github/workflows/
           git reset .github/workflows/domain-replacer/
