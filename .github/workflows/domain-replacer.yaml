@@ -34,7 +34,6 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-          # Check if the branch exists remotely
           if git ls-remote --exit-code --heads origin domain-replacement; then
             echo "Branch 'domain-replacement' exists. Checking it out."
             git fetch origin domain-replacement
@@ -44,14 +43,22 @@ jobs:
             git checkout -b domain-replacement
           fi
 
+          # Unstage any workflow or action files
+          git reset .github/workflows/
+          git reset .github/workflows/domain-replacer/
+
+          # Add everything else
           git add . ':!./.github/workflows/' ':!./.github/workflows/domain-replacer/'
+
           if git diff --cached --quiet; then
             echo "No changes to commit."
             exit 0
           fi
+
           git commit -m "Replace external GitHub domain with internal Enterprise domain"
           git pull --rebase origin domain-replacement || true
           git push --force-with-lease origin domain-replacement
+
 
       - name: Install GitHub CLI
         run: |
