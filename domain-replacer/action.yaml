@@ -10,4 +10,4 @@ runs:
         chmod +x ${{ github.action_path }}/replace.sh
         ${{ github.action_path }}/replace.sh "${{ inputs.file-glob }}"
       env:
-        REPLACEMENT_DOMAIN: ${{ secrets.INTERNALDOMAIN }}
+        REPLACEMENT_DOMAIN: ${{ inputs.replacement-domain }}

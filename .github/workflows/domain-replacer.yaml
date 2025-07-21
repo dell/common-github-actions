@@ -11,9 +11,13 @@ name: domain-replacer
 
 on: 
   workflow_call:
+    inputs:
+      replacement_domain:
+        required: true
+        type: string
+
 
 jobs:
-
   replacedomain:
     name: Scan for external GitHub domain URLs
     runs-on: ubuntu-latest
