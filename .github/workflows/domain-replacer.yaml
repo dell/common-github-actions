@@ -9,14 +9,13 @@
 # Reusable workflow to update external GitHub domain references in files
 name: domain-replacer
 
-# yamllint sees the below line as a true or false value instead of an 'on' trigger
-on:  # yamllint disable-line rule:truthy
+on: 
   workflow_call:
 
 jobs:
 
   replacedomain:
-    name: Scan for external GitHub domain
+    name: Scan for external GitHub domain URLs
     runs-on: ubuntu-latest
 
     steps:
@@ -42,18 +41,10 @@ jobs:
             echo "Branch 'domain-replacement' does not exist. Creating it."
             git checkout -b domain-replacement
           fi
-          
-          # Remove workflow file from the branch to avoid permission issues
-          # git rm --cached .github/workflows/domain-replacer.yaml || true
-
-
-          # Unstage any workflow or action files
-          # git reset .github/workflows/
-          # git reset .github/workflows/domain-replacer/
 
           # Add everything else
-          # git add . ':!./.github/workflows/' ':!./.github/workflows/domain-replacer/'
-          git add . ':!./.github/workflows/'
+          # git add . ':!./.github/workflows/'
+          git add .
 
           if git diff --cached --quiet; then
             echo "No changes to commit."
