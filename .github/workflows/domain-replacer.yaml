@@ -11,43 +11,9 @@ name: domain-replacer
 
 # yamllint sees the below line as a true or false value instead of an 'on' trigger
 on:  # yamllint disable-line rule:truthy
-  workflow_dispatch:
+  workflow_call:
 
 jobs:
-  # replacedomain:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout main branch
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
-
-  #     - name: Create orphan branch and clean workspace
-  #       run: |
-  #         git checkout --orphan domain-replacement
-  #         git rm -rf .
-  #         git checkout main -- . ':!./.github/workflows/domain-replacer.yaml'
-
-  #     - name: Run domain replacement
-  #       uses: hoppea2/common-github-actions/domain-replacer@main
-
-  #     - name: Show Git Diff
-  #       run: git diff --stat || true
-
-  #     - name: Commit and push changes
-  #       run: |
-  #         git config user.name "github-actions"
-  #         git config user.email "github-actions@github.com"
-
-  #         git add . ':!./.github/workflows/' ':!./.github/actions/domain-replacer/'
-
-  #         if git diff --cached --quiet; then
-  #           echo "No changes to commit."
-  #           exit 0
-  #         fi
-
-  #         git commit -m "Replace external GitHub domain with internal Enterprise domain"
-  #         git push --set-upstream origin domain-replacement
 
   replacedomain:
     name: Scan for external GitHub domain
