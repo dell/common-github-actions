@@ -78,15 +78,16 @@ jobs:
           fi
           
           # Remove workflow file from the branch to avoid permission issues
-          git rm --cached .github/workflows/domain-replacer.yaml || true
+          # git rm --cached .github/workflows/domain-replacer.yaml || true
 
 
           # Unstage any workflow or action files
-          git reset .github/workflows/
-          git reset .github/workflows/domain-replacer/
+          # git reset .github/workflows/
+          # git reset .github/workflows/domain-replacer/
 
           # Add everything else
-          git add . ':!./.github/workflows/' ':!./.github/workflows/domain-replacer/'
+          # git add . ':!./.github/workflows/' ':!./.github/workflows/domain-replacer/'
+          git add . ':!./.github/workflows/'
 
           if git diff --cached --quiet; then
             echo "No changes to commit."
