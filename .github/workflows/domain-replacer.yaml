@@ -11,22 +11,51 @@ name: domain-replacer
 
 # yamllint sees the below line as a true or false value instead of an 'on' trigger
 on:  # yamllint disable-line rule:truthy
-  workflow_call:
+  workflow_dispatch:
 
 jobs:
-  replacedomain:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout main branch
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+  # replacedomain:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout main branch
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
 
-      - name: Create orphan branch and clean workspace
-        run: |
-          git checkout --orphan domain-replacement
-          git rm -rf .
-          git checkout main -- . ':!./.github/workflows/domain-replacer.yaml'
+  #     - name: Create orphan branch and clean workspace
+  #       run: |
+  #         git checkout --orphan domain-replacement
+  #         git rm -rf .
+  #         git checkout main -- . ':!./.github/workflows/domain-replacer.yaml'
+
+  #     - name: Run domain replacement
+  #       uses: hoppea2/common-github-actions/domain-replacer@main
+
+  #     - name: Show Git Diff
+  #       run: git diff --stat || true
+
+  #     - name: Commit and push changes
+  #       run: |
+  #         git config user.name "github-actions"
+  #         git config user.email "github-actions@github.com"
+
+  #         git add . ':!./.github/workflows/' ':!./.github/actions/domain-replacer/'
+
+  #         if git diff --cached --quiet; then
+  #           echo "No changes to commit."
+  #           exit 0
+  #         fi
+
+  #         git commit -m "Replace external GitHub domain with internal Enterprise domain"
+  #         git push --set-upstream origin domain-replacement
+
+  replacedomain:
+    name: Scan for external GitHub domain
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Run domain replacement
         uses: hoppea2/common-github-actions/domain-replacer@main
@@ -39,7 +68,25 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-          git add . ':!./.github/workflows/' ':!./.github/actions/domain-replacer/'
+          if git ls-remote --exit-code --heads origin domain-replacement; then
+            echo "Branch 'domain-replacement' exists. Checking it out."
+            git fetch origin domain-replacement
+            git checkout domain-replacement
+          else
+            echo "Branch 'domain-replacement' does not exist. Creating it."
+            git checkout -b domain-replacement
+          fi
+          
+          # Remove workflow file from the branch to avoid permission issues
+          git rm --cached .github/workflows/domain-replacer.yaml || true
+
+
+          # Unstage any workflow or action files
+          git reset .github/workflows/
+          git reset .github/workflows/domain-replacer/
+
+          # Add everything else
+          git add . ':!./.github/workflows/' ':!./.github/workflows/domain-replacer/'
 
           if git diff --cached --quiet; then
             echo "No changes to commit."
@@ -47,56 +94,8 @@ jobs:
           fi
 
           git commit -m "Replace external GitHub domain with internal Enterprise domain"
-          git push --set-upstream origin domain-replacement
-# jobs:
-
-#   replacedomain:
-#     name: Scan for external GitHub domain
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v4
-
-#       - name: Run domain replacement
-#         uses: hoppea2/common-github-actions/domain-replacer@main
-
-#       - name: Show Git Diff
-#         run: git diff --stat || true
-
-#       - name: Commit and push changes
-#         run: |
-#           git config user.name "github-actions"
-#           git config user.email "github-actions@github.com"
-
-#           if git ls-remote --exit-code --heads origin domain-replacement; then
-#             echo "Branch 'domain-replacement' exists. Checking it out."
-#             git fetch origin domain-replacement
-#             git checkout domain-replacement
-#           else
-#             echo "Branch 'domain-replacement' does not exist. Creating it."
-#             git checkout -b domain-replacement
-#           fi
-          
-#           # Remove workflow file from the branch to avoid permission issues
-#           git rm --cached .github/workflows/domain-replacer.yaml || true
-
-
-#           # Unstage any workflow or action files
-#           git reset .github/workflows/
-#           git reset .github/workflows/domain-replacer/
-
-#           # Add everything else
-#           git add . ':!./.github/workflows/' ':!./.github/workflows/domain-replacer/'
-
-#           if git diff --cached --quiet; then
-#             echo "No changes to commit."
-#             exit 0
-#           fi
-
-#           git commit -m "Replace external GitHub domain with internal Enterprise domain"
-#           git pull --rebase origin domain-replacement || true
-#           git push --force-with-lease origin domain-replacement
+          git pull --rebase origin domain-replacement || true
+          git push --force-with-lease origin domain-replacement
 
 
       - name: Install GitHub CLI
