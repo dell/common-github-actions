@@ -21,8 +21,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run domain replacement
-        uses: hoppea2/common-github-actions/domain-replacer@main
+     
+      - name: Replace github.com/dell/ with eos2git.cec.lab.emc.com/CSM/
+        run: |
+          echo "Scanning for files to update..."
+          find . -type f ! -name "go.sum" | while read -r file; do
+            echo "Checking $file"
+            if grep -q 'github.com/dell/' "$file"; then
+              echo "Updating $file"
+              sed -i 's|github.com/dell/|eos2git.cec.lab.emc.com/CSM/|g' "$file"
+            fi
+          done
 
       - name: Show Git Diff
         run: git diff --stat || true
