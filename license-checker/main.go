@@ -26,7 +26,10 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
+
+	"github.com/sethvargo/go-githubactions"
 )
 
 const (
@@ -44,24 +47,34 @@ func main() {
 	isAutofixEnabled := flag.Bool("auto-fix", false, "Autofix enabled")
 	flag.Parse()
 
-	hasLicense, err := checkGoLicenseHeader(isAutofixEnabled)
+	if isAutofixEnabled == nil {
+		fmt.Println("Auto-fix is not set from the command line, we will try to take it from the action input")
+		actions := githubactions.New()
+		autofix, err := strconv.ParseBool(actions.GetInput("auto-fix"))
+		if err != nil {
+			fmt.Println("Error getting autofix input from actions:", err)
+		}
+		isAutofixEnabled = &autofix
+	}
+
+	hasGoLicense, err := checkGoLicenseHeader(isAutofixEnabled)
 	if err != nil {
 		fmt.Println("Error checking go license header:", err)
 	}
-	hasLicense, err = checkShellLicenseHeader(isAutofixEnabled)
+	hasShellLicense, err := checkShellLicenseHeader(isAutofixEnabled)
 	if err != nil {
 		fmt.Println("Error checking shell license header:", err)
 	}
-	hasLicense, err = checkYamlLicenseHeader(isAutofixEnabled)
+	hasYamlLicense, err := checkYamlLicenseHeader(isAutofixEnabled)
 	if err != nil {
 		fmt.Println("Error checking YAML license header:", err)
 	}
-	hasLicense, err = checkDockerFileLicenseHeader(isAutofixEnabled)
+	hasDockerFileLicense, err := checkDockerFileLicenseHeader(isAutofixEnabled)
 	if err != nil {
 		fmt.Println("Error checking Dockerfile license header:", err)
 	}
 	// if any of the license headers are missing or incorrect then exit with error
-	if !hasLicense {
+	if !hasGoLicense || !hasShellLicense || !hasYamlLicense || !hasDockerFileLicense {
 		os.Exit(1)
 	}
 }
