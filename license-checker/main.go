@@ -74,7 +74,7 @@ func main() {
 		fmt.Println("Error checking Dockerfile license header:", err)
 	}
 	// if any of the license headers are missing or incorrect then exit with error
-	if !hasGoLicense || !hasShellLicense || !hasYamlLicense || !hasDockerFileLicense {
+	if !hasGoLicense || !hasShellLicense || !hasYamlLicense || !hasDockerFileLicense && !*isAutofixEnabled {
 		os.Exit(1)
 	}
 }
