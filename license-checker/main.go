@@ -47,7 +47,7 @@ func main() {
 	isAutofixEnabled := flag.Bool("auto-fix", false, "Autofix enabled")
 	flag.Parse()
 
-	if isAutofixEnabled == nil {
+	if !*isAutofixEnabled {
 		fmt.Println("Auto-fix is not set from the command line, we will try to take it from the action input")
 		actions := githubactions.New()
 		autofix, err := strconv.ParseBool(actions.GetInput("auto-fix"))
@@ -74,8 +74,12 @@ func main() {
 		fmt.Println("Error checking Dockerfile license header:", err)
 	}
 	// if any of the license headers are missing or incorrect then exit with error
-	if !hasGoLicense || !hasShellLicense || !hasYamlLicense || !hasDockerFileLicense && !*isAutofixEnabled {
-		os.Exit(1)
+	if !hasGoLicense || !hasShellLicense || !hasYamlLicense || !hasDockerFileLicense {
+		if *isAutofixEnabled {
+			fmt.Printf("Auto-fix enabled, proceeding to autofix\n")
+		} else {
+			os.Exit(1)
+		}
 	}
 }
 
