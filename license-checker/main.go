@@ -50,7 +50,7 @@ func main() {
 	if !*isAutofixEnabled {
 		fmt.Println("Auto-fix is not set from the command line, we will try to take it from the action input")
 		actions := githubactions.New()
-		autofix, err := strconv.ParseBool(actions.GetInput("auto-fix"))
+		autofix, err := strconv.ParseBool(actions.GetInput("autofix"))
 		if err != nil {
 			fmt.Println("Error getting autofix input from actions:", err)
 		}
