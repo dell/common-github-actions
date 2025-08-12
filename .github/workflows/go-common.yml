@@ -128,15 +128,3 @@ jobs:
   # dependabot_automerge:
   #   name: Automerge Dependabot PRs
   #   uses: dell/common-github-actions/.github/workflows/dependabot-automerge.yml@main
-
-  # TODO: Need to reconsider how to deal with generated files. Need to also test on a wider set of csm repositories.
-  #check-license-header:
-    #runs-on: ubuntu-latest
-    #steps:
-      #- name: Checkout repository
-       # uses: actions/checkout@v4
-
-     # - name: Check license headers
-       # uses: dell/common-github-actions/license-checker@main
-       # with:
-        #  autofix: false
