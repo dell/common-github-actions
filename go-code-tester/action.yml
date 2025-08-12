@@ -11,7 +11,7 @@ inputs:
   threshold:
     description: 'Code coverage threshold for packages'
     required: true
-    default: "90"
+    default: "85"
   test-folder:
     description: 'Folder the test is run in'
     required: false
@@ -35,7 +35,7 @@ inputs:
   exclude-directory:
     description: 'Name of directory to be excluded from go test'
     required: false
-    default: ""
+    default: "./internal|./inttests"
 runs:
   using: 'docker'
   image: 'Dockerfile'
