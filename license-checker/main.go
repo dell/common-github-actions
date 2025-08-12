@@ -300,7 +300,8 @@ func listFilesByExtension(extension string) ([]string, error) {
 			}
 		} else {
 			if !dirEntry.IsDir() &&
-				strings.HasSuffix(dirEntry.Name(), extension) {
+				// Altering the github action file itself will fail and hence excluding that.
+				strings.HasSuffix(dirEntry.Name(), extension) && !strings.Contains(path, ".github") {
 				files = append(files, path)
 			}
 		}
