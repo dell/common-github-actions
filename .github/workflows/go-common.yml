@@ -18,19 +18,30 @@ on:
 
 # Set defaults
 env:
-  # unit test action
-  CODE_COVERAGE_TARGET: ${{ vars.CODE_COVERAGE_TARGET || 90 }}
-  CODE_COVERAGE_DIR: ${{ vars.CODE_COVERAGE_DIR || '.' }}
-  SKIP_LIST: ${{ vars.PACKAGE_SKIP_LIST || '' }}
-  RACE_DETECTOR: ${{ vars.RACE_DETECTOR || true }}
-  SKIP_TEST: ${{ vars.SKIP_TEST || '' }}
-  RUN_TEST: ${{ vars.RUN_TEST || '' }}
-  EXCLUDE_DIRECTORIES: ${{ vars.EXCLUDE_DIRECTORIES || '' }}
-
   # gosec action
   GOSEC_EXCLUDES: ${{ vars.GOSEC_EXCLUDES || '' }}
 
 jobs:
+  # Needed for external contributors
+  defaults:
+    name: Set default environment variables
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set defaults for unit tests
+        run: |
+          if [[ "${{ github.repository }}" == "dell/gobrick" ]]; then
+            echo "CODE_COVERAGE_TARGET=85" >> $GITHUB_ENV
+            echo "EXCLUDE_DIRECTORIES=./internal|./inttests" >> $GITHUB_ENV
+          else
+            echo "CODE_COVERAGE_TARGET=${{ vars.CODE_COVERAGE_TARGET || 90 }}" >> $GITHUB_ENV
+            echo "CODE_COVERAGE_DIR=${{ vars.CODE_COVERAGE_DIR || '.' }}" >> $GITHUB_ENV
+            echo "SKIP_LIST=${{ vars.PACKAGE_SKIP_LIST || '' }}" >> $GITHUB_ENV
+            echo "RACE_DETECTOR=${{ vars.RACE_DETECTOR || true }}" >> $GITHUB_ENV
+            echo "SKIP_TEST=${{ vars.SKIP_TEST || '' }}" >> $GITHUB_ENV
+            echo "RUN_TEST=${{ vars.RUN_TEST || '' }}" >> $GITHUB_ENV
+            echo "EXCLUDE_DIRECTORIES=${{ vars.EXCLUDE_DIRECTORIES || '' }}" >> $GITHUB_ENV
+          fi
+
   # Run unit tests
   gocoverage:
     name: Unit tests and package coverage
