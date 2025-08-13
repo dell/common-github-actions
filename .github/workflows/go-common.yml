@@ -44,8 +44,6 @@ jobs:
       # Needed for external contributors
       - name: Set defaults for unit tests
         run: |
-          echo ${{ github.repository }}
-
           if [[ "${{ github.repository }}" == "dell/gobrick" ]]; then
             echo "CODE_COVERAGE_TARGET=85" >> $GITHUB_ENV
             echo "EXCLUDE_DIRECTORIES=./internal|./inttests" >> $GITHUB_ENV
