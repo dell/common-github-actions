@@ -33,7 +33,8 @@ import (
 )
 
 const (
-	goLicenseFile            = "/app/LICENSE-HEADER-GO.txt" // Change this to the path of your license file
+	goLicenseFile            = "/app/LICENSE-HEADER-GO.txt"   // Change this to the path of your license file
+	goLicenseFileSecondType  = "/app/LICENSE-HEADER-GO-2.txt" // Change this to the path of your license file
 	genericLicenseHeaderFile = "/app/LICENSE-HEADER-ALL.txt"
 	shellLicenseHeaderFile   = "/app/LICENSE-HEADER-SHELL.txt"
 	rootDir                  = "." // Change this to the directory you want to search
@@ -44,19 +45,23 @@ const (
 )
 
 func main() {
-	isAutofixEnabled := flag.Bool("auto-fix", false, "Autofix enabled")
-	flag.Parse()
-
-	if !*isAutofixEnabled {
-		fmt.Println("Auto-fix is not set from the command line, we will try to take it from the action input")
-		actions := githubactions.New()
-		autofix, err := strconv.ParseBool(actions.GetInput("autofix"))
+	var isAutofixEnabled *bool
+	actions := githubactions.New()
+	autoFix := actions.GetInput("autofix")
+	if autoFix != "" {
+		fmt.Println("Auto-fix is set from actions:", autoFix)
+		autofix, err := strconv.ParseBool(autoFix)
 		if err != nil {
 			fmt.Println("Error getting autofix input from actions:", err)
 		}
 		isAutofixEnabled = &autofix
 	}
 
+	if isAutofixEnabled == nil {
+		isAutofixEnabled = flag.Bool("auto-fix", false, "Autofix enabled")
+		flag.Parse()
+		fmt.Println("Auto-fix is not set from actions, Taking from flag:", *isAutofixEnabled)
+	}
 	hasGoLicense, err := checkGoLicenseHeader(isAutofixEnabled)
 	if err != nil {
 		fmt.Println("Error checking go license header:", err)
@@ -111,6 +116,12 @@ func checkLicenseHeader(filePath, licenseHeader string) (bool, error) {
 	scanner := bufio.NewScanner(file)
 	headerLines := strings.Split(licenseHeader, "\n")
 	for i := 0; scanner.Scan() && i < len(headerLines); i++ {
+		//for go files only we will exclude generated files
+		if strings.Contains(filePath, goExtensions) && strings.Contains(scanner.Text(), "DO NOT EDIT") {
+			// we will skip generated files here
+			fmt.Println("skipped generated file: ", filePath)
+			break
+		}
 		if !strings.Contains(headerLines[i], "Copyright") {
 			if strings.TrimSpace(scanner.Text()) != strings.TrimSpace(headerLines[i]) {
 				return false, nil
@@ -142,20 +153,33 @@ func checkGoLicenseHeader(isAutofixEnabled *bool) (bool, error) {
 		fmt.Println("Error reading license file:", err)
 		return false, err
 	}
+	licenseHeader2, err := readLicenseHeader(goLicenseFileSecondType)
+	if err != nil {
+		fmt.Println("Error reading license file:", err)
+		return false, err
+	}
 	files, err := listFilesByExtension(goExtensions)
 	if err != nil {
 		return false, err
 	}
 	fmt.Println("Checking license header for the following go files:")
+
+	var hasLicenseFirstType, hasLicenseSecondType bool
+	hasLicense := true
 	for _, file := range files {
-		fmt.Println(file)
-	}
-	var hasLicense bool
-	for _, file := range files {
-		hasLicense, err = checkLicenseHeader(file, licenseHeader)
+		hasLicenseFirstType, err = checkLicenseHeader(file, licenseHeader)
 		if err != nil {
 			fmt.Printf("Error checking file %s: %v\n", file, err)
 			continue
+		}
+		//we will check for other license header if the file is go
+		hasLicenseSecondType, err = checkLicenseHeader(file, licenseHeader2)
+		if err != nil {
+			fmt.Printf("Error checking file %s: %v\n", file, err)
+			continue
+		}
+		if !hasLicenseFirstType && !hasLicenseSecondType {
+			hasLicense = false
 		}
 		if !hasLicense {
 			fmt.Printf("Missing or incorrect license header: %s\n", file)
@@ -183,10 +207,7 @@ func checkShellLicenseHeader(isAutofixEnabled *bool) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	fmt.Println("Checking license header for the following shell script files:")
-	for _, file := range files {
-		fmt.Println(file)
-	}
+	fmt.Println("Checking license header for the shell script files:")
 	var hasLicense bool
 	for _, file := range files {
 		hasLicense, err = checkLicenseHeader(file, licenseHeader)
@@ -220,10 +241,7 @@ func checkDockerFileLicenseHeader(isAutofixEnabled *bool) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	fmt.Println("Checking license header for the following Docker files:")
-	for _, file := range files {
-		fmt.Println(file)
-	}
+	fmt.Println("Checking license header for the Dockerfile:")
 	var hasLicense bool
 	for _, file := range files {
 		hasLicense, err = checkLicenseHeader(file, licenseHeader)
@@ -257,10 +275,7 @@ func checkYamlLicenseHeader(isAutofixEnabled *bool) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	fmt.Println("Checking license header for the following YAML files:")
-	for _, file := range files {
-		fmt.Println(file)
-	}
+	fmt.Println("Checking license header for the YAML files:")
 	var hasLicense bool
 	for _, file := range files {
 		hasLicense, err = checkLicenseHeader(file, licenseHeader)
