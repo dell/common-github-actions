@@ -48,6 +48,12 @@ jobs:
           MY_VAR: ${{ env.MY_VAR }}
         run: |
           current_version=$MY_VAR
+
+          # The latest version does not exist. Set it to v0.0.0.
+          if [[ "$current_version" = "null" ]]; then
+            current_version="v0.0.0"
+          fi
+
           current_version=(${current_version#v}) # remove 'v' prefix from $current_version"
 
           IFS='.' read -r -a version_parts <<< "$current_version"              
