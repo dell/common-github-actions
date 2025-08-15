@@ -18,7 +18,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Set up Go
       uses: actions/setup-go@v5
@@ -79,7 +79,7 @@ jobs:
 
     # Needed for signing commits using Github App tokens
     # See: https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#commit-signing
-    - uses: actions/create-github-app-token@v2.0.6
+    - uses: actions/create-github-app-token@v2.1.1
       id: generate-token
       with:
         app-id: ${{ vars.CSM_RELEASE_APP_ID }}

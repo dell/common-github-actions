@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout csm repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: dell/csm
           path: csm
@@ -65,7 +65,7 @@ jobs:
           echo "CSI_UNITY=$csi_unity" >> $GITHUB_ENV
 
       - name: Checkout csm-operator repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: dell/csm-operator
 
@@ -99,7 +99,7 @@ jobs:
       # Needed for signing commits using Github App tokens
       # See: https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#commit-signing
       - name: Generate GitHub App Token
-        uses: actions/create-github-app-token@v2.0.6
+        uses: actions/create-github-app-token@v2.1.1
         id: generate-token
         with:
           app-id: ${{ vars.CSM_RELEASE_APP_ID }}
