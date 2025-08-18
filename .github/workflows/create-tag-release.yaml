@@ -1,5 +1,6 @@
+# This workflow is used to create Github Tag and Release
 name: Create Tag and Release
-
+# Invocable as a reusable workflow
 on:
   workflow_call:
     inputs:
