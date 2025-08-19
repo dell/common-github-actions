@@ -13,7 +13,7 @@ jobs:
     name: Malware Scanner
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Malware Scanner
         uses: ./malware-scanner
         with:

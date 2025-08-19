@@ -39,7 +39,7 @@ jobs:
           go-version: "1.24"
           cache: false
       - name: Checkout the code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Grab golangci-lint config file
         continue-on-error: true
         run: |
@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: setup python
         uses: actions/setup-python@v5
         with:
