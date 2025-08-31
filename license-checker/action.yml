@@ -5,6 +5,9 @@ inputs:
   autofix:
     required: false
     description: "Enable autofix"
+  exclude-files:
+    required: false
+    description: "Exclude files from check"
 
 runs:
   using: "docker"
