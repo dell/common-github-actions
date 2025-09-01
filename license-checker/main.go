@@ -64,7 +64,6 @@ func main() {
 
 	if isAutofixEnabled == nil {
 		isAutofixEnabled = flag.Bool("auto-fix", false, "Autofix enabled")
-		flag.Parse()
 		fmt.Println("Auto-fix is not set from actions, Taking from flag:", *isAutofixEnabled)
 	}
 
