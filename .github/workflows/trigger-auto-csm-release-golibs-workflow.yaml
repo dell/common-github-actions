@@ -29,7 +29,6 @@ jobs:
             "dell/gopowermax",
             "dell/gounity",
             "dell/goscaleio",
-            "dell/dell-csi-extensions",
           ]
     steps:
       - name: Trigger Release of ${{ matrix.repo }}
