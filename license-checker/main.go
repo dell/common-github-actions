@@ -71,7 +71,10 @@ func main() {
 		fmt.Println("Exclude-files is set from actions:", excludedFiles)
 		excludedFilesList = strings.Split(excludedFiles, ",")
 	} else {
-		fmt.Println("Exclude-files is not set from actions, No files skipped by default")
+		excludedFilesString := flag.String("exclude-files", "", "List if excluded files separated by comma")
+		excludedFilesList = strings.Split(*excludedFilesString, ",")
+		flag.Parse()
+		fmt.Println("Exclude-files is not set from actions, Taking from flag", *excludedFilesString)
 	}
 	hasGoLicense, err := checkGoLicenseHeader(isAutofixEnabled, excludedFilesList)
 	if err != nil {
