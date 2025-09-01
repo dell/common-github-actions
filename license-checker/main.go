@@ -47,8 +47,9 @@ const (
 
 func main() {
 	var isAutofixEnabled *bool
+	var excludedFilesString *string
 	var excludedFilesList []string
-	//var excludedFiles string
+
 	actions := githubactions.New()
 	autoFix := actions.GetInput("autofix")
 	excludedFiles := actions.GetInput("exclude-files")
@@ -67,14 +68,14 @@ func main() {
 		fmt.Println("Auto-fix is not set from actions, Taking from flag:", *isAutofixEnabled)
 	}
 
-	if excludedFiles != "" {
+	if excludedFiles == "" {
+		excludedFilesString = flag.String("exclude-files", "", "List if excluded files separated by comma")
+		flag.Parse()
+		excludedFilesList = strings.Split(*excludedFilesString, ",")
+		fmt.Println("Exclude-files is not set from actions, Taking from flag", *excludedFilesString)
+	} else {
 		fmt.Println("Exclude-files is set from actions:", excludedFiles)
 		excludedFilesList = strings.Split(excludedFiles, ",")
-	} else {
-		excludedFilesString := flag.String("exclude-files", "", "List if excluded files separated by comma")
-		excludedFilesList = strings.Split(*excludedFilesString, ",")
-		flag.Parse()
-		fmt.Println("Exclude-files is not set from actions, Taking from flag", *excludedFilesString)
 	}
 	hasGoLicense, err := checkGoLicenseHeader(isAutofixEnabled, excludedFilesList)
 	if err != nil {
