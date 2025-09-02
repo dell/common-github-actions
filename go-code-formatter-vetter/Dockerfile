@@ -1,4 +1,4 @@
-FROM golang:1.24
+FROM golang:1.25
 
 LABEL "com.github.actions.name"="go-code-formatter-vetter"
 LABEL "com.github.actions.description"="Checks for formatting and vetting issues"
