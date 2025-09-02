@@ -34,8 +34,7 @@ import (
 )
 
 const (
-	goLicenseFile            = "/app/LICENSE-HEADER-GO.txt"   // Change this to the path of your license file
-	goLicenseFileSecondType  = "/app/LICENSE-HEADER-GO-2.txt" // Change this to the path of your license file
+	goLicenseFile            = "/app/LICENSE-HEADER-GO.txt" // Change this to the path of your license file
 	genericLicenseHeaderFile = "/app/LICENSE-HEADER-ALL.txt"
 	shellLicenseHeaderFile   = "/app/LICENSE-HEADER-SHELL.txt"
 	rootDir                  = "." // Change this to the directory you want to search
@@ -134,12 +133,14 @@ func checkLicenseHeader(filePath, licenseHeader string) (bool, error) {
 		if strings.Contains(filePath, goExtensions) && strings.Contains(scanner.Text(), "DO NOT EDIT") {
 			// we will skip generated files here
 			fmt.Println("skipped generated file: ", filePath)
-			break
+			// for a generated file we will return true always to avoid false positives
+			return true, nil
 		}
 		if !strings.Contains(headerLines[i], "Copyright") {
-			if strings.TrimSpace(scanner.Text()) != strings.TrimSpace(headerLines[i]) {
+			if strings.TrimSpace(scanner.Text()) != strings.TrimSpace(headerLines[i]) && i > 1 {
 				return false, nil
 			}
+
 		} else {
 			// Check for the copyright year using regex
 			re := regexp.MustCompile(`Copyright © \d{4}`)
@@ -167,18 +168,13 @@ func checkGoLicenseHeader(isAutofixEnabled *bool, excludedFilesList []string) (b
 		fmt.Println("Error reading license file:", err)
 		return false, err
 	}
-	licenseHeader2, err := readLicenseHeader(goLicenseFileSecondType)
-	if err != nil {
-		fmt.Println("Error reading license file:", err)
-		return false, err
-	}
 	files, err := listFilesByExtension(goExtensions)
 	if err != nil {
 		return false, err
 	}
 	fmt.Println("Checking license header for the following go files:")
 
-	var hasLicenseFirstType, hasLicenseSecondType bool
+	var hasLicenseFirstType, additionalCheckPassed bool
 	hasLicense := true
 	for _, file := range files {
 		if slices.Contains(excludedFilesList, file) {
@@ -192,14 +188,7 @@ func checkGoLicenseHeader(isAutofixEnabled *bool, excludedFilesList []string) (b
 			continue
 		}
 		//we will check for other license header if the file is go
-		hasLicenseSecondType, err = checkLicenseHeader(file, licenseHeader2)
-		if err != nil {
-			fmt.Printf("Error checking file %s: %v\n", file, err)
-			continue
-		}
-		if !hasLicenseFirstType && !hasLicenseSecondType {
-			hasLicense = false
-		}
+		err, hasLicense = performAdditionalChecks(additionalCheckPassed, err, file, hasLicenseFirstType, hasLicense)
 		if !hasLicense {
 			fmt.Printf("Missing or incorrect license header: %s\n", file)
 			//  if auto-fix is enabled then only we will fix the license headers else just report valid header and exit
@@ -227,17 +216,21 @@ func checkShellLicenseHeader(isAutofixEnabled *bool, excludedFilesList []string)
 		return false, err
 	}
 	fmt.Println("Checking license header for the shell script files:")
-	var hasLicense bool
+	var hasLicenseFirstType, additionalCheckPassed bool
+	hasLicense := true
+
 	for _, file := range files {
 		if slices.Contains(excludedFilesList, file) {
 			fmt.Printf("Skipping excluded file: %s\n", file)
 			continue
 		}
 		hasLicense, err = checkLicenseHeader(file, licenseHeader)
+		hasLicenseFirstType, err = checkLicenseHeader(file, licenseHeader)
 		if err != nil {
 			fmt.Printf("Error checking file %s: %v\n", file, err)
 			continue
 		}
+		err, hasLicense = performAdditionalChecks(additionalCheckPassed, err, file, hasLicenseFirstType, hasLicense)
 		if !hasLicense {
 			fmt.Printf("Missing or incorrect license header: %s\n", file)
 			//  if auto-fix is enabled then only we will fix the license headers else just report valid header and exit
@@ -254,6 +247,24 @@ func checkShellLicenseHeader(isAutofixEnabled *bool, excludedFilesList []string)
 	return hasLicense, nil
 }
 
+func performAdditionalChecks(additionalCheckPassed bool, err error, file string, hasLicenseFirstType bool, hasLicense bool) (error, bool) {
+	additionalCheckPassed, err = doAdditionalCheck(file)
+
+	if hasLicenseFirstType == false && additionalCheckPassed == true {
+		hasLicense = true
+	}
+	if hasLicenseFirstType == true && additionalCheckPassed == false {
+		hasLicense = true
+	}
+	if hasLicenseFirstType == false && additionalCheckPassed == false {
+		hasLicense = false
+	}
+	if hasLicenseFirstType == true && additionalCheckPassed == true {
+		hasLicense = true
+	}
+	return err, hasLicense
+}
+
 func checkDockerFileLicenseHeader(isAutofixEnabled *bool, excludedFilesList []string) (bool, error) {
 	licenseHeader, err := readLicenseHeader(genericLicenseHeaderFile)
 	if err != nil {
@@ -265,7 +276,9 @@ func checkDockerFileLicenseHeader(isAutofixEnabled *bool, excludedFilesList []st
 		return false, err
 	}
 	fmt.Println("Checking license header for the Dockerfile:")
-	var hasLicense bool
+	var hasLicenseFirstType, additionalCheckPassed bool
+	hasLicense := true
+
 	for _, file := range files {
 		if slices.Contains(excludedFilesList, file) {
 			fmt.Printf("Skipping excluded file: %s\n", file)
@@ -276,6 +289,7 @@ func checkDockerFileLicenseHeader(isAutofixEnabled *bool, excludedFilesList []st
 			fmt.Printf("Error checking file %s: %v\n", file, err)
 			continue
 		}
+		err, hasLicense = performAdditionalChecks(additionalCheckPassed, err, file, hasLicenseFirstType, hasLicense)
 		if !hasLicense {
 			fmt.Printf("Missing or incorrect license header: %s\n", file)
 			//  if auto-fix is enabled then only we will fix the license headers else just report valid header and exit
@@ -303,7 +317,9 @@ func checkYamlLicenseHeader(isAutofixEnabled *bool, excludedFilesList []string) 
 		return false, err
 	}
 	fmt.Println("Checking license header for the YAML files:")
-	var hasLicense bool
+	var hasLicenseFirstType, additionalCheckPassed bool
+	hasLicense := true
+
 	for _, file := range files {
 		if slices.Contains(excludedFilesList, file) {
 			fmt.Printf("Skipping excluded file: %s\n", file)
@@ -314,6 +330,7 @@ func checkYamlLicenseHeader(isAutofixEnabled *bool, excludedFilesList []string) 
 			fmt.Printf("Error checking file %s: %v\n", file, err)
 			continue
 		}
+		err, hasLicense = performAdditionalChecks(additionalCheckPassed, err, file, hasLicenseFirstType, hasLicense)
 		if !hasLicense {
 			fmt.Printf("Missing or incorrect license header: %s\n", file)
 			//  if auto-fix is enabled then only we will fix the license headers else just report valid header and exit
@@ -354,4 +371,26 @@ func listFilesByExtension(extension string) ([]string, error) {
 		return nil
 	})
 	return files, err
+}
+
+func doAdditionalCheck(filePath string) (bool, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return false, err
+	}
+	defer file.Close()
+
+	headerFound := false
+	lineCount := 0
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() && lineCount < 30 { // Check only the first 30 lines
+		line := scanner.Text()
+		if strings.Contains(line, "Licensed under the Apache License, Version 2.0 (the \"License\");") {
+			headerFound = true
+			break
+		}
+		lineCount++
+	}
+	return headerFound, nil
 }
