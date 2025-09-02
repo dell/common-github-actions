@@ -22,7 +22,8 @@ LABEL version="1.0.0"
 
 WORKDIR /app
 
-COPY go.mod go.sum main.go LICENSE-HEADER-GO.txt LICENSE-HEADER-GO-2.txt LICENSE-HEADER-SHELL.txt LICENSE-HEADER-ALL.txt ./
+COPY go.mod go.sum main.go *.txt ./
+RUN ls
 RUN go mod tidy
 RUN go build .
 
