@@ -34,7 +34,6 @@ jobs:
             "dell/csm-replication",
             "dell/karavi-resiliency",
             "dell/karavi-metrics-powerflex",
-            "dell/karavi-topology",
             "dell/cert-csi",
           ]
 
