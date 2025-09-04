@@ -56,7 +56,6 @@ jobs:
             "dell/gounity",
             "dell/karavi-metrics-powerflex",
             "dell/karavi-resiliency",
-            "dell/karavi-topology",
           ]
 
     steps:

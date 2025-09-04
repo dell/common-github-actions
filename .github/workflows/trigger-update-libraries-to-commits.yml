@@ -43,7 +43,6 @@ jobs:
             "dell/gobrick",
             "dell/karavi-metrics-powerflex",
             "dell/karavi-resiliency",
-            "dell/karavi-topology",
           ]
 
     steps:
