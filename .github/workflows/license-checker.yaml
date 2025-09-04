@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       file-exclusions-list:
-        description: "Autofix mode"
+        description: "file-exclusions-list"
         required: false
         type: string
 jobs:
