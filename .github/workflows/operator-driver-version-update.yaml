@@ -70,7 +70,7 @@ jobs:
           repository: dell/csm-operator
 
       - name: Set Up Go Environment
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
 
       - name: Install yq
         run: |

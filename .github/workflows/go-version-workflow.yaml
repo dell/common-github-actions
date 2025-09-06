@@ -34,7 +34,7 @@ jobs:
           echo "The latest Go version is: $latest_version"
           echo "The latest major Go version is: $major_version"
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: "${{ env.major_version }}"
           cache: false
