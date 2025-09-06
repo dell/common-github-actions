@@ -34,7 +34,7 @@ jobs:
     name: Lint golang code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: "1.25"
           cache: false
@@ -64,7 +64,7 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v5
       - name: setup python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Install yamllint
