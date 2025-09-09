@@ -55,7 +55,6 @@ jobs:
            csm_metrics_powerstore=$(extract_value 'csm-metrics-powerstore')
            csm_metrics_powerscale=$(extract_value 'csm-metrics-powerscale')
            csm_metrics_powermax=$(extract_value 'csm-metrics-powermax')
-           karavi_topology=$(extract_value 'karavi-topology')
            otel_collector=$(extract_value 'otel-collector')
           
            echo "CSM_VERSION=$csm_version" >> $GITHUB_ENV
@@ -74,7 +73,6 @@ jobs:
            echo "CSM_METRICS_POWERSTORE=$csm_metrics_powerstore" >> $GITHUB_ENV
            echo "CSM_METRICS_POWERSCALE=$csm_metrics_powerscale" >> $GITHUB_ENV
            echo "CSM_METRICS_POWERMAX=$csm_metrics_powermax" >> $GITHUB_ENV
-           echo "KARAVI_TOPOLOGY=$karavi_topology" >> $GITHUB_ENV
            echo "OTEL_COLLECTOR=$otel_collector" >> $GITHUB_ENV
 
       - name: Checkout csm-operator repository
