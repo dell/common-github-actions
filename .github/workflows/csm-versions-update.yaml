@@ -37,21 +37,9 @@ jobs:
           rm versions-content.txt
           rm update_csm_docs_versions.sh
 
-      - name: Determine Changes
-        id: determine_changes
-        run: |
-          if git diff --quiet; then
-            echo "Everything is up to date. No changes detected."
-            echo "makePullRequest=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "Changes detected, pull request will be created."
-            echo "makePullRequest=true" >> "$GITHUB_OUTPUT"
-          fi
-
       # Needed for signing commits using Github App tokens
       # See: https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#commit-signing
       - name: Generate GitHub App Token
-        if: ${{ steps.determine_changes.outputs.makePullRequest == 'true' }}
         uses: actions/create-github-app-token@v2.1.1
         id: generate-token
         with:
@@ -61,7 +49,6 @@ jobs:
       # Must enable "allow GitHub Actions to create pull requests" setting
       # Author defaults to the user who triggered the workflow run
       - name: Create pull request
-        if: ${{ steps.determine_changes.outputs.makePullRequest == 'true' }}
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ steps.generate-token.outputs.token }}

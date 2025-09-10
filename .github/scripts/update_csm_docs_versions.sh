@@ -105,6 +105,7 @@ update_csi_drivers_versions() {
 # Updates the version in the shortcodes. This needs to be aligned properly
 # with the naming conventions.
 update_shortcodes() {
+  echo "Checking to see if any shortcodes need to be updated..."
   for key in "${!all_images[@]}"; do
     path="layouts/shortcodes/version-docs.html"
     name=$(echo $key | tr '-' '_')
@@ -125,14 +126,13 @@ update_shortcodes() {
 
     new_shortcode=$(echo $old_shortcode | sed "s/}}.*/}}$version/")
 
-    updated_shortcodes+="\t$key to $version\n"
     sed -i "s|${old_shortcode}|${new_shortcode}|g" $path
   done
 }
 
 # Specific substitution needed due to the fact that the overall helm file is formatting in a different manner.
 update_installation_wizard_helm() {
-  echo "Starting installation wizard helm update..."
+  echo "Checking to see if any installation wizard helm files need to be updated..."
   # Sanitize the CSM version
   csm_version=$(echo ${all_images[csm-version]} | tr -d 'v' | tr -d '\r')
 
@@ -145,40 +145,32 @@ update_installation_wizard_helm() {
   fi
 
   for file in $wizard_files; do
-    updated_images=""
     for key in "${!all_images[@]}"; do
-    # Retrieve the current version from the file of the sidecar.
-    old_version=$(grep -m 1 -E ".*image.*$key.*" $file | xargs)
-    if [ -z "$old_version" ]; then
-      continue
-    fi
+      # Retrieve the current version from the file of the sidecar.
+      old_version=$(grep -m 1 -E ".*image.*$key.*" $file | xargs)
+      if [ -z "$old_version" ]; then
+        continue
+      fi
 
-    # All instance of the image in a file either go "image:/value:" so we remove that to get the pure image.
-    old_version=$(echo $old_version | cut -d':' -f2- | tr -d ' ')
-    new_version=$(echo $old_version | sed "s/:.*/:${all_images[$key]}/")
+      # All instance of the image in a file either go "image:/value:" so we remove that to get the pure image.
+      old_version=$(echo $old_version | cut -d':' -f2- | tr -d ' ')
+      new_version=$(echo $old_version | sed "s/:.*/:${all_images[$key]}/")
 
-    # If the version is the same, then we skip
-    if [ "$old_version" == "$new_version" ]; then
-      continue
-    fi
+      # If the version is the same, then we skip
+      if [ "$old_version" == "$new_version" ]; then
+        continue
+      fi
 
-    updated_images+="\t$new_version\n"
-
-    # Update the version in the file.
-    sed -i "s|${old_version}|${new_version}|g" $file
+      # Update the version in the file.
+      sed -i "s|${old_version}|${new_version}|g" $file
     done
-
-    if [ -z "$updated_images" ]; then
-      continue
-    fi
-
-    updated_installation_wizard+="Updated $file with the following images:\n$updated_images\n"
   done
 }
 
 # Properly parses the contents of each operator file and updates the image versions.
+# Due to the use of 'yq', exact changes will not be tracked until the pull request is created.
 update_installation_wizard_operator() {
-  echo "Starting installation wizard operator update..."
+  echo "Checking to see if any installation wizard operator files need to be updated..."
 
   # Sanitize the CSM version
   csm_version=$(echo ${all_images[csm-version]} | tr -d 'v' | tr -d '\r')
@@ -269,6 +261,7 @@ get_all_images_raw
 update_modules_versions
 update_csi_sidecars_versions
 update_csi_drivers_versions
+
 update_shortcodes
 update_installation_wizard_helm
 update_installation_wizard_operator
