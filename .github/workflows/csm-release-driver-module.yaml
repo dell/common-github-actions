@@ -87,7 +87,7 @@ jobs:
 
           for image in $images_list; do
 
-            latest_version=$(curl -s https://quay.io/api/v1/repository/$REPOSITORY/$image/tag/?limit=100 | jq -r '.tags[].name' | sort -V | tail -n 1)
+            latest_version=$(curl -s https://quay.io/api/v1/repository/$REPOSITORY/$image?tab=tags | jq -r '.tags[].name' | sort -V | tail -n 1)
             echo "Current latest version of $image:$latest_version"
 
             IFS='.' read -r -a version_parts <<< "$latest_version"
