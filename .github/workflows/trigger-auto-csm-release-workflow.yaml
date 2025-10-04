@@ -39,7 +39,7 @@ jobs:
 
     steps:
       - name: Trigger Release of CSM Drivers and Modules
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@v4
         with:
           # For token information, see: https://github.com/peter-evans/repository-dispatch/tree/main?tab=readme-ov-file#token
           token: ${{ secrets.CSMBOT_PAT }}
