@@ -24,7 +24,7 @@ on:
 jobs:
   process-inputs:
     name: Process Inputs
-    uses: CSM/actions/.github/workflows/process-inputs.yaml@main
+    uses: dell/common-github-actions/.github/workflows/process-inputs.yaml@main
     with:
       option: ${{ inputs.option }}
       version: ${{ inputs.version }}
