@@ -17,10 +17,17 @@ on:
         description: "Semantic version to release. Ex: major, minor, or patch"
         required: true
         type: string
+
+    outputs:
+      rel_version:
+        description: "The released version of the repository"
+        value: ${{ jobs.tag-and-release.outputs.rel_version }}
 jobs:
   tag-and-release:
     name: Create tag and release
     runs-on: ubuntu-latest
+    outputs:
+      rel_version: ${{ steps.create-rel-branch.outputs.rel_version }}
     steps:
       - name: Checkout the code
         uses: actions/checkout@v5
@@ -34,12 +41,12 @@ jobs:
         run: |
           echo "REL_VERSION=v${{ inputs.version }}" >> $GITHUB_ENV
 
-      #  we will auto bump up the version if it is only patch, minor, or major else we will just use the user given input
+      # we will auto bump up the version if it is only patch, minor, or major else we will just use the user given input
       - name: Get latest release
         if: ${{ inputs.version == 'patch' || inputs.version == 'minor' || inputs.version == 'major' }}
         run: |
           latest_version=$(curl -s https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/latest | jq -r .tag_name)
-          echo "MY_VAR=${latest_version}" >> $GITHUB_ENV            
+          echo "MY_VAR=${latest_version}" >> $GITHUB_ENV
           echo "latest_version=${latest_version}"
 
       - name: Increment version
@@ -56,7 +63,7 @@ jobs:
 
           current_version=(${current_version#v}) # remove 'v' prefix from $current_version"
 
-          IFS='.' read -r -a version_parts <<< "$current_version"              
+          IFS='.' read -r -a version_parts <<< "$current_version"
 
           if "${{ inputs.version == 'major' }}"; then
               # major version bump up
@@ -100,14 +107,19 @@ jobs:
         uses: actions/download-artifact@v5.0.0
 
       # This is required to check if the binary exists and update its name to the release.
-      - run: |
-          FILE="./cert-csi-linux-amd64/cert-csi-linux-amd64"
-          if [ -d "repctl-linux-amd64" ]; then
-              FILE="./repctl-linux-amd64/repctl-linux-amd64"
-          fi
-          echo "File name: $FILE"
-          echo "FILE_NAME=$FILE" >> $GITHUB_ENV
+      - name: Set file name
         shell: bash
+        run: |
+          FILE=""
+          if [ -d "cert-csi-linux-amd64" ]; then
+              FILE="./cert-csi-linux-amd64/cert-csi-linux-amd64"
+          fi
+
+          if [ -d "repctl-linux-amd64" ]; then
+              FILE="repctl-linux-amd64"
+          fi
+
+          echo "FILE_NAME=$FILE" >> $GITHUB_ENV
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -125,6 +137,7 @@ jobs:
           FILE_NAME: ${{ env.FILE_NAME }}
 
       - name: Create release branch
+        id: create-rel-branch
         env:
           REL_VERSION: ${{ env.REL_VERSION }}
         run: |
@@ -137,3 +150,6 @@ jobs:
             git checkout -b $branch_name
             git push origin $branch_name
           fi
+
+          # Save the release version after everything is succcessful.
+          echo "rel_version=$REL_VERSION" >> $GITHUB_OUTPUT

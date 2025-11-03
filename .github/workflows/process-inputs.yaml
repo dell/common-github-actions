@@ -1,0 +1,79 @@
+# Copyright (c) 2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+
+name: Process Inputs for Release
+
+# Invocable as a reusable workflow
+on:
+  workflow_call:
+    inputs:
+      option:
+        description: "Type of release. Ex: major, minor, patch, or version."
+        type: string
+        required: true
+      version:
+        description: "Specific semver version to release. Only used when 'version' is the selected option. Ex: v2.1.0."
+        type: string
+        required: false
+
+    outputs:
+      processedVersion:
+        description: "The type of release. Ex: major, minor, patch, or semver."
+        value: ${{ jobs.process-inputs.outputs.processedVersion }}
+
+jobs:
+  process-inputs:
+    name: Process Inputs
+    runs-on: ubuntu-latest
+    outputs:
+      processedVersion: ${{ steps.set-version.outputs.versionEnv }}
+    steps:
+      - name: Process input
+        id: set-version
+        shell: bash
+        run: |
+          valid_options=("major" "minor" "patch" "version")
+          if [[ ! " ${valid_options[@]} " =~ " ${option} " ]]; then
+            echo "Invalid option: $option"
+            exit 1
+          fi
+
+          # When worker is triggered by "repository_dispatch" for auto release, if the input option
+          # is not set to a default due to the action not going through "workflow_dispatch", the option
+          # will be set to "minor" by default.
+          if [[ "${{ inputs.option }}" == "" ]]; then
+            echo "versionEnv=minor" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [[ "${{ inputs.option }}" == "version" && "${{ inputs.version }}" != "" ]]; then
+            # if both version and option are provided, then version takes precedence i.e. for releasing a specific version, not incremental.
+
+            # remove prefix 'v'
+            version="${{ inputs.version }}"
+            clean_version="${version#v}"
+
+            # verify the version is in semver format
+            if ! [[ "$clean_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "Version "$clean_version" is not in semver format. Ex: v2.1.0"
+              exit 1
+            fi
+
+            echo "versionEnv=$clean_version" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # This should take care of all other options aside from version.
+          if [[ "${{ inputs.option }}" != "version" ]]; then
+            # if only option is provided, then option takes precedence i.e. minor, major or patch release
+            echo "versionEnv=${{ inputs.option }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "Failed to process inputs"
+          exit 1
