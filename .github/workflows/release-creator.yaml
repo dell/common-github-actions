@@ -111,8 +111,6 @@ jobs:
       - name: Set file name
         shell: bash
         run: |
-          set -euo pipefail
-
           echo "Checking downloaded artifacts..."
           FILE=""
           if [ -f "cert-csi-linux-amd64" ]; then
