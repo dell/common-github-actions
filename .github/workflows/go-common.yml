@@ -75,7 +75,7 @@ jobs:
 
       - name: Upload coverprofile
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: code-coverage
           path: ${{ steps.test_coverage.outputs.code_coverage_artifact }}
