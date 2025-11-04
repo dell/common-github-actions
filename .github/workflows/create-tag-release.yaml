@@ -53,12 +53,12 @@ jobs:
       - name: Build binaries
         run: |
           echo "Building binaries to attach to the release if any..."
-          if [ "${GITHUB_REPOSITORY}" == "cert-csi" ]; then
+          if [ "${GITHUB_REPOSITORY}" == "dell/cert-csi" ]; then
             make build
             mv cert-csi cert-csi-linux-amd64
             echo "BIN_NAME=cert-csi-linux-amd64" >> $GITHUB_ENV
           fi
-          if [ "${GITHUB_REPOSITORY}" == "csm-replication" ]; then
+          if [ "${GITHUB_REPOSITORY}" == "dell/csm-replication" ]; then
             cd repctl
             make build
             mv repctl repctl-linux-amd64
