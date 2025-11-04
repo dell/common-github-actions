@@ -36,7 +36,7 @@ This repository contains a set of reusable actions and workflows, designed to be
   - [Go Static Analysis](#go-static-analysis)
   - [Update Go Version](#go-version-workflow)
   - [Go Common](#go-common)
-  - [Release CSM Driver and Modules](#csm-release-driver-module)
+  - [Create Tag and Release](#create-tag-release)
   - [Update Dell Libraries to Latest Commits](#update-libraries-to-commits)
   - [Update Dell Libraries](#update-libraries)
   - [Dockerfile Modifications](#image-version-workflow)
@@ -145,9 +145,7 @@ jobs:
 ```
 ### create-tag-release
 
-This workflow automates the creation of Tag and Release in driver and module Github repositories. The workflow accepts two parameters as version and image, and can be used from any repo by creating a workflow that resembles the following.
-
-For manual trigger from driver and module repositories, here is the example for the csi-powerscale repo:
+This workflow automates the creation of Tag and Release in driver and module Github repositories. The workflow accepts two parameters, and can be used from any repo by creating a workflow that resembles the following:
 
 ```yaml
 name: Create Tag and Release
@@ -158,224 +156,27 @@ on:  # yamllint disable-line rule:truthy
   workflow_dispatch:
     inputs:
       option:
-        description: 'Select version to release'
+        description: "Select type of release. If first release, use major and it will release v1.0.0."
         required: true
         type: choice
-        default: 'minor'
+        default: "minor"
         options:
           - major
           - minor
           - patch
-          - n-1/n-2 patch (Provide input in the below box)
+          - version
       version:
-        description: "Patch version to release. example: 2.1.x (Use this only if n-1/n-2 patch is selected)"
+        description: "Specific semver version to release. Only used when 'version' is the selected option. Example: v2.1.x."
         required: false
         type: string
-  repository_dispatch:
-    types: [auto-release-workflow]
 
 jobs:
-  process-inputs:
-    name: Process Inputs
-    runs-on: ubuntu-latest
-    outputs:
-      processedVersion: ${{ steps.set-version.outputs.versionEnv }}
-    steps:
-      - name: Process input
-        id: set-version
-        shell: bash
-        run: |
-          echo "Triggered by: ${{ github.event_name }}"
-          if [[ "${{ github.event_name }}" == "repository_dispatch" ]]; then
-            echo "versionEnv=minor" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          if [[ "${{ github.event.inputs.version }}" != "" && "${{ github.event.inputs.option }}" == "n-1/n-2 patch (Provide input in the below box)" ]]; then
-            echo "versionEnv=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          if [[ "${{ github.event.inputs.option }}" != "n-1/n-2 patch (Provide input in the below box)" ]]; then
-            echo "versionEnv=${{ github.event.inputs.option }}" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          echo "versionEnv=minor" >> $GITHUB_OUTPUT
-
   csm-release:
-    needs: process-inputs
-    uses: dell/common-github-actions/.github/workflows/create-tag-release.yaml@main
     name: Create Tag and Release
+    uses: dell/common-github-actions/.github/workflows/create-tag-release.yaml@main
     with:
-      version: ${{ needs.process-inputs.outputs.processedVersion }}
-      images: 'csi-isilon'
-    secrets: inherit
-
-  next-steps:
-    name: 📌 Next Steps for Release Process
-    runs-on: ubuntu-latest
-    needs: csm-release
-    steps:
-      - name: Share next steps with user
-        run: |
-          echo "✅ Tag and release completed."
-          echo "➡️ Please manually trigger the Jenkins image build job: CSM-Images-Build-Nightly."
-          echo "🚀 Once the Jenkins image build job is successful, trigger the Release Image workflow from GitHub Actions."
-```
-### release-image
-
-This workflow automates releasing the images to quay.io. The workflow accepts two parameters as version and image, and can be used from any repo by creating a workflow that resembles the following.
-
-Before manually triggering this workflow from a driver or module repository, ensure that the create-tag-and-image workflow has been executed, followed by a manual trigger of the Jenkins job 'CSM-Images-Build-Nightly'. Once the Jenkins image build job is successful, the release-image workflow can be manually triggered to publish the image to quay.io. here is the example for the csi-powerscale repo:
-
-```yaml
-name: Release CSI-Powerscale Image
-# Invocable as a reusable workflow
-# Can be manually triggered
-on:  # yamllint disable-line rule:truthy
-  workflow_call:
-  workflow_dispatch:
-    inputs:
-      option:
-        description: 'Select version to release'
-        required: true
-        type: choice
-        default: 'minor'
-        options:
-          - major
-          - minor
-          - patch
-          - n-1/n-2 patch (Provide input in the below box)
-      version:
-        description: "Patch version to release. example: 2.1.x (Use this only if n-1/n-2 patch is selected)"
-        required: false
-        type: string
-  repository_dispatch:
-    types: [auto-release-workflow]
-jobs:
-  process-inputs:
-    name: Process Inputs
-    runs-on: ubuntu-latest
-    outputs:
-      processedVersion: ${{ steps.set-version.outputs.versionEnv }}
-    steps:
-      - name: Process input
-        id: set-version
-        shell: bash
-        run: |
-          echo "Triggered by: ${{ github.event_name }}"
-          if [[ "${{ github.event_name }}" == "repository_dispatch" ]]; then
-            echo "versionEnv=minor" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          if [[ "${{ github.event.inputs.version }}" != "" && "${{ github.event.inputs.option }}" == "n-1/n-2 patch (Provide input in the below box)" ]]; then
-            # if both version and option are provided, then version takes precedence i.e. patch release for n-1/n-2
-            echo "versionEnv=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          if [[ "${{ github.event.inputs.option }}" != "n-1/n-2 patch (Provide input in the below box)" ]]; then
-            # if only option is provided, then option takes precedence i.e. minor, major or patch release
-            echo "versionEnv=${{ github.event.inputs.option }}" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          # if neither option nor version is provided, then minor release is taken by default (Auto-release)
-          echo "versionEnv=minor" >> $GITHUB_OUTPUT
-  csm-release:
-    needs: [process-inputs]
-    uses: dell/common-github-actions/.github/workflows/release-image.yaml@main
-    name: Release Image
-    with:
-      version: ${{ needs.process-inputs.outputs.processedVersion }}
-      images: 'csi-isilon'
-    secrets: inherit
-```
-
-### csm-release-driver-module
-
-This workflow automates the release of CSM drivers and modules repositories. The workflow accepts two parameters as version and image, and can be used from any repo by creating a workflow that resembles the following.
-The manual workflow is recommended to be used for out of band releases such as patch releases or when the increment is a major version change.
-
-For manual trigger from driver and module repositories, here is the example for the csi-powerscale repo:
-
-```yaml
-name: Release CSI-Powerscale
-# Invocable as a reusable workflow
-# Can be manually triggered
-on:  # yamllint disable-line rule:truthy
-  workflow_call:
-  workflow_dispatch:
-    inputs:
-      option:
-        description: 'Select version to release'
-        required: true
-        type: choice
-        default: 'minor'
-        options:
-          - major
-          - minor
-          - patch
-          - n-1/n-2 patch (Provide input in the below box)
-      version:
-        description: "Patch version to release. example: 2.1.x (Use this only if n-1/n-2 patch is selected)"
-        required: false
-        type: string
-jobs:
-  csm-release:
-    uses: dell/common-github-actions/.github/workflows/csm-release-driver-module.yaml@main
-    name: Release CSM Drivers and Modules
-    with:
-      version: ${{ github.event.inputs.option }}
-      images: csi-powerscale
-    secrets: inherit
-
-```
-
-For Auto release of the driver and module repositories, here is the example for the csi-powerscale repo:
-
-```yaml
-name: Auto Release CSIPowerScale
-on:
-  workflow_dispatch:
-  repository_dispatch:
-    types: [auto-release-workflow]
-
-jobs:
-  calculate-version:
-    runs-on: ubuntu-latest
-    outputs:
-      new-version: ${{ steps.set-version.outputs.version }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # Fetch the full history including tags
-
-      - name: Get latest release version
-        id: get-latest-version
-        run: |
-          latest_version=$(git describe --tags $(git rev-list --tags --max-count=1))
-          echo "latest_version=${latest_version}" >> $GITHUB_ENV
-
-      - name: Increment minor version and remove 'v' prefix
-        id: set-version
-        run: |
-          version=${{ env.latest_version }}
-          clean_version=${version#v}
-
-          # Parse version parts
-          major=$(echo $clean_version | cut -d'.' -f1)
-          minor=$(echo $clean_version | cut -d'.' -f2)
-          patch=$(echo $clean_version | cut -d'.' -f3)
-          new_minor=$((minor + 1))
-          new_version="${major}.${new_minor}.0"
-
-          echo "New version: $new_version"
-          echo "::set-output name=version::$new_version"
-
-  csm-release:
-    needs: calculate-version
-    uses: dell/common-github-actions/.github/workflows/csm-release-driver-module.yaml@main
-    with:
-      version: ${{ inputs.version || needs.calculate-version.outputs.new-version }}
-      image: "csi-isilon"  # Please provide the appropriate image name
+      option: ${{ inputs.option || 'minor' }}
+      version: ${{ inputs.version || '' }}
     secrets: inherit
 ```
 
@@ -457,7 +258,7 @@ name: UBI Image Update
 
 on:
   workflow_dispatch:
-  
+
 jobs:
   ubi-version-update:
     uses: dell/common-github-actions/.github/workflows/ubi-version-update.yaml@main
@@ -517,7 +318,7 @@ Below is the example usage in csm-operator repository.
 
 It expects a script to be present in the csm-operator repository ".github/scripts/operator-version-update.sh".
 
-Make sure to update all the latest versions before you trigger this workflow  <https://github.com/dell/csm/blob/main/config/csm-versions.yaml>  
+Make sure to update all the latest versions before you trigger this workflow  <https://github.com/dell/csm/blob/main/config/csm-versions.yaml>
 Workflow needs to be triggered manually from csm-operator repository. Below is the example usage in csm-operator repository.
 
 Example:
@@ -636,7 +437,7 @@ Below is the example usage in csm-operator repository.
 
 It expects a script to be present in the csm-operator repository ".github/scripts/module-version-update.sh".
 
-Make sure to update all the latest versions before you trigger this workflow  <https://github.com/dell/csm/blob/main/config/csm-versions.yaml>  
+Make sure to update all the latest versions before you trigger this workflow  <https://github.com/dell/csm/blob/main/config/csm-versions.yaml>
 Workflow needs to be triggered manually from csm-operator repository. Below is the example usage in csm-operator repository.
 
 Example:
@@ -696,7 +497,7 @@ Below is the example usage in csm-operator repository.
 
 It expects a script to be present in the csm-operator repository ".github/scripts/driver-version-update.sh".
 
-Make sure to update all the latest versions before you trigger this workflow <https://github.com/dell/csm/blob/main/config/csm-versions.yaml>  
+Make sure to update all the latest versions before you trigger this workflow <https://github.com/dell/csm/blob/main/config/csm-versions.yaml>
 Workflow needs to be triggered manually from csm-operator repository. Below is the example usage in csm-operator repository.
 
 Example:
