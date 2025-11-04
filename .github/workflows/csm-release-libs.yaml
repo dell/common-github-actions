@@ -13,13 +13,28 @@ name: Release Go Client Libraries
 on:
   workflow_call:
     inputs:
-      version:
-        description: 'Semantic version to release. Ex: major, minor, or patch'
-        required: true
+      option:
+        description: "Type of release. Ex: major, minor, patch, or version."
         type: string
+        required: true
+      version:
+        description: "Specific semver version to release. Only used when 'version' is the selected option. Ex: v2.1.0."
+        type: string
+        required: false
 jobs:
+  process-inputs:
+    name: Process Inputs
+    uses: dell/common-github-actions/.github/workflows/process-inputs.yaml@main
+    with:
+      option: ${{ inputs.option }}
+      version: ${{ inputs.version }}
+    secrets: inherit
+
   build-and-scan:
     name: Build and Scan
+    needs: [process-inputs]
+    outputs:
+      processedVersion: ${{ needs.process-inputs.outputs.processedVersion }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
@@ -42,8 +57,8 @@ jobs:
 
   release-and-tag:
     name: Tag and Release
-    needs: build-and-scan
+    needs: [build-and-scan]
     uses: dell/common-github-actions/.github/workflows/release-creator.yaml@main
     with:
-      version: ${{ inputs.version }}
+      version: ${{ needs.build-and-scan.outputs.processedVersion }}
     secrets: inherit
