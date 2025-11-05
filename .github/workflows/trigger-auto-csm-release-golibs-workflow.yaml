@@ -33,7 +33,7 @@ jobs:
     steps:
       - name: Trigger Release of ${{ matrix.repo }}
         id: release
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ secrets.CSMBOT_PAT }}
           repository: ${{ matrix.repo }}
@@ -59,7 +59,7 @@ jobs:
         repo: ["dell/gobrick"]
     steps:
       - name: Trigger Release of ${{ matrix.repo }}
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ secrets.CSMBOT_PAT }}
           repository: ${{ matrix.repo }}
