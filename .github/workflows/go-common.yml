@@ -34,7 +34,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Go
         uses: actions/setup-go@v6
@@ -99,7 +99,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Run Gosec
         uses: dell/common-github-actions/gosec-runner@main
@@ -112,7 +112,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: gofmt and go vet
         uses: dell/common-github-actions/go-code-formatter-vetter@main
@@ -123,7 +123,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Run malware scan
         uses: dell/common-github-actions/malware-scanner@main
         with:
