@@ -30,7 +30,7 @@ jobs:
       rel_version: ${{ steps.create-rel-branch.outputs.rel_version }}
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0 # Fetch the full history including tags
           ref: ${{ github.ref }} # Checkout the branch from which the workflow is triggered
