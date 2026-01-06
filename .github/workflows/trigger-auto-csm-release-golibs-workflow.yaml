@@ -56,7 +56,7 @@ jobs:
     needs: release_independent_repos
     strategy:
       matrix:
-        repo: ["dell/gobrick"]
+        repo: ["dell/gobrick", "dell/csi-metadata-retriever"]
     steps:
       - name: Trigger Release of ${{ matrix.repo }}
         uses: peter-evans/repository-dispatch@v4
