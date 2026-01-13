@@ -68,7 +68,7 @@ jobs:
 
       - name: Upload Binaries
         if: ${{ env.BIN_NAME != '' }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         env:
           BIN_NAME: ${{ env.BIN_NAME }}
         with:

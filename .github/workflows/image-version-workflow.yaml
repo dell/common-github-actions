@@ -107,7 +107,7 @@ jobs:
 
       # Needed for signing commits using Github App tokens
       # See: https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#commit-signing
-      - uses: actions/create-github-app-token@v2.2.0
+      - uses: actions/create-github-app-token@v2.2.1
         id: generate-token
         with:
           app-id: ${{ vars.CSM_RELEASE_APP_ID }}
@@ -116,7 +116,7 @@ jobs:
       # Must enable "allow GitHub Actions to create pull requests" setting
       # Author defaults to the user who triggered the workflow run
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ steps.generate-token.outputs.token }}
           branch: "updateImage-${{ env.NEW_VERSION }}"
