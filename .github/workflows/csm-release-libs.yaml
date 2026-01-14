@@ -37,7 +37,7 @@ jobs:
 
   build-and-scan:
     name: Build and Scan
-    needs: [process-inputs]
+    needs: [process-inputs, package-update]
     outputs:
       processedVersion: ${{ needs.process-inputs.outputs.processedVersion }}
     runs-on: ubuntu-latest
