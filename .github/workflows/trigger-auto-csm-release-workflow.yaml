@@ -13,15 +13,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  trigger:
-    name: Trigger Release of CSM Drivers and Modules
+  release_independent_repos:
+    name: Release Independent CSM Drivers and Modules
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         repo:
           [
-            "dell/csi-metadata-retriever",
             "dell/csi-powerflex",
             "dell/csi-powermax",
             "dell/csi-powerscale",
@@ -32,9 +30,7 @@ jobs:
             "dell/csm-metrics-powerstore",
             "dell/csm-operator",
             "dell/csm-replication",
-            "dell/karavi-resiliency",
             "dell/karavi-metrics-powerflex",
-            "dell/cert-csi",
           ]
 
     steps:
@@ -46,3 +42,35 @@ jobs:
           repository: ${{ matrix.repo }}
           event-type: auto-release-workflow
           client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
+
+      - name: Check status of triggered workflows for release of ${{ matrix.repo }}
+        run: |
+          curl -sfL https://raw.githubusercontent.com/dell/common-github-actions/main/.github/scripts/check_workflow_status.sh -o check_workflow_status.sh
+          chmod +x check_workflow_status.sh
+          bash check_workflow_status.sh ${{ secrets.CSMBOT_PAT }} ${{ matrix.repo }} "repository_dispatch"
+        shell: bash
+
+  release_dependent_repo:
+    name: Release Dependent CSM Drivers and Modules
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repo:
+          ["dell/karavi-resiliency", "dell/karavi-observability", "dell/cert-csi"]
+
+    steps:
+      - name: Trigger Release of CSM Drivers and Modules
+        uses: peter-evans/repository-dispatch@v4
+        with:
+          # For token information, see: https://github.com/peter-evans/repository-dispatch/tree/main?tab=readme-ov-file#token
+          token: ${{ secrets.CSMBOT_PAT }}
+          repository: ${{ matrix.repo }}
+          event-type: auto-release-workflow
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
+
+      - name: Check status of triggered workflows for release of ${{ matrix.repo }}
+        run: |
+          curl -sfL https://raw.githubusercontent.com/dell/common-github-actions/main/.github/scripts/check_workflow_status.sh -o check_workflow_status.sh
+          chmod +x check_workflow_status.sh
+          bash check_workflow_status.sh ${{ secrets.CSMBOT_PAT }} ${{ matrix.repo }} "repository_dispatch"
+        shell: bash
