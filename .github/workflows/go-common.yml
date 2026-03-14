@@ -88,7 +88,7 @@ jobs:
         # code coverage profiles are uploaded as GitHub artifacts, which automatically expire after 90 days
         # if no coverage profile exists on main branch yet, then the step will fail
         continue-on-error: true
-        uses: fgrosse/go-coverage-report@v1.2.0
+        uses: fgrosse/go-coverage-report@v1.3.0
         with:
           coverage-artifact-name: "code-coverage"
           coverage-file-name: "new_coverage.txt"
