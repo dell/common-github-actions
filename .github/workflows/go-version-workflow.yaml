@@ -80,7 +80,7 @@ jobs:
       - uses: actions/create-github-app-token@v3.2.0
         id: generate-token
         with:
-          app-id: ${{ vars.CSM_RELEASE_APP_ID }}
+          client-id: ${{ vars.CSM_RELEASE_APP_ID }}
           private-key: ${{ secrets.CSM_RELEASE_APP_PRIVATE_KEY }}
 
       # Must enable "allow GitHub Actions to create pull requests" setting
