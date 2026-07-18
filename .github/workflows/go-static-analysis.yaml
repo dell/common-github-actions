@@ -34,12 +34,12 @@ jobs:
     name: Lint golang code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
           go-version: "1.25"
           cache: false
       - name: Checkout the code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Grab golangci-lint config file
         continue-on-error: true
         run: |
@@ -50,7 +50,7 @@ jobs:
         run: |
           go mod vendor
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v9.2.0
+        uses: golangci/golangci-lint-action@v9.3.0
         with:
           version: latest
           skip-cache: true
@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: setup python
         uses: actions/setup-python@v6
         with:
