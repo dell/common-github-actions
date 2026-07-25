@@ -34,14 +34,14 @@ jobs:
           echo "The latest Go version is: $latest_version"
           echo "The latest major Go version is: $major_version"
 
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
           go-version: "${{ env.major_version }}"
           cache: false
           check-latest: true
 
       - name: Checkout the code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # This step will update the go version in:
       # 1 - go.mod files and go.mod toolchain, if found
@@ -77,7 +77,7 @@ jobs:
 
       # Needed for signing commits using Github App tokens
       # See: https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#commit-signing
-      - uses: actions/create-github-app-token@v3.1.1
+      - uses: actions/create-github-app-token@v3.2.0
         id: generate-token
         with:
           app-id: ${{ vars.CSM_RELEASE_APP_ID }}

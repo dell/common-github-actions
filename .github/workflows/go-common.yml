@@ -34,10 +34,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version: "1.25"
 
@@ -88,7 +88,7 @@ jobs:
         # code coverage profiles are uploaded as GitHub artifacts, which automatically expire after 90 days
         # if no coverage profile exists on main branch yet, then the step will fail
         continue-on-error: true
-        uses: fgrosse/go-coverage-report@v1.3.0
+        uses: fgrosse/go-coverage-report@v1.3.1
         with:
           coverage-artifact-name: "code-coverage"
           coverage-file-name: "new_coverage.txt"
@@ -99,7 +99,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Run Gosec
         uses: dell/common-github-actions/gosec-runner@main
@@ -112,7 +112,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: gofmt and go vet
         uses: dell/common-github-actions/go-code-formatter-vetter@main
@@ -123,7 +123,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Run malware scan
         uses: dell/common-github-actions/malware-scanner@main
         with:
