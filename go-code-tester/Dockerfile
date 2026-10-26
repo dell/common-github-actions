@@ -1,4 +1,4 @@
-FROM golang:1.25
+FROM golang:1.27
 
 LABEL "com.github.actions.name"="go-code-tester"
 LABEL "com.github.actions.description"="Runs unit tests and verifies code coverage per package"

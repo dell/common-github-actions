@@ -11,7 +11,7 @@
 # limitations under the License.
 #
 
-FROM golang:1.25
+FROM golang:1.27
 
 LABEL "com.github.actions.name"="license-checker"
 LABEL "com.github.actions.description"="Checks for license header"
